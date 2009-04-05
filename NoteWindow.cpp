@@ -1,7 +1,8 @@
 /* Finestra principale
  *
- * Autore: Eleonora Ciceri
+ * Autore: Eleonora Ciceri, Ilio Catallo
  * Data: 2 Aprile 2009
+ * Ultima revisione: Ilio Catallo, 5 Aprile 2009
  */
  
 // Costanti
@@ -32,7 +33,7 @@
 
 // Costruttore
 NoteWindow::NoteWindow(BRect frame)
-	: BWindow (frame,"Messaggi",B_TITLED_WINDOW,B_NOT_RESIZABLE){
+	: BWindow (frame,"TakeNotes",B_TITLED_WINDOW,B_NOT_RESIZABLE){
 	frame.OffsetTo(B_ORIGIN);
 	
 	// Barra del Menu

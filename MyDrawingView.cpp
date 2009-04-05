@@ -34,7 +34,7 @@ void MyDrawingView :: Draw (BRect updateRect) {
 	// Variabili
 	BRect frame = Bounds();
 	//rgb_color colore = {15,255,255,255};
-	BRect aRect;
+	
 	
 	StrokeRect(frame);
 	

@@ -3,7 +3,7 @@
  *
  * Autori: Eleonora Ciceri, Ilio Catallo
  * Data: 2 Aprile 2009
- * Ultima revisione: ilio Catallo, 5 Aprile 2009
+ * Ultima revisione: Ilio Catallo, 5 Aprile 2009
  */
  
 // Definizione delle inclusioni

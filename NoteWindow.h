@@ -13,7 +13,7 @@
 #endif
 
 #ifndef MY_DRAWING_H
-#include "MyDrawingView.h"
+#include "NoteView.h"
 #endif
 
 #ifndef COLOR_WINDOW_H
@@ -32,7 +32,7 @@ class NoteWindow : public BWindow {
 			virtual void	MessageReceived(BMessage* message);
 			virtual bool	QuitRequested();
 	private:
-		MyDrawingView *fNoteView;
+		NoteView *fNoteView;
 		ColorWindow * fColorWindow;
 		BMenuBar *fNoteMenuBar;
 		BMenu *fFontMenu;

@@ -19,8 +19,8 @@
 #include <InterfaceKit.h>
 #endif
 
-#ifndef MY_DRAWING_VIEW_H
-#include "MyDrawingView.h"
+#ifndef NOTE_VIEW_H
+#include "NoteView.h"
 #endif
 
 #ifndef _VIEW_H

@@ -19,8 +19,8 @@
 #include "NoteWindow.h"
 #endif
 
-#ifndef MY_DRAWING_VIEW_H
-#include "MyDrawingView.h"
+#ifndef NOTE_VIEW_H
+#include "NoteView.h"
 #endif
 
 #ifndef COLOR_WINDOW_H
@@ -54,7 +54,7 @@ NoteWindow::NoteWindow(BRect frame)
 	BMenuItem* menuItem;
 	fFontMenu -> AddItem (menuItem = new BMenuItem ("Change color...",
 			new BMessage (MENU_CHANGE_COLOR)));
-	fNoteView = new MyDrawingView (frame, "NoteView");
+	fNoteView = new NoteView (frame, "NoteView");
 	AddChild(fNoteView);
 	
 	Show();

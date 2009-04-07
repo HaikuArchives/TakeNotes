@@ -17,7 +17,7 @@ class NoteView : public BView {
 		NoteView (BRect frame, char *name);
 		virtual void AttachedToWindow ();
 		virtual void Draw(BRect updateRect);
-		void setColor(rgb_color colore);
+		void SetColor(rgb_color colore);
 		
 	//new
 	private:

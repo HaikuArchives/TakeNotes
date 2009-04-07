@@ -70,7 +70,12 @@ void NoteView :: Draw (BRect updateRect) {
 }
 
 // Cambio il colore
-void NoteView :: setColor (rgb_color colore) {
-	//cambio il colore della TextView
+void NoteView :: SetColor (rgb_color colore) {
+	//cambio il colore della View + TextView
+	
+	SetViewColor(colore);
 	fTextView->SetViewColor(colore);
+	Invalidate();
+	fTextView->Invalidate();
+	
 }

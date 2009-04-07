@@ -95,10 +95,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			colore.green = (uint8)c;
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
-			fNoteView -> SetViewColor(colore);
-			// così aggiorno anche il colore della TextView
-			fNoteView -> setColor(colore);
-			fNoteView -> Invalidate();
+			fNoteView -> SetColor(colore);
+			
 		}
 		break;		
 			

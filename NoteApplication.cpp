@@ -3,7 +3,7 @@
  *
  * Autori: Eleonora Ciceri, Ilio Catallo
  * Data: 2 Aprile 2009
- * Ultima revisione: Ilio Catallo, 5 Aprile 2009
+ * Ultima revisione: Ilio Catallo, 7 Aprile 2009
  */
  
 // Definizione delle inclusioni
@@ -31,7 +31,7 @@
 #include <Window.h>
 #endif
 
-#define COLOR_CHANGED 'CC'
+#define COLOR_CHANGED 'ccrq'
 
 // Main
 int main(){
@@ -44,7 +44,8 @@ int main(){
 
 
 NoteApplication::NoteApplication()
-	: BApplication("application/x-vnd.Eleonora-NoteApplication"){	
+	: BApplication("application/x-vnd.ccc-TakeNotes"){	
+	
 	// Variabili
 	BRect	aRect;
 	

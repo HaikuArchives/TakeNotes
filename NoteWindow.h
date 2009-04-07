@@ -37,7 +37,8 @@ class NoteWindow : public BWindow {
 		BMenuBar *fNoteMenuBar;
 		BMenu *fFontMenu;
 		BMenu *fEditMenu;
-		BMenu *fTagMenu;
+		BMenu *fSettingsMenu;
+		BMenu *fAboutMenu;
 		BWindow *fTagWindow;
 };
 

@@ -19,7 +19,7 @@
 #endif
 
 // Messaggi
-#define COLOR_CHANGED 'CC'
+#define COLOR_CHANGED 'ccrq'
 
 // Costruttore
 ColorView :: ColorView(BRect rect, char *name)
@@ -31,12 +31,7 @@ ColorView :: ColorView(BRect rect, char *name)
 	   	   
 	   	   fColorControl = new BColorControl (leftTop, matrix, cellSide, "ColorControl");
 	   	   AddChild(fColorControl);
-/*	   	   
-	   	   BRect buttonRect (300,300,400,400);
-	   	   BMessage *msg = new BMessage (COLOR_CHANGED);
-	   	   fButton = new BButton (buttonRect, "MyButton", "clickMe", msg);
-	   	   AddChild (fButton);
-*/
+
 }
 
 // Font

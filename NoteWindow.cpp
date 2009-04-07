@@ -7,7 +7,7 @@
  
 // Costanti
 #define MENU_CHANGE_COLOR 'mcg'
-#define COLOR_CHANGED 'CC'
+#define COLOR_CHANGED 'ccrq'
 
 
 // Dichiarazione degli include
@@ -40,20 +40,29 @@ NoteWindow::NoteWindow(BRect frame)
 	BRect menuBarRect;
 	menuBarRect.Set(0,0,0,0);
 	fNoteMenuBar = new BMenuBar(menuBarRect,"Barra del menu");
-	AddChild(fNoteMenuBar);
+	
 	
 	// Menu
+	
 	fFontMenu = new BMenu("Font");
-	fNoteMenuBar -> AddItem (fFontMenu);
 	fEditMenu = new BMenu ("Edit");
+	fSettingsMenu = new BMenu ("Settings");
+	fAboutMenu = new BMenu("About");
+	
 	fNoteMenuBar -> AddItem (fEditMenu);
-	fTagMenu = new BMenu ("Tag");
-	fNoteMenuBar -> AddItem (fTagMenu);
+	fNoteMenuBar -> AddItem (fFontMenu);
+	fNoteMenuBar -> AddItem (fSettingsMenu);
+	fNoteMenuBar -> AddItem (fAboutMenu);
 	
 	// Menu Item
+	
+	// Menu Settings
+	
 	BMenuItem* menuItem;
-	fFontMenu -> AddItem (menuItem = new BMenuItem ("Change color...",
+	fSettingsMenu -> AddItem (menuItem = new BMenuItem ("Change background color",
 			new BMessage (MENU_CHANGE_COLOR)));
+	
+	// Menu Edit
 	
 	fEditMenu -> AddItem (menuItem = new BMenuItem("Cut", new BMessage(B_CUT), 'X'));
 	menuItem -> SetTarget(NULL,this);
@@ -67,9 +76,15 @@ NoteWindow::NoteWindow(BRect frame)
 	fEditMenu -> AddItem (menuItem = new BMenuItem("Select All", new BMessage(B_SELECT_ALL), 'A'));
 	menuItem -> SetTarget(NULL,this);
 	
-	fNoteView = new NoteView (frame, "NoteView");
-	AddChild(fNoteView);
+	// View principale
 	
+	fNoteView = new NoteView (frame, "NoteView");
+	
+	// Associamolo alla Window
+	
+	AddChild(fNoteMenuBar);
+	AddChild(fNoteView);
+
 	Show();
 	}
 

@@ -5,12 +5,23 @@
 #include <View.h>
 #endif
 
+//new
+#ifndef _TEXT_VIEW_H
+#include <TextView.h>
+#endif
+
+
+
 class NoteView : public BView {
 	public:
 		NoteView (BRect frame, char *name);
 		virtual void AttachedToWindow ();
 		virtual void Draw(BRect updateRect);
 		void setColor(rgb_color colore);
+		
+	//new
+	private:
+		BTextView		*fTextView;
 };
 
 #endif

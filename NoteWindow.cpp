@@ -1,8 +1,8 @@
 /* Finestra principale
  *
- * Autore: Eleonora Ciceri, Ilio Catallo
+ * Autore: Eleonora Ciceri, Ilio Catallo, Stefano Celentano
  * Data: 2 Aprile 2009
- * Ultima revisione: Ilio Catallo, 5 Aprile 2009
+ * Ultima revisione: Stefano Celentano, 7 Aprile 2009
  */
  
 // Costanti
@@ -54,6 +54,19 @@ NoteWindow::NoteWindow(BRect frame)
 	BMenuItem* menuItem;
 	fFontMenu -> AddItem (menuItem = new BMenuItem ("Change color...",
 			new BMessage (MENU_CHANGE_COLOR)));
+	
+	fEditMenu -> AddItem (menuItem = new BMenuItem("Cut", new BMessage(B_CUT), 'X'));
+	menuItem -> SetTarget(NULL,this);
+	
+	fEditMenu -> AddItem (menuItem = new BMenuItem("Copy", new BMessage(B_COPY), 'C'));
+	menuItem -> SetTarget(NULL,this);
+	
+	fEditMenu -> AddItem (menuItem = new BMenuItem("Paste", new BMessage(B_PASTE), 'V'));
+	menuItem -> SetTarget(NULL,this);
+	
+	fEditMenu -> AddItem (menuItem = new BMenuItem("Select All", new BMessage(B_SELECT_ALL), 'A'));
+	menuItem -> SetTarget(NULL,this);
+	
 	fNoteView = new NoteView (frame, "NoteView");
 	AddChild(fNoteView);
 	
@@ -83,6 +96,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
 			fNoteView -> SetViewColor(colore);
+			// così aggiorno anche il colore della TextView
+			fNoteView -> setColor(colore);
 			fNoteView -> Invalidate();
 		}
 		break;		

@@ -49,13 +49,12 @@ void ColorView :: Draw (BRect updateRect) {
 // Quando clicco...
 void ColorView :: MouseDown(BPoint point) {
 	// Variabili
-	BRect aRect (20.0, 330.0, 350.0, 340.0);
+	
 	rgb_color userColorChoice;
 	
 	// Prendo il valore scelto dall'utente
 	userColorChoice = fColorControl -> ValueAsColor();
-	SetHighColor(userColorChoice);
-	FillRect (aRect, B_SOLID_HIGH);
+
 	// Invio il messaggio
 	BMessage *msg = new BMessage (COLOR_CHANGED);
 	msg -> AddInt8 ("red", (int8)userColorChoice.red);

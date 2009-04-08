@@ -2,7 +2,7 @@
  *
  * Autore: Eleonora Ciceri, Ilio Catallo, Stefano Celentano
  * Data: 2 Aprile 2009
- * Ultima revisione: Stefano Celentano, 7 Aprile 2009
+ * Ultima revisione: Ilio Catallo, 9 Aprile 2009
  */
  
 // Costanti
@@ -31,14 +31,19 @@
 #include <InterfaceKit.h>
 #endif
 
+#define MENU_BAR_HEIGHT 18;
+#define TEXT_INSET 5
+
 // Costruttore
 NoteWindow::NoteWindow(BRect frame)
 	: BWindow (frame,"TakeNotes",B_TITLED_WINDOW,B_NOT_RESIZABLE){
-	frame.OffsetTo(B_ORIGIN);
+	
+	//frame.OffsetTo(B_ORIGIN);
 	
 	// Barra del Menu
-	BRect menuBarRect;
-	menuBarRect.Set(0,0,0,0);
+	
+	BRect menuBarRect = Bounds();
+	menuBarRect.bottom = MENU_BAR_HEIGHT;
 	fNoteMenuBar = new BMenuBar(menuBarRect,"Barra del menu");
 	
 	
@@ -56,13 +61,13 @@ NoteWindow::NoteWindow(BRect frame)
 	
 	// Menu Item
 	
-	// Menu Settings
+	// Settings
 	
 	BMenuItem* menuItem;
 	fSettingsMenu -> AddItem (menuItem = new BMenuItem ("Change background color",
 			new BMessage (MENU_CHANGE_COLOR)));
 	
-	// Menu Edit
+	//Edit
 	
 	fEditMenu -> AddItem (menuItem = new BMenuItem("Cut", new BMessage(B_CUT), 'X'));
 	menuItem -> SetTarget(NULL,this);
@@ -77,8 +82,20 @@ NoteWindow::NoteWindow(BRect frame)
 	menuItem -> SetTarget(NULL,this);
 	
 	// View principale
+
 	
-	fNoteView = new NoteView (frame, "NoteView");
+	BRect frameView = Bounds();
+	
+	frameView.top = fNoteMenuBar->Bounds().Height() +1;
+	frameView.left = 0;
+	
+	BRect frameText = frameView;
+	
+	frameText.OffsetTo(B_ORIGIN);
+	frameText.InsetBy(TEXT_INSET,TEXT_INSET);
+	
+	fNoteView = new NoteView (frameView, frameText, "NoteView");
+	fNoteView->MakeFocus(); 
 	
 	// Associamolo alla Window
 	
@@ -110,7 +127,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			colore.green = (uint8)c;
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
-			fNoteView -> SetColor(colore);
+			fNoteView -> SetBackgroundColor(colore);
 			
 		}
 		break;		

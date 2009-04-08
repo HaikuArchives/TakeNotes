@@ -15,13 +15,14 @@
 
 class ColorView : public BView {
 	public:
-		ColorView (BRect frame, char *name);
+		ColorView (BRect frame, char *name, BHandler *handler);
 		virtual void AttachedToWindow ();
 		virtual void Draw(BRect updateRect);
 		virtual void MouseDown(BPoint point);
 	private:
-		BColorControl *fColorControl;
-		BButton * fButton;
+		BColorControl 	*fColorControl;
+		BButton 		*fButton;
+		BMessenger		*fMessenger;
 };
 
 #endif

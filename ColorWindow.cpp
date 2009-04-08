@@ -22,10 +22,11 @@
 
 // Costruttore
 // Me la crea tenendo la dimensione del rettangolo BRect
-ColorWindow :: ColorWindow (BRect frame)
-		: BWindow (frame, "Cambia il colore...", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
+ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
+		: BWindow (frame, "Change the background color", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
+	
 	frame.OffsetTo(B_ORIGIN);
-	fColorView = new ColorView (frame, "ColorView");
+	fColorView = new ColorView (frame, "ColorView",handler);
 	AddChild(fColorView);
 	
 	Show();

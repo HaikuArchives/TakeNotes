@@ -12,8 +12,12 @@
 
 class NoteView : public BTextView {
 	public:
-		NoteView (BRect frame, BRect frameText, char *name);
+		NoteView (BRect frame, BRect frameText, char *name,BHandler *handler);
 		void SetBackgroundColor(rgb_color colore);
+
+	private:
+	
+		BHandler *handler;
 
 };
 

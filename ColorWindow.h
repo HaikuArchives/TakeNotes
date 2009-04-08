@@ -21,7 +21,7 @@
 // Dichiarazione della classe
 class ColorWindow : public BWindow {
 	public:
-		ColorWindow(BRect frame);
+		ColorWindow(BRect frame, BHandler *handler);
 		virtual bool QuitRequested();
 	private:
 		ColorView *fColorView;

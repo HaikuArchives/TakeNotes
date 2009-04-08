@@ -22,9 +22,9 @@ class NoteApplication : public BApplication {
 
 	public:
 			NoteApplication();
-			void MessageReceived(BMessage *message);
+	
 	private:
-		NoteWindow * fTakeWindow;
+		NoteWindow * fNoteWindow;
 }; 
 
 #endif

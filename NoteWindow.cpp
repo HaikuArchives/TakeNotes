@@ -94,7 +94,7 @@ NoteWindow::NoteWindow(BRect frame)
 	frameText.OffsetTo(B_ORIGIN);
 	frameText.InsetBy(TEXT_INSET,TEXT_INSET);
 	
-	fNoteView = new NoteView (frameView, frameText, "NoteView");
+	fNoteView = new NoteView (frameView, frameText, "NoteView",this);
 	fNoteView->MakeFocus(); 
 	
 	// Associamolo alla Window
@@ -114,7 +114,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			
 			// Evito che ci siano due finestre di scelta colore			
 			if (be_app->CountWindows() == 1)
-				fColorWindow = new ColorWindow(aRect);
+				fColorWindow = new ColorWindow(aRect,this);
 			}
 			break;	
 		case COLOR_CHANGED: {

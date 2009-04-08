@@ -1,8 +1,9 @@
 /*
  * View di disegno
  *
- * Autore: Eleonora Ciceri
+ * Autore: Eleonora Ciceri, Ilio Catallo
  * Data: 2 Aprile 2009
+ * Ultima modifica: 9 Aprile 2009
  */
  
 // L'ho messo per inserire la scritta nel quadrato
@@ -18,13 +19,21 @@
 #include <Button.h>
 #endif
 
+#ifndef _MESSENGER_H
+#include <Messenger.h>
+#endif
+
 // Messaggi
 #define COLOR_CHANGED 'ccrq'
 
 // Costruttore
-ColorView :: ColorView(BRect rect, char *name)
+ColorView :: ColorView(BRect rect, char *name,BHandler *handler)
 	   	   : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW) {
+	   	   
 	   	   // Variabili
+	   	   
+	   	   fMessenger = new BMessenger(handler);
+	   	   
 	   	   BPoint leftTop(20.0, 50.0);
 	   	   color_control_layout matrix = B_CELLS_16x16;
 	   	   long cellSide = 16;
@@ -60,5 +69,5 @@ void ColorView :: MouseDown(BPoint point) {
 	msg -> AddInt8 ("red", (int8)userColorChoice.red);
 	msg -> AddInt8 ("green", (int8)userColorChoice.green);
 	msg -> AddInt8 ("blue", (int8)userColorChoice.blue);
-	be_app->PostMessage(msg);
+	fMessenger->SendMessage(msg);
 }

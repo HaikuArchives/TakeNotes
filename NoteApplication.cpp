@@ -52,21 +52,9 @@ NoteApplication::NoteApplication()
 	// Creazione del rettangolo che ridimensiona la finestra
 	// x, y, w, h
 	aRect.Set(30, 30, 300, 300);
-	fTakeWindow = new NoteWindow(aRect);	
+	fNoteWindow = new NoteWindow(aRect);	
 	
 	// Mostro la finestra
-	fTakeWindow->Show();	
+	fNoteWindow->Show();	
 }
 
-// Ricezione di messaggi
-void NoteApplication :: MessageReceived (BMessage *message) {
-	switch (message -> what) {
-		case COLOR_CHANGED: {
-			fTakeWindow -> PostMessage(message);
-		}
-		break;
-		
-		default:
-			BApplication :: MessageReceived(message);
-	}
-}

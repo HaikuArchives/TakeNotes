@@ -31,8 +31,12 @@
 #include <InterfaceKit.h>
 #endif
 
+#ifndef _SCROLLVIEW_H
+#include <ScrollView.h>
+#endif
+
 #define MENU_BAR_HEIGHT 18;
-#define TEXT_INSET 5
+#define TEXT_INSET 10
 
 // Costruttore
 NoteWindow::NoteWindow(BRect frame)
@@ -86,7 +90,8 @@ NoteWindow::NoteWindow(BRect frame)
 	
 	BRect frameView = Bounds();
 	
-	frameView.top = fNoteMenuBar->Bounds().Height() +1;
+	frameView.top = fNoteMenuBar->Bounds().Height() + 5;
+	frameView.right -= B_V_SCROLL_BAR_WIDTH;
 	frameView.left = 0;
 	
 	BRect frameText = frameView;
@@ -94,16 +99,23 @@ NoteWindow::NoteWindow(BRect frame)
 	frameText.OffsetTo(B_ORIGIN);
 	frameText.InsetBy(TEXT_INSET,TEXT_INSET);
 	
-	fNoteView = new NoteView (frameView, frameText, "NoteView",this);
-	fNoteView->MakeFocus(); 
+	fNoteView = new NoteView (frameView, frameText, "NoteView");
+	fNoteView->SetStylable(true);
+
+	
+	// Scrollbar
+	
+	fScrollView = new BScrollView("scrollview", fNoteView, B_FOLLOW_ALL, 0, false, true, B_NO_BORDER);
 	
 	// Associamolo alla Window
-	
+	AddChild(fScrollView);
 	AddChild(fNoteMenuBar);
-	AddChild(fNoteView);
-
+	
+	
+	fNoteView->MakeFocus(); 
+	
 	Show();
-	}
+}
 
 // Funzione per la ricezione di messaggi
 void NoteWindow :: MessageReceived(BMessage* message) {

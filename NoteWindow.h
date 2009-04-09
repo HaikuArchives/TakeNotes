@@ -24,6 +24,10 @@
 #include <InterfaceKit.h>
 #endif
 
+#ifndef _SCROLLVIEW_H
+#include <ScrollView.h>
+#endif
+
 // Costruttore
 class NoteWindow : public BWindow {
 
@@ -40,6 +44,7 @@ class NoteWindow : public BWindow {
 		BMenu *fSettingsMenu;
 		BMenu *fAboutMenu;
 		BWindow *fTagWindow;
+		BScrollView	*fScrollView;
 };
 
 #endif

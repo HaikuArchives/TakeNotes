@@ -21,8 +21,8 @@
 
 
 // Costruttore
-NoteView :: NoteView(BRect frame,BRect frameText, char *name, BHandler *handler )
-	   	   : BTextView(frame, name, frameText, B_FOLLOW_ALL, B_FRAME_EVENTS | B_WILL_DRAW) {
+NoteView :: NoteView(BRect frame,BRect frameText, char *name)
+	   	   : BTextView(frame, name, frameText, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS) {
 	   	   
 	   	   rgb_color giallo = {254,254,92,255};
 	   	   SetViewColor(giallo);

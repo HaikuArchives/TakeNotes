@@ -29,6 +29,9 @@ NoteView :: NoteView(BRect frame,BRect frameText, char *name, BHandler *handler 
 	   	   rgb_color giallo = {254,254,92,255};
 	   	   SetViewColor(giallo);
 	   	   
+	   	   SetDoesUndo(true);
+	   	   MakeFocus(true);
+	   	   
 	   	   }
 
 

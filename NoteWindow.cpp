@@ -39,6 +39,10 @@
 #include <Application.h>
 #endif
 
+#ifndef _CLIPBOARD_H
+#include <Clipboard.h>
+#endif
+
 #include <stdio.h>
 
 #define MENU_BAR_HEIGHT 18;
@@ -80,6 +84,10 @@ NoteWindow::NoteWindow(BRect frame)
 			new BMessage (MENU_CHANGE_COLOR)));
 	
 	//Edit
+
+	fEditMenu -> AddItem (menuItem = new BMenuItem("Undo", new BMessage(B_UNDO), 'Z'));
+	
+	fEditMenu -> AddSeparatorItem();
 	
 	fEditMenu -> AddItem (menuItem = new BMenuItem("Cut", new BMessage(B_CUT), 'X'));
 	menuItem -> SetTarget(NULL,this);
@@ -203,6 +211,7 @@ NoteWindow::NoteWindow(BRect frame)
 	frameText.InsetBy(TEXT_INSET,TEXT_INSET);
 	
 	fNoteView = new NoteView (frameView, frameText, "NoteView",this);
+	fNoteView->SetDoesUndo(true);
 	fNoteView->MakeFocus(); 
 	
 	// Associamolo alla Window
@@ -331,6 +340,11 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			SetFontStyle (fontFamily, fontStyle);
 		}
 		break;
+		
+		case B_UNDO:
+			fNoteView->Undo(be_clipboard);
+		break;
+		
 			
 		default:
 			BWindow::MessageReceived(message);

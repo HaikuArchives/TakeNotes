@@ -32,6 +32,7 @@
 #endif
 
 #define COLOR_CHANGED 'ccrq'
+#define FONT_BOLD 'fntb'
 
 // Main
 int main(){

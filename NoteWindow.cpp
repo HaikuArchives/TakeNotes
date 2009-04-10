@@ -251,11 +251,13 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 			oldItem -> SetMarked (false);	// Gli tolgo la marcatura
 	}		
 	font.SetFamilyAndStyle (fontFamily, fontStyle);
-	fNoteView -> SetFontAndColor (&font, B_FONT_ALL, &sameColor);
+	fNoteView -> SetFontAndColor (&font);
 	BMenuItem *superItem;
 	superItem = fFontMenu -> FindItem (fontFamily);
 		if (superItem != NULL )
 			superItem -> SetMarked (true);	// Marco quello selezionato
+	BMenuItem *menuItem = fFontMenu -> FindItem("Black");
+	menuItem -> SetMarked(true);
 }
 
 // Funzione per la ricezione di messaggi
@@ -297,7 +299,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				
 				fNoteView -> GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
-				fNoteView -> SetFontAndColor (&font, B_FONT_ALL, &sameColor);
+				fNoteView -> SetFontAndColor (&font, B_FONT_SIZE);
 			}
 		}
 		break;
@@ -316,7 +318,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			uint32 sameProperties;
 			BFont font;
 			fNoteView -> GetFontAndColor(&font, &sameProperties);
-			fNoteView -> SetFontAndColor(&font,B_FONT_ALL,&colore);
+			fNoteView -> SetFontAndColor(&font,0,&colore);
 		}
 		break;
 		

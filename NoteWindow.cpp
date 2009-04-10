@@ -219,6 +219,7 @@ NoteWindow::NoteWindow(BRect frame)
 	fNoteView = new NoteView (frameView, frameText, "NoteView",this);
 	fNoteView->SetDoesUndo(true);
 	fNoteView->MakeFocus(); 
+	fNoteView->SetStylable(true);
 	
 	// ScrollView
 	
@@ -239,8 +240,9 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 	uint32 sameProperties;
 	font_family oldFamily;
 	font_style oldStyle;
+	rgb_color sameColor;
 	
-	fNoteView -> GetFontAndColor (&font, &sameProperties);
+	fNoteView -> GetFontAndColor (&font, &sameProperties, &sameColor);
 	font.GetFamilyAndStyle (&oldFamily, &oldStyle); // raccolgo famiglia e
 													// stile attuali
 	if (strcmp (oldFamily, fontFamily)) {// Se richeisto il font in uso
@@ -249,15 +251,11 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 			oldItem -> SetMarked (false);	// Gli tolgo la marcatura
 	}		
 	font.SetFamilyAndStyle (fontFamily, fontStyle);
-	fNoteView -> SetFontAndColor (&font, B_FONT_ALL);
+	fNoteView -> SetFontAndColor (&font, B_FONT_ALL, &sameColor);
 	BMenuItem *superItem;
 	superItem = fFontMenu -> FindItem (fontFamily);
 		if (superItem != NULL )
 			superItem -> SetMarked (true);	// Marco quello selezionato
-	// Marco il colore nero
-	BMenuItem *colorItem = fFontMenu -> FindItem ("Black");
-		if (colorItem != NULL)
-			colorItem -> SetMarked(true);
 }
 
 // Funzione per la ricezione di messaggi
@@ -295,10 +293,11 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			if (message -> FindFloat ("size", &fontSize) == B_OK){
 				uint32 sameProperties;
 				BFont font;
+				rgb_color sameColor;
 				
-				fNoteView -> GetFontAndColor(&font, &sameProperties);
+				fNoteView -> GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
-				fNoteView -> SetFontAndColor (&font,B_FONT_ALL);
+				fNoteView -> SetFontAndColor (&font, B_FONT_ALL, &sameColor);
 			}
 		}
 		break;

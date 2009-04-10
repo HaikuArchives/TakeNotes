@@ -2,7 +2,7 @@
  *
  * Autore: Eleonora Ciceri, Ilio Catallo, Stefano Celentano
  * Data: 2 Aprile 2009
- * Ultima revisione: Eleonora Ciceri, 9 Aprile 2009
+ * Ultima revisione: Ilio Catallo, 10 Aprile 2009
  */
  
 // Costanti
@@ -43,10 +43,14 @@
 #include <Clipboard.h>
 #endif
 
+#ifndef _SCROLLVIEW_H
+#include <ScrollView.h>
+#endif
+
 #include <stdio.h>
 
 #define MENU_BAR_HEIGHT 18;
-#define TEXT_INSET 5
+#define TEXT_INSET 10
 
 // Costruttore
 NoteWindow::NoteWindow(BRect frame)
@@ -202,8 +206,10 @@ NoteWindow::NoteWindow(BRect frame)
 	// View principale	
 	BRect frameView = Bounds();
 	
-	frameView.top = fNoteMenuBar->Bounds().Height() +1;
+	frameView.top = fNoteMenuBar->Bounds().Height() + 4;
+	frameView.right -= B_V_SCROLL_BAR_WIDTH;
 	frameView.left = 0;
+	
 	
 	BRect frameText = frameView;
 	
@@ -214,10 +220,14 @@ NoteWindow::NoteWindow(BRect frame)
 	fNoteView->SetDoesUndo(true);
 	fNoteView->MakeFocus(); 
 	
+	// ScrollView
+	
+	fScrollView = new BScrollView("scrollview", fNoteView, B_FOLLOW_ALL, 0, false, true, B_NO_BORDER);
+	
 	// Associamolo alla Window
 	
 	AddChild(fNoteMenuBar);
-	AddChild(fNoteView);
+	AddChild(fScrollView);
 
 	Show();
 	}
@@ -288,7 +298,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				
 				fNoteView -> GetFontAndColor(&font, &sameProperties);
 				font.SetSize(fontSize);
-				fNoteView -> SetFontAndColor (&font, B_FONT_ALL);
+				fNoteView -> SetFontAndColor (&font,B_FONT_ALL);
 			}
 		}
 		break;

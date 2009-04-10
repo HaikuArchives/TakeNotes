@@ -24,6 +24,10 @@
 #include <InterfaceKit.h>
 #endif
 
+#ifndef _SCROLLVIEW_H
+#include <ScrollView.h>
+#endif
+
 // Costruttore
 class NoteWindow : public BWindow {
 
@@ -32,6 +36,7 @@ class NoteWindow : public BWindow {
 			virtual void	MessageReceived(BMessage* message);
 			virtual bool	QuitRequested();
 			void SetFontStyle (const char* fontFamily, const char *fontStyle);
+	
 	private:
 		NoteView *fNoteView;
 		ColorWindow * fColorWindow;
@@ -42,6 +47,7 @@ class NoteWindow : public BWindow {
 		BMenu *fAboutMenu;
 		BWindow *fTagWindow;
 		BMenuItem *fCurrentFont;
+		BScrollView	*fScrollView;
 };
 
 #endif

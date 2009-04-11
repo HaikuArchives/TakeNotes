@@ -21,6 +21,8 @@
 #include <Application.h>
 #endif
 
+// Messaggi
+#define TEXT_CHANGED 'txch'
 
 // Costruttore
 NoteView :: NoteView(BRect frame,BRect frameText, char *name, BHandler *handler )
@@ -28,6 +30,8 @@ NoteView :: NoteView(BRect frame,BRect frameText, char *name, BHandler *handler 
 	   	   
 	   	   rgb_color giallo = {254,254,92,255};
 	   	   SetViewColor(giallo);
+	   	   
+	   	   fMessenger = new BMessenger(handler);
 	   	   
 }
 
@@ -37,4 +41,13 @@ void NoteView :: SetBackgroundColor (rgb_color colore) {
 	SetViewColor(colore);
 	Invalidate();
 		
+}
+
+
+void NoteView :: InsertText(const char* text, int32 length, int32 offset, const text_run_array *runs) {
+
+    BMessage *msg = new BMessage (TEXT_CHANGED);
+	fMessenger->SendMessage(msg);	
+	BTextView::InsertText(text,length,offset,runs);
+
 }

@@ -48,6 +48,24 @@ class NoteWindow : public BWindow {
 		BWindow *fTagWindow;
 		BMenuItem *fCurrentFont;
 		BScrollView	*fScrollView;
+		
+		//MenuItems (menu Edit)
+		
+		BMenuItem* fUndoItem;
+		BMenuItem* fCutItem;
+		BMenuItem* fCopyItem;
+		BMenuItem* fPasteItem;
+		BMenuItem* fSelectAllItem;
+		
+		//MenuItems (menu Settings)
+		
+		BMenuItem* fChangeBackgroundColorItem;
+		
+		//flag di undo
+		bool fUndoFlag;
+		bool fCanUndo;
+		bool fCanRedo;
+		bool fRedoFlag;
 };
 
 #endif

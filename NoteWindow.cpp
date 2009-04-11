@@ -12,6 +12,7 @@
 #define FONT_COLOR 'fntc'
 #define FONT_FAMILY 'fntf'
 #define FONT_STYLE 'ftst'
+#define TEXT_CHANGED 'txch'
 
 
 // Dichiarazione degli include
@@ -47,6 +48,8 @@
 #include <ScrollView.h>
 #endif
 
+#include <Autolock.h>
+
 #include <stdio.h>
 
 #define MENU_BAR_HEIGHT 18;
@@ -57,6 +60,13 @@ NoteWindow::NoteWindow(BRect frame)
 	: BWindow (frame,"TakeNotes",B_TITLED_WINDOW,B_NOT_RESIZABLE){
 	
 	//frame.OffsetTo(B_ORIGIN);
+	
+	
+	//flag di undo
+	
+	fCanUndo=false;		//se non c'è testo non posso fare undo
+	fUndoFlag=false;
+	
 	
 	// Barra del Menu
 	
@@ -83,29 +93,30 @@ NoteWindow::NoteWindow(BRect frame)
 	
 	// Settings
 	
-	BMenuItem* menuItem;
-	fSettingsMenu -> AddItem (menuItem = new BMenuItem ("Change background color",
+	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Change background color",
 			new BMessage (MENU_CHANGE_COLOR)));
 	
 	//Edit
 
-	fEditMenu -> AddItem (menuItem = new BMenuItem("Undo", new BMessage(B_UNDO), 'Z'));
+	fEditMenu -> AddItem (fUndoItem = new BMenuItem("Can't Undo", new BMessage(B_UNDO), 'Z'));
+	fUndoItem -> SetEnabled(false);		//senza un messaggio TEXT_CHANGED, non deve essere possibile fare undo
 	
 	fEditMenu -> AddSeparatorItem();
 	
-	fEditMenu -> AddItem (menuItem = new BMenuItem("Cut", new BMessage(B_CUT), 'X'));
-	menuItem -> SetTarget(NULL,this);
+	fEditMenu -> AddItem (fCutItem = new BMenuItem("Cut", new BMessage(B_CUT), 'X'));
+	fCutItem -> SetTarget(NULL,this);
 	
-	fEditMenu -> AddItem (menuItem = new BMenuItem("Copy", new BMessage(B_COPY), 'C'));
-	menuItem -> SetTarget(NULL,this);
+	fEditMenu -> AddItem (fCopyItem = new BMenuItem("Copy", new BMessage(B_COPY), 'C'));
+	fCopyItem -> SetTarget(NULL,this);
 	
-	fEditMenu -> AddItem (menuItem = new BMenuItem("Paste", new BMessage(B_PASTE), 'V'));
-	menuItem -> SetTarget(NULL,this);
+	fEditMenu -> AddItem (fPasteItem = new BMenuItem("Paste", new BMessage(B_PASTE), 'V'));
+	fPasteItem -> SetTarget(NULL,this);
 	
-	fEditMenu -> AddItem (menuItem = new BMenuItem("Select All", new BMessage(B_SELECT_ALL), 'A'));
-	menuItem -> SetTarget(NULL,this);
+	fEditMenu -> AddItem (fSelectAllItem = new BMenuItem("Select All", new BMessage(B_SELECT_ALL), 'A'));
+	fSelectAllItem -> SetTarget(NULL,this);
 	
 	// Font: Size
+	BMenuItem* menuItem;
 	BMenu *sizeFont = new BMenu ("Size");
 	sizeFont -> SetRadioMode (true);
 	fFontMenu -> AddItem (sizeFont);
@@ -206,7 +217,7 @@ NoteWindow::NoteWindow(BRect frame)
 	// View principale	
 	BRect frameView = Bounds();
 	
-	frameView.top = fNoteMenuBar->Bounds().Height() + 4;
+	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
 	frameView.right -= B_V_SCROLL_BAR_WIDTH;
 	frameView.left = 0;
 	
@@ -352,8 +363,36 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}
 		break;
 		
-		case B_UNDO:
-			fNoteView->Undo(be_clipboard);
+		//
+		case TEXT_CHANGED:
+			if (fUndoFlag) {
+				fCanUndo = false;
+				fCanRedo = true;
+				fUndoItem -> SetLabel("Redo");
+				fUndoItem -> SetEnabled(true);
+				fUndoFlag = false;
+			}
+			
+			else {
+			
+			fCanUndo = true;		//posso fare undo
+			fCanRedo = false;
+			fUndoItem -> SetLabel("Undo");
+			fUndoItem -> SetEnabled(true);
+			fRedoFlag = false;
+			
+		    }
+		break;
+				
+		//Messaggio per la funzione di undo
+		
+		case B_UNDO:		//se ho ricevuto un B_UNDO message...
+		if (fCanUndo)	//...e sono in uno stato in cui posso fare undo
+			fUndoFlag = true;
+		if (fCanRedo)	//...e sono in uno stato in cui posso fare redo
+			fRedoFlag = true;
+			
+		fNoteView->Undo(be_clipboard);
 		break;
 		
 			

@@ -13,6 +13,7 @@
 #define FONT_FAMILY 'fntf'
 #define FONT_STYLE 'ftst'
 #define TEXT_CHANGED 'txch'
+#define ADD_DATA 'addd'
 
 
 // Dichiarazione degli include
@@ -51,9 +52,17 @@
 #include <Autolock.h>
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
+
+// Strutture
+const struct tm gettime() {
+    time_t    t=time(NULL);
+    return *localtime(&t);
+}
 
 // Costruttore
 NoteWindow::NoteWindow(BRect frame)
@@ -95,6 +104,8 @@ NoteWindow::NoteWindow(BRect frame)
 	
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Change background color",
 			new BMessage (MENU_CHANGE_COLOR)));
+	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Add date and time",
+			new BMessage (ADD_DATA)));		
 	
 	//Edit
 
@@ -393,6 +404,23 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fRedoFlag = true;
 			
 		fNoteView->Undo(be_clipboard);
+		break;
+		
+		case ADD_DATA: {
+			int day = gettime().tm_mday;
+			int month = gettime().tm_mon + 1;
+			int year = gettime().tm_year+1900;
+			int second = gettime().tm_sec;
+			int min = gettime().tm_min;
+			int hour = gettime().tm_hour;
+			
+			char stringa[2];
+			sprintf(stringa, "%d/%d/%d - %d:%d:%d", day,
+					month, year, hour, min, second);
+			
+			fNoteView -> MakeFocus();
+			fNoteView -> Insert(stringa);
+		}
 		break;
 		
 			

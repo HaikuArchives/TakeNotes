@@ -6,8 +6,6 @@
  * Ultima revisione: Ilio Catallo, 9 Aprile 2009
  */
 
-// Messaggi
-#define FONT_BOLD 'fntb'
 
 #ifndef NOTE_VIEW_H
 #include "NoteView.h"
@@ -21,20 +19,79 @@
 #include <Application.h>
 #endif
 
+#ifndef _DRAGGER_H
+#include <Dragger.h>
+#endif
+
 // Messaggi
 #define TEXT_CHANGED 'txch'
+#define FONT_BOLD 'fntb'
 
 // Costruttore
 NoteView :: NoteView(BRect frame,BRect frameText, char *name, BHandler *handler )
 	   	   : BTextView(frame, name, frameText, B_FOLLOW_ALL, B_FRAME_EVENTS | B_WILL_DRAW) {
 	   	   
-	   	   rgb_color giallo = {254,254,92,255};
-	   	   SetViewColor(giallo);
+	   	  // rgb_color giallo = {254,254,92,255};
+	   	   //SetViewColor(giallo);
 	   	   
 	   	   fMessenger = new BMessenger(handler);
-	   	   
+		   Init();	   	   
 }
 
+NoteView :: NoteView (BMessage *msg)
+		   : BTextView(msg) {
+
+		Init();
+
+}
+
+NoteView :: ~NoteView(){}
+
+
+void NoteView :: Init(){
+
+		BDragger *dragger;
+		
+		dragger = new BDragger(BRect(0,270,7,277),this,0);
+		SetViewColor(254,254,92,255);
+		AddChild(dragger);
+}
+		
+		
+status_t NoteView :: Archive (BMessage *msg,bool deep) const{
+
+		msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
+		return BView::Archive(msg,deep);
+
+}
+
+BArchivable* NoteView :: Instantiate(BMessage *msg){
+
+		if (!validate_instantiation(msg,"NoteView")) return NULL;
+		return new NoteView(msg);
+		
+}
+
+void NoteView :: AboutRequested(){
+
+		BAlert *alert = new BAlert("TakeNotes","A program to take notes","OK");
+		alert->SetShortcut(0,B_ESCAPE);
+		alert->Go();
+
+}
+
+
+void NoteView :: MessageReceived(BMessage *msg){
+
+		switch(msg->what){
+		
+			case B_ABOUT_REQUESTED:
+				AboutRequested();
+				break;
+			default:
+				BView::MessageReceived(msg);
+		}
+}
 
 void NoteView :: SetBackgroundColor (rgb_color colore) {
 

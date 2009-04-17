@@ -238,7 +238,7 @@ NoteWindow::NoteWindow(BRect frame)
 	frameText.OffsetTo(B_ORIGIN);
 	frameText.InsetBy(TEXT_INSET,TEXT_INSET);
 	
-	fNoteView = new NoteView (frameView, frameText, "NoteView",this);
+	fNoteView = new NoteView (frameView, frameText, "TakeNotes",this); // necessario per gli about
 	fNoteView->SetDoesUndo(true);
 	fNoteView->MakeFocus(); 
 	fNoteView->SetStylable(true);
@@ -248,6 +248,8 @@ NoteWindow::NoteWindow(BRect frame)
 	fScrollView = new BScrollView("scrollview", fNoteView, B_FOLLOW_ALL, 0, false, true, B_NO_BORDER);
 	
 	// Associamolo alla Window
+	
+
 	
 	AddChild(fNoteMenuBar);
 	AddChild(fScrollView);

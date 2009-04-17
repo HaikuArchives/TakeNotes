@@ -17,10 +17,15 @@
 #include <Message.h>
 #endif
 
+#ifndef _STRING_H
+#include <String.h>
+#endif
+
 
 
 class NoteView : public BTextView {
 	public:
+						
 						NoteView (BRect frame, BRect frameText, char *name,BHandler *handler);
 						NoteView (BMessage *msg);
 	   				   ~NoteView();
@@ -35,8 +40,10 @@ virtual	void 			InsertText(const char *text, int32 length, int32 offset, const t
 
 	private:
 	
-		BHandler *handler;
-		BMessenger *fMessenger;
+		BHandler 	*handler;
+		BMessenger 	*fMessenger;
+		BString 	*message;
+	
 
 };
 

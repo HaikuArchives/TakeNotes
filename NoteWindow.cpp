@@ -115,16 +115,16 @@ NoteWindow::NoteWindow(BRect frame)
 	fEditMenu -> AddSeparatorItem();
 	
 	fEditMenu -> AddItem (fCutItem = new BMenuItem("Cut", new BMessage(B_CUT), 'X'));
-	fCutItem -> SetTarget(NULL,this);
+	fCutItem -> SetTarget(this);
 	
 	fEditMenu -> AddItem (fCopyItem = new BMenuItem("Copy", new BMessage(B_COPY), 'C'));
-	fCopyItem -> SetTarget(NULL,this);
+	fCopyItem -> SetTarget(this);
 	
 	fEditMenu -> AddItem (fPasteItem = new BMenuItem("Paste", new BMessage(B_PASTE), 'V'));
-	fPasteItem -> SetTarget(NULL,this);
+	fPasteItem -> SetTarget(this);
 	
 	fEditMenu -> AddItem (fSelectAllItem = new BMenuItem("Select All", new BMessage(B_SELECT_ALL), 'A'));
-	fSelectAllItem -> SetTarget(NULL,this);
+	fSelectAllItem -> SetTarget(this);
 	
 	// Font: Size
 	BMenuItem* menuItem;
@@ -376,7 +376,24 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}
 		break;
 		
-		//
+		//Messaggi per l'edit		
+		case B_CUT:
+			fNoteView->Cut(be_clipboard);
+		break;
+		
+		case B_COPY:
+			fNoteView->Copy(be_clipboard);
+		break;
+		
+		case B_PASTE:
+			fNoteView->Paste(be_clipboard);
+		break;
+		
+		case B_SELECT_ALL:
+			fNoteView->SelectAll();
+		break;
+		
+		//Messaggio per il cambiamento del testo (serve per il can't undo)
 		case TEXT_CHANGED:
 			if (fUndoFlag) {
 				fCanUndo = false;
@@ -397,8 +414,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		    }
 		break;
 				
-		//Messaggio per la funzione di undo
-		
+		//Messaggio per la funzione di undo	
 		case B_UNDO:		//se ho ricevuto un B_UNDO message...
 		if (fCanUndo)	//...e sono in uno stato in cui posso fare undo
 			fUndoFlag = true;

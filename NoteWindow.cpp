@@ -14,6 +14,7 @@
 #define FONT_STYLE 'ftst'
 #define TEXT_CHANGED 'txch'
 #define ADD_DATA 'addd'
+#define SET_ALARM 'salr'
 
 
 // Dichiarazione degli include
@@ -31,6 +32,10 @@
 
 #ifndef COLOR_WINDOW_H
 #include "ColorWindow.h"
+#endif
+
+#ifndef ALARM_WINDOW_H
+#include "AlarmWindow.h"
 #endif
 
 #ifndef _INTERFACE_H
@@ -105,7 +110,9 @@ NoteWindow::NoteWindow(BRect frame)
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Change background color",
 			new BMessage (MENU_CHANGE_COLOR)));
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Add date and time",
-			new BMessage (ADD_DATA)));		
+			new BMessage (ADD_DATA)));
+	fSettingsMenu -> AddItem (fSetAlarmItem = new BMenuItem ("Set alarm",
+			new BMessage (SET_ALARM)));					
 	
 	//Edit
 
@@ -439,6 +446,13 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fNoteView -> MakeFocus();
 			fNoteView -> Insert(stringa);
 		}
+		break;
+		
+		case SET_ALARM: {
+			BRect aRect;
+			aRect.Set(300,300,800,600);
+			fAlarmWindow = new AlarmWindow(aRect,this);
+		}		
 		break;
 		
 			

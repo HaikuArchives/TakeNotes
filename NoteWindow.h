@@ -20,6 +20,10 @@
 #include "ColorWindow.h"
 #endif
 
+#ifndef ALARM_WINDOW_H
+#include "AlarmWindow.h"
+#endif
+
 #ifndef _INTERFACE_H
 #include <InterfaceKit.h>
 #endif
@@ -40,6 +44,7 @@ class NoteWindow : public BWindow {
 	private:
 		NoteView *fNoteView;
 		ColorWindow * fColorWindow;
+		AlarmWindow * fAlarmWindow;
 		BMenuBar *fNoteMenuBar;
 		BMenu *fFontMenu;
 		BMenu *fEditMenu;
@@ -60,6 +65,7 @@ class NoteWindow : public BWindow {
 		//MenuItems (menu Settings)
 		
 		BMenuItem* fChangeBackgroundColorItem;
+		BMenuItem* fSetAlarmItem;
 		
 		//flag di undo
 		bool fUndoFlag;

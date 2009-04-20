@@ -2,7 +2,7 @@
  *
  * Autore: Eleonora Ciceri, Ilio Catallo, Stefano Celentano
  * Data: 2 Aprile 2009
- * Ultima revisione: Ilio Catallo, 10 Aprile 2009
+ * Ultima revisione: Eleonora Ciceri, 20 Aprile 2009
  */
  
 // Costanti
@@ -15,6 +15,7 @@
 #define TEXT_CHANGED 'txch'
 #define ADD_DATA 'addd'
 #define SET_ALARM 'salr'
+#define ALARM_MSG 'alrm'
 
 
 // Dichiarazione degli include
@@ -74,6 +75,12 @@ NoteWindow::NoteWindow(BRect frame)
 	: BWindow (frame,"TakeNotes",B_TITLED_WINDOW,B_NOT_RESIZABLE){
 	
 	//frame.OffsetTo(B_ORIGIN);
+	
+	/************************************************************/
+	// Struttura dati
+	fDati.Id = 1;
+	fDati.Titolo = "Titolo";
+	/************************************************************/
 	
 	
 	//flag di undo
@@ -283,6 +290,7 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 	}		
 	font.SetFamilyAndStyle (fontFamily, fontStyle);
 	fNoteView -> SetFontAndColor (&font);
+	
 	BMenuItem *superItem;
 	superItem = fFontMenu -> FindItem (fontFamily);
 		if (superItem != NULL )
@@ -315,6 +323,9 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
 			fNoteView -> SetBackgroundColor(colore);
+			
+			// STRUTTURA DATI
+			fDati.ColoreBack = colore;
 			
 		}
 		break;	
@@ -419,6 +430,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fRedoFlag = false;
 			
 		    }
+		    // Modifico la struttura dati
+		    fDati.Contenuto = (char*) fNoteView -> Text();
 		break;
 				
 		//Messaggio per la funzione di undo	
@@ -455,6 +468,22 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}		
 		break;
 		
+		// Setto i campi di data e ora scadenza
+		case ALARM_MSG: {
+			int16 i;
+			
+			message -> FindInt16("year", &i);
+			fDati.Anno = i;
+			message -> FindInt16("month", &i);
+			fDati.Mese = i;
+			message -> FindInt16("day", &i);
+			fDati.Giorno = i;
+			message -> FindInt16("hour", &i);
+			fDati.Ora = i;
+			message -> FindInt16("minute", &i);
+			fDati.Minuto = i;
+		}
+		break;
 			
 		default:
 			BWindow::MessageReceived(message);

@@ -18,8 +18,12 @@
 #include <Messenger.h>
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #define BUTTON_ALARM_OK 'alok'
 #define SET_ALARM 'salr'
+#define ALARM_MSG 'alrm'
 
 AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler) : BWindow (frame, "Set alarm for this note", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 	
@@ -88,14 +92,21 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 
 //si dovranno mettere un bel po' di controlli: stringhe vuote e dati inconsistenti
 
-		BMessage *msg = new BMessage (SET_ALARM);
-		msg -> AddString ("hour", hourTextField);
-		msg -> AddString ("minute", minuteTextField);
-		msg -> AddString ("day", dayTextField);
-		msg -> AddString ("month", monthTextField);
-		msg -> AddString ("year", yearTextField);
+		BMessage *msg = new BMessage (ALARM_MSG);
+		int16 i;
+		
+		i = atoi (hourTextField);
+		msg -> AddInt16 ("hour", i);
+		i = atoi (minuteTextField);
+		msg -> AddInt16 ("minute", i);
+		i = atoi (dayTextField);
+		msg -> AddInt16 ("day", i);
+		i = atoi (monthTextField);
+		msg -> AddInt16 ("month", i);
+		i = atoi (yearTextField);
+		msg -> AddInt16 ("year", i);
 //...........
-//		fMessenger->SendMessage(msg);
+		fMessenger->SendMessage(msg);
 
 
 

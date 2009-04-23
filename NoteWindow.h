@@ -1,36 +1,27 @@
-/* Finestra principale
+/*
+ * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
+ * Distribuited under the terms of the GPL v2 license
  * 
- * Autore: Eleonora Ciceri
- * Data: 2 Aprile 2009
+ * Authors:
+ *
+ *			Eleonora Ciceri
+ * 
+ * Last revision: Eleonora Ciceri, 20th April 2009
+ *
+ * Description: TODO
  */
 
-// Include
+
 #ifndef NOTE_WINDOW_H
 #define NOTE_WINDOW_H 
 
-#ifndef _WINDOW_H
-#include <Window.h>
-#endif
-
-#ifndef MY_DRAWING_H
 #include "NoteView.h"
-#endif
-
-#ifndef COLOR_WINDOW_H
 #include "ColorWindow.h"
-#endif
-
-#ifndef ALARM_WINDOW_H
 #include "AlarmWindow.h"
-#endif
 
-#ifndef _INTERFACE_H
-#include <InterfaceKit.h>
-#endif
-
-#ifndef _SCROLLVIEW_H
+#include <Window.h>
 #include <ScrollView.h>
-#endif
+
 
 /* == STRUTTURA DATI ==
  * Struttura contenente tutte le informazioni inerenti al post-it corrente

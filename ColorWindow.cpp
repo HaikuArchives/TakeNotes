@@ -1,24 +1,19 @@
 /*
- * Semplice finestra
+ * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
+ * Distribuited under the terms of the GPL v2 license
+ * 
+ * Authors:
  *
- * Autore: Ciceri Eleonora
- * Data: 14 Marzo 2009 14.15
+ *			Ilio Catallo
+ *			Eleonora Ciceri
+ * 
+ * Last revision: Ilio Catallo, 8th April 2009
+ *
+ * Description: TODO
  */
 
-// Librerie
-#ifndef _APPLICATION_H  // Application è l'insieme delle API
-						// di gestione degli eventi
-						// tipo mouse clickato ecc
-#include <Application.h>
-#endif
-
-#ifndef COLOR_WINDOW_H
 #include "ColorWindow.h"
-#endif
 
-#ifndef COLOR_VIEW_H
-#include "ColorView.h"
-#endif
 
 // Costruttore
 // Me la crea tenendo la dimensione del rettangolo BRect

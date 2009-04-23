@@ -1,34 +1,26 @@
 /*
- * View di disegno
+ * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
+ * Distribuited under the terms of the GPL v2 license
+ * 
+ * Authors:
  *
- * Autore: Eleonora Ciceri, Ilio Catallo
- * Data: 2 Aprile 2009
- * Ultima modifica: 9 Aprile 2009
+ *			Ilio Catallo
+ *			Eleonora Ciceri
+ * 
+ * Last revision: Ilio Catallo, 8th April 2009
+ *
+ * Description: TODO
  */
- 
-// L'ho messo per inserire la scritta nel quadrato
-#ifndef COLOR_VIEW_H
+
 #include "ColorView.h"
-#endif
 
-#ifndef _APPLICATION_H
-#include <Application.h>
-#endif
-
-#ifndef _BUTTON_H
-#include <Button.h>
-#endif
-
-#ifndef _MESSENGER_H
-#include <Messenger.h>
-#endif
 
 // Messaggi
 #define COLOR_CHANGED 'ccrq'
 
 // Costruttore
 ColorView :: ColorView(BRect rect, char *name,BHandler *handler)
-	   	   : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW) {
+	   	  : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW){
 	   	   
 	   	   // Variabili
 	   	   

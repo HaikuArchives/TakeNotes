@@ -1,31 +1,23 @@
 /*
- * View di disegno
+ * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
+ * Distribuited under the terms of the GPL v2 license
+ * 
+ * Authors:
  *
- * Autore: Eleonora Ciceri, Stefano Celentano
- * Data: 2 Aprile 2009
- * Ultima revisione: Ilio Catallo, 9 Aprile 2009
+ *			Ilio Catallo
+ *			Stefano Celentano
+ *			Eleonora Ciceri
+ * 
+ * Last revision: Ilio Catallo, 23th April 2009
+ *
+ * Description: TODO
  */
 
 
-#ifndef NOTE_VIEW_H
 #include "NoteView.h"
-#endif
 
-#ifndef _INTERFACE_H
-#include <InterfaceKit.h>
-#endif
-
-#ifndef _APPLICATION_H
-#include <Application.h>
-#endif
-
-#ifndef _DRAGGER_H
 #include <Dragger.h>
-#endif
-
-#ifndef _SCROLLBAR_H
-#include <ScrollBar.h>
-#endif
+#include <Alert.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,28 +29,13 @@
 // Costruttore
 NoteView :: NoteView(BRect frame,BRect frameText, char *name, BHandler *handler )
 	   	   : BTextView(frame, name, frameText, B_FOLLOW_ALL, B_FRAME_EVENTS | B_WILL_DRAW){
-	   	   
-	   	   this->handler = handler;
+	   	   	   	   
 	   	   fMessenger = new BMessenger(handler);
 		   Init();	   	   
 }
 
 NoteView :: NoteView (BMessage *msg)
-		   : BTextView(msg) {
-
-			// va letto con calma 
-
-			//BScrollBar *verticalBar;
-//			BRect scrollFrame;
-//			float min = 1.0;
-//			float max = 1.0;
-//			
-//			scrollFrame = Bounds();
-//			scrollFrame.left = scrollFrame.right;
-//			scrollFrame.right = scrollFrame.left + 30;
-//			
-//			verticalBar = new BScrollBar(scrollFrame, "Vertical Bar",this,min,max, B_VERTICAL);
-//			AddChild(verticalBar);
+		   : BTextView(msg){
 			
 			Init();
 
@@ -69,10 +46,10 @@ NoteView :: ~NoteView(){}
 
 void NoteView :: Init(){
 
+		// Variable
 		BDragger *dragger;	
 		
-	
-		dragger = new BDragger(BRect(0,270,7,277),this,0);
+		dragger = new BDragger(BRect(0,270,7,277),this,B_FOLLOW_ALL);
 
 		SetViewColor(254,254,92,255);
 		AddChild(dragger);
@@ -81,7 +58,11 @@ void NoteView :: Init(){
 		
 status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		
-		status_t result = BTextView ::Archive(msg,deep);
+		//Variable
+		status_t result;
+		
+		
+		result = BTextView ::Archive(msg,deep);
 		
 		if (result == B_OK){
 		
@@ -103,28 +84,31 @@ BArchivable* NoteView :: Instantiate(BMessage *msg){
 
 void NoteView :: AboutRequested(){
 
-		BAlert *alert = new BAlert("TakeNotes","A program to take notes","OK");
+		//Variable
+		BAlert *alert;
+
+		alert = new BAlert("TakeNotes","A program to take notes","OK");
 		alert->SetShortcut(0,B_ESCAPE);
 		alert->Go();
 
 }
 
 
-void NoteView :: MessageReceived(BMessage *msg){
+void NoteView :: MessageReceived(BMessage *message){
 
-		switch(msg->what){
+		switch(message->what){
 		
 			case B_ABOUT_REQUESTED:
 				AboutRequested();
 				break;
 			default:
-				BView::MessageReceived(msg);
+				BView::MessageReceived(message);
 		}
 }
 
-void NoteView :: SetBackgroundColor (rgb_color colore) {
+void NoteView :: SetBackgroundColor(rgb_color color){
 
-	SetViewColor(colore);
+	SetViewColor(color);
 	Invalidate();
 		
 }

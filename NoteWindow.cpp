@@ -1,10 +1,29 @@
-/* Finestra principale
+/*
+ * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
+ * Distribuited under the terms of the GPL v2 license
+ * 
+ * Authors:
  *
- * Autore: Eleonora Ciceri, Ilio Catallo, Stefano Celentano
- * Data: 2 Aprile 2009
- * Ultima revisione: Eleonora Ciceri, 20 Aprile 2009
+ *			Ilio Catallo
+ *			Stefano Celentano
+ *			Eleonora Ciceri
+ * 
+ * Last revision: Eleonora Ciceri, 20th April 2009
+ *
+ * Description: TODO
  */
- 
+
+
+#include "NoteWindow.h"
+
+#include <Clipboard.h>
+#include <Autolock.h>
+#include <Application.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h> 
+
 // Costanti
 #define MENU_CHANGE_COLOR 'mcg'
 #define COLOR_CHANGED 'ccrq'
@@ -16,51 +35,6 @@
 #define ADD_DATA 'addd'
 #define SET_ALARM 'salr'
 #define ALARM_MSG 'alrm'
-
-
-// Dichiarazione degli include
-#ifndef _APPLICATION_H
-#include <Application.h>
-#endif
-
-#ifndef NOTE_WINDOW_H
-#include "NoteWindow.h"
-#endif
-
-#ifndef NOTE_VIEW_H
-#include "NoteView.h"
-#endif
-
-#ifndef COLOR_WINDOW_H
-#include "ColorWindow.h"
-#endif
-
-#ifndef ALARM_WINDOW_H
-#include "AlarmWindow.h"
-#endif
-
-#ifndef _INTERFACE_H
-#include <InterfaceKit.h>
-#endif
-
-#ifndef _APPLICATION_H
-#include <Application.h>
-#endif
-
-#ifndef _CLIPBOARD_H
-#include <Clipboard.h>
-#endif
-
-#ifndef _SCROLLVIEW_H
-#include <ScrollView.h>
-#endif
-
-#include <Autolock.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
 
@@ -72,7 +46,7 @@ const struct tm gettime() {
 
 // Costruttore
 NoteWindow::NoteWindow(BRect frame)
-	: BWindow (frame,"TakeNotes",B_TITLED_WINDOW,B_NOT_RESIZABLE){
+	: BWindow (frame, "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
 	
 	//frame.OffsetTo(B_ORIGIN);
 	
@@ -176,7 +150,7 @@ NoteWindow::NoteWindow(BRect frame)
 		msg -> AddInt8 ("green", (int8)colors[i].green);
 		msg -> AddInt8 ("blue", (int8)colors[i].blue);
 		
-		char *label;
+		char *label = NULL;
 		switch (i) {
 			case 0:
 				label = "Black";
@@ -244,6 +218,7 @@ NoteWindow::NoteWindow(BRect frame)
 	
 	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
 	frameView.right -= B_V_SCROLL_BAR_WIDTH;
+	frameView.bottom -= B_H_SCROLL_BAR_HEIGHT;
 	frameView.left = 0;
 	
 	
@@ -259,7 +234,7 @@ NoteWindow::NoteWindow(BRect frame)
 	
 	// ScrollView
 	
-	fScrollView = new BScrollView("scrollview", fNoteView, B_FOLLOW_ALL, 0, false, true, B_NO_BORDER);
+	fScrollView = new BScrollView("scrollview", fNoteView, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
 	
 	// Associamolo alla Window
 	

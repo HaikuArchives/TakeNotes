@@ -1,30 +1,37 @@
 /*
- * Semplice finestra
+ * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
+ * Distribuited under the terms of the GPL v2 license
+ * 
+ * Authors:
  *
- * Autore: Ciceri Eleonora
- * Data: 14 Marzo 2009 14.15
+ *			Ilio Catallo
+ *			Eleonora Ciceri
+ * 
+ * Last revision: Ilio Catallo, 8th April 2009
+ *
+ * Description: TODO
  */
 
-// Librerie
+
 #ifndef COLOR_WINDOW_H
 #define COLOR_WINDOW_H
 
-// Window.h fa sempre parte di Application
-#ifndef _WINDOW_H
-#include <Window.h>
-#endif
-
-#ifndef COLOR_VIEW_H
 #include "ColorView.h"
-#endif
+
+#include <Window.h>
+
 
 // Dichiarazione della classe
 class ColorWindow : public BWindow {
+	
 	public:
-		ColorWindow(BRect frame, BHandler *handler);
+		
+					 ColorWindow(BRect frame, BHandler *handler);
 		virtual bool QuitRequested();
+	
 	private:
-		ColorView *fColorView;
+		
+		ColorView 	 *fColorView;
 };
 
 #endif

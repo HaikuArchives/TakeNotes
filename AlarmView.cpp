@@ -1,10 +1,18 @@
-#ifndef ALARM_VIEW_H
-#include "AlarmView.h"
-#endif
+/*
+ * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
+ * Distribuited under the terms of the GPL v2 license
+ * 
+ * Authors:
+ *
+ *			Stefano Celentano
+ * 
+ * Last revision: Stefano Celentano, 19th April 2009
+ *
+ * Description: TODO
+ */
+ 
 
-#ifndef _APPLICATION_H
-#include <Application.h>
-#endif
+#include "AlarmView.h"
 
 AlarmView::AlarmView(BRect rect, char *name) : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW) {
 

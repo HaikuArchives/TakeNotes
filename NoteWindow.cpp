@@ -35,6 +35,7 @@
 #define ADD_DATA 'addd'
 #define SET_ALARM 'salr'
 #define ALARM_MSG 'alrm'
+
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
 
@@ -48,13 +49,44 @@ const struct tm gettime() {
 NoteWindow::NoteWindow(BRect frame)
 	: BWindow (frame, "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
 	
-	//frame.OffsetTo(B_ORIGIN);
+	//Variables
+	BMessage	*message;
 	
-	/************************************************************/
+	BRect 		menuBarRect,
+				frameView,
+				frameText;
+				
+	BMenuItem 	*menuItem;
+	
+	BMenu		*sizeFont,
+				*colorFont,
+				*fontMenu;
+	
+	char		*label;
+	
+	font_family plainFamily,
+	 			family;
+	font_style 	plainStyle,
+				style;
+	
+	uint32		flags;
+	
+	int32		numFamilies,
+				numStyles,
+				fontSizes[] = {9,10,11,12,14,18,24,36,48,72};
+
+	rgb_color 	black = {0,0,0},
+				red = {0,255,0},
+				green = {0,255,0},
+				blue = {0,0,255},
+				yellow = {254,254,92};
+	rgb_color   colors[] = {black, red, green, blue, yellow};
+	
+		
 	// Struttura dati
 	fDati.Id = 1;
 	fDati.Titolo = "Titolo";
-	/************************************************************/
+
 	
 	
 	//flag di undo
@@ -65,7 +97,7 @@ NoteWindow::NoteWindow(BRect frame)
 	
 	// Barra del Menu
 	
-	BRect menuBarRect = Bounds();
+	menuBarRect = Bounds();
 	menuBarRect.bottom = MENU_BAR_HEIGHT;
 	fNoteMenuBar = new BMenuBar(menuBarRect,"Barra del menu");
 	
@@ -115,42 +147,42 @@ NoteWindow::NoteWindow(BRect frame)
 	fSelectAllItem -> SetTarget(this);
 	
 	// Font: Size
-	BMenuItem* menuItem;
-	BMenu *sizeFont = new BMenu ("Size");
+	
+	sizeFont = new BMenu ("Size");
 	sizeFont -> SetRadioMode (true);
 	fFontMenu -> AddItem (sizeFont);
-	int32 fontSizes[] = {9,10,11,12,14,18,24,36,48,72};
+	
 	for (uint32 i = 0; i < sizeof(fontSizes) / sizeof(fontSizes[0]); i++ ){
-		BMessage *msg = new BMessage (FONT_SIZE);
-		msg -> AddFloat ("size", fontSizes[i]);
+		message = new BMessage (FONT_SIZE);
+		message -> AddFloat ("size", fontSizes[i]);
 		
 		char label[64];
 		snprintf(label, sizeof(label), "%ld", fontSizes[i]);
-		sizeFont -> AddItem (menuItem = new BMenuItem (label, msg));
+		sizeFont -> AddItem (menuItem = new BMenuItem (label, message));
 		
 			if (i == 3)
 				menuItem -> SetMarked(true);
 	}
 	
 	// Font: Color
-	BMenu *colorFont = new BMenu ("Color");
+	colorFont = new BMenu ("Color");
 	colorFont -> SetRadioMode (true);
 	fFontMenu -> AddItem (colorFont);
 	
-	rgb_color black = {0,0,0};
-	rgb_color red = {255,0,0};
-	rgb_color green = {0,255,0};
-	rgb_color blue = {0,0,255};
-	rgb_color yellow = {254,254,92};
-	rgb_color colors[] = {black, red, green, blue, yellow};
+
+	
 	// Stampa del menu
+	
+	delete message;
+	
 	for (uint32 i = 0; i < sizeof(colors) / sizeof(colors[0]); i++ ){
-		BMessage *msg = new BMessage (FONT_COLOR);
-		msg -> AddInt8 ("red", (int8)colors[i].red);
-		msg -> AddInt8 ("green", (int8)colors[i].green);
-		msg -> AddInt8 ("blue", (int8)colors[i].blue);
+
+		message = new BMessage (FONT_COLOR);
+		message -> AddInt8 ("red", (int8)colors[i].red);
+		message -> AddInt8 ("green", (int8)colors[i].green);
+		message -> AddInt8 ("blue", (int8)colors[i].blue);
 		
-		char *label = NULL;
+		label = NULL;
 		switch (i) {
 			case 0:
 				label = "Black";
@@ -170,7 +202,7 @@ NoteWindow::NoteWindow(BRect frame)
 			default:
 				break;
 		}
-		colorFont -> AddItem (menuItem = new BMenuItem (label, msg));
+		colorFont -> AddItem (menuItem = new BMenuItem (label, message));
 			// Marco l'item come utilizzato
 			if (i == 0)
 				menuItem -> SetMarked(true);
@@ -179,15 +211,14 @@ NoteWindow::NoteWindow(BRect frame)
 	fFontMenu -> AddSeparatorItem();
 	
 	// Tipo di carattere
-	font_family plainFamily;
-	font_style plainStyle;
+	
 	fCurrentFont = 0;
 	
 	be_plain_font -> GetFamilyAndStyle (&plainFamily,&plainStyle);
-	BMenu *fontMenu;
-	int32 numFamilies = count_font_families();
+	
+	numFamilies = count_font_families();
 	for (int32 i = 0; i < numFamilies; i++) {
-		font_family family;
+		
 			if (get_font_family(i,&family) == B_OK) {
 				fontMenu = new BMenu (family);
 				fontMenu -> SetRadioMode (true);	// Click esclusivo
@@ -197,10 +228,9 @@ NoteWindow::NoteWindow(BRect frame)
 					menuItem -> SetMarked (true);
 					fCurrentFont = menuItem;
 				}
-				int32 numStyles = count_font_styles (family);
+				numStyles = count_font_styles (family);
 				for (int32 j = 0; j < numStyles; j++) {
-					font_style style;
-					uint32 flags;
+				
 					if (get_font_style(family,j,&style,&flags)==B_OK) {
 						fontMenu -> AddItem (menuItem = new BMenuItem
 							(style, new BMessage(FONT_STYLE)));
@@ -214,7 +244,7 @@ NoteWindow::NoteWindow(BRect frame)
 		
 	
 	// View principale	
-	BRect frameView = Bounds();
+	frameView = Bounds();
 	
 	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
 	frameView.right -= B_V_SCROLL_BAR_WIDTH;
@@ -222,7 +252,7 @@ NoteWindow::NoteWindow(BRect frame)
 	frameView.left = 0;
 	
 	
-	BRect frameText = frameView;
+	frameText = frameView;
 	
 	frameText.OffsetTo(B_ORIGIN);
 	frameText.InsetBy(TEXT_INSET,TEXT_INSET);
@@ -233,27 +263,31 @@ NoteWindow::NoteWindow(BRect frame)
 	fNoteView->SetStylable(true);
 	
 	// ScrollView
-	
 	fScrollView = new BScrollView("scrollview", fNoteView, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
 	
 	// Associamolo alla Window
-	
-
-	
 	AddChild(fNoteMenuBar);
 	AddChild(fScrollView);
 
 	Show();
-	}
+	
+}
 	
 // Funzione per il cambio di tipo di font
 void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) {
-	// Variabili
-	BFont font;
-	uint32 sameProperties;
+	
+	// Variables
+	BMenuItem 	*superItem;
+	BMenuItem	*menuItem;
+	BFont 		font;
+	
 	font_family oldFamily;
-	font_style oldStyle;
-	rgb_color sameColor;
+	font_style 	oldStyle;
+	
+	uint32 		sameProperties;
+
+	rgb_color 	sameColor;
+	
 	
 	fNoteView -> GetFontAndColor (&font, &sameProperties, &sameColor);
 	font.GetFamilyAndStyle (&oldFamily, &oldStyle); // raccolgo famiglia e
@@ -266,19 +300,44 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 	font.SetFamilyAndStyle (fontFamily, fontStyle);
 	fNoteView -> SetFontAndColor (&font);
 	
-	BMenuItem *superItem;
+	
 	superItem = fFontMenu -> FindItem (fontFamily);
 		if (superItem != NULL )
 			superItem -> SetMarked (true);	// Marco quello selezionato
-	BMenuItem *menuItem = fFontMenu -> FindItem("Black");
+	menuItem = fFontMenu -> FindItem("Black");
 	menuItem -> SetMarked(true);
 }
 
 // Funzione per la ricezione di messaggi
 void NoteWindow :: MessageReceived(BMessage* message) {
+	
+	//Variables
+		BFont	  font;
+		BRect	  aRect;	
+	
+  const char 	  *fontFamily,
+  				  *fontStyle;
+  		char	  stringa[2];		  
+  		void	  *ptr;		  
+	
+		int		  second,
+				  minute,
+				  hour,
+				  day,
+				  month,
+				  year;
+		uint32	  sameProperties;
+		int8	  c;
+		int16 	  i;
+		float     fontSize;
+	
+		rgb_color colore,
+			 	  sameColor;
+			  
+	
 	switch (message -> what) {
 		case MENU_CHANGE_COLOR:{
-			BRect aRect;
+			
 			aRect.Set(300,300,700,700);
 			
 			// Evito che ci siano due finestre di scelta colore			
@@ -288,9 +347,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			break;	
 		// Colore di background
 		case COLOR_CHANGED: {
-			rgb_color colore;
-			int8 c;
-			
+				
 			message->FindInt8("red", &c);
 			colore.red = (uint8)c;
 			message->FindInt8("green", &c);
@@ -307,13 +364,9 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		// Dimensione del font
 		case FONT_SIZE: {
-			float fontSize;
-			
+		
 			if (message -> FindFloat ("size", &fontSize) == B_OK){
-				uint32 sameProperties;
-				BFont font;
-				rgb_color sameColor;
-				
+			
 				fNoteView -> GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
 				fNoteView -> SetFontAndColor (&font, B_FONT_SIZE);
@@ -323,17 +376,14 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		// Colore del font
 		case FONT_COLOR: {
-			rgb_color colore;
-			int8 c;
-			
+		
 			message->FindInt8("red", &c);
 			colore.red = (uint8)c;
 			message->FindInt8("green", &c);
 			colore.green = (uint8)c;
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
-			uint32 sameProperties;
-			BFont font;
+			
 			fNoteView -> GetFontAndColor(&font, &sameProperties);
 			fNoteView -> SetFontAndColor(&font,0,&colore);
 		}
@@ -341,9 +391,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		// Tipo di font
 		case FONT_FAMILY: {
-			const char* fontFamily = NULL;
-			const char* fontStyle = NULL;
-			void* ptr;
+			fontFamily = NULL;
+			fontStyle = NULL;
 			
 			message -> FindPointer ("source", &ptr);
 			fCurrentFont = static_cast <BMenuItem*>(ptr);
@@ -352,9 +401,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}
 		break;
 		case FONT_STYLE: {
-			const char* fontFamily = NULL;
-			const char* fontStyle = NULL;
-			void* ptr;
+			fontFamily = NULL;
+			fontStyle = NULL;
 			
 			message -> FindPointer ("source", &ptr);
 			BMenuItem *item = static_cast <BMenuItem*>(ptr);
@@ -389,6 +437,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		//Messaggio per il cambiamento del testo (serve per il can't undo)
 		case TEXT_CHANGED:
 			if (fUndoFlag) {
+			
 				fCanUndo = false;
 				fCanRedo = true;
 				fUndoItem -> SetLabel("Redo");
@@ -398,15 +447,15 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			
 			else {
 			
-			fCanUndo = true;		//posso fare undo
-			fCanRedo = false;
-			fUndoItem -> SetLabel("Undo");
-			fUndoItem -> SetEnabled(true);
-			fRedoFlag = false;
+				fCanUndo = true;		
+				fCanRedo = false;
+				fUndoItem -> SetLabel("Undo");
+				fUndoItem -> SetEnabled(true);
+				fRedoFlag = false;
 			
 		    }
 		    // Modifico la struttura dati
-		    fDati.Contenuto = (char*) fNoteView -> Text();
+		    fDati.Contenuto = (char*)fNoteView -> Text();
 		break;
 				
 		//Messaggio per la funzione di undo	
@@ -420,14 +469,14 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		break;
 		
 		case ADD_DATA: {
-			int day = gettime().tm_mday;
-			int month = gettime().tm_mon + 1;
-			int year = gettime().tm_year+1900;
-			int second = gettime().tm_sec;
-			int min = gettime().tm_min;
-			int hour = gettime().tm_hour;
+			day = gettime().tm_mday;
+			month = gettime().tm_mon + 1;
+			year = gettime().tm_year+1900;
+			second = gettime().tm_sec;
+			min = gettime().tm_min;
+			hour = gettime().tm_hour;
 			
-			char stringa[2];
+			
 			sprintf(stringa, "%d/%d/%d - %d:%d:%d", day,
 					month, year, hour, min, second);
 			
@@ -437,7 +486,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		break;
 		
 		case SET_ALARM: {
-			BRect aRect;
+			
 			aRect.Set(300,300,800,600);
 			fAlarmWindow = new AlarmWindow(aRect,this);
 		}		
@@ -445,7 +494,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		// Setto i campi di data e ora scadenza
 		case ALARM_MSG: {
-			int16 i;
+			
 			
 			message -> FindInt16("year", &i);
 			fDati.Anno = i;

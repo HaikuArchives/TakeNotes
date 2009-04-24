@@ -21,6 +21,9 @@
 
 #include <Window.h>
 #include <ScrollView.h>
+#include <Menu.h>
+#include <MenuBar.h>
+#include <MenuItem.h>
 
 
 /* == STRUTTURA DATI ==
@@ -59,42 +62,42 @@ class NoteWindow : public BWindow {
 							NoteWindow(BRect frame);
 			virtual void	MessageReceived(BMessage* message);
 			virtual bool	QuitRequested();
-			void SetFontStyle (const char* fontFamily, const char *fontStyle);
+					void 	SetFontStyle (const char* fontFamily, const char *fontStyle);
 	
 	private:
-		NoteView *fNoteView;
-		ColorWindow * fColorWindow;
-		AlarmWindow * fAlarmWindow;
-		BMenuBar *fNoteMenuBar;
-		BMenu *fFontMenu;
-		BMenu *fEditMenu;
-		BMenu *fSettingsMenu;
-		BMenu *fAboutMenu;
-		BWindow *fTagWindow;
-		BMenuItem *fCurrentFont;
+		NoteView 	*fNoteView;
+		ColorWindow *fColorWindow;
+		AlarmWindow *fAlarmWindow;
+		BMenuBar 	*fNoteMenuBar;
+		BMenu 		*fFontMenu;
+		BMenu 		*fEditMenu;
+		BMenu 		*fSettingsMenu;
+		BMenu 		*fAboutMenu;
+		BWindow 	*fTagWindow;
+		BMenuItem 	*fCurrentFont;
 		BScrollView	*fScrollView;
 		
 		//MenuItems (menu Edit)
 		
-		BMenuItem* fUndoItem;
-		BMenuItem* fCutItem;
-		BMenuItem* fCopyItem;
-		BMenuItem* fPasteItem;
-		BMenuItem* fSelectAllItem;
+		BMenuItem 	*fUndoItem;
+		BMenuItem 	*fCutItem;
+		BMenuItem 	*fCopyItem;
+		BMenuItem 	*fPasteItem;
+		BMenuItem 	*fSelectAllItem;
 		
 		//MenuItems (menu Settings)
 		
-		BMenuItem* fChangeBackgroundColorItem;
-		BMenuItem* fSetAlarmItem;
+		BMenuItem 	*fChangeBackgroundColorItem;
+		BMenuItem 	*fSetAlarmItem;
 		
 		//flag di undo
-		bool fUndoFlag;
-		bool fCanUndo;
-		bool fCanRedo;
-		bool fRedoFlag;
+		bool 		fUndoFlag;
+		bool 		fCanUndo;
+		bool 		fCanRedo;
+		bool 		fRedoFlag;
 		
 		// Struttura Dati
-		DatiPostIt fDati;
+		DatiPostIt 	fDati;
 };
 
 #endif

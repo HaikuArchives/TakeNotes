@@ -23,8 +23,8 @@
 
 #include "NoteApplication.h"
 
-#define COLOR_CHANGED 'ccrq'
-#define FONT_BOLD 'fntb'
+#define COLOR_CHANGED 	'ccrq'
+#define FONT_BOLD 		'fntb'
 
 // Main
 int main(){
@@ -37,17 +37,17 @@ int main(){
 
 
 NoteApplication::NoteApplication()
-	: BApplication("application/x-vnd.ccc-TakeNotes"){	
+			   : BApplication("application/x-vnd.ccc-TakeNotes"){	
 	
-	// Variabili
+	// Variables
 	BRect	aRect;
 	
-	// Creazione del rettangolo che ridimensiona la finestra
+	// Creation of the rectangle that gives dimensions to the window
 	// x, y, w, h
 	aRect.Set(30, 30, 300, 300);
 	fNoteWindow = new NoteWindow(aRect);	
 	
-	// Mostro la finestra
+	// Show the window
 	fNoteWindow->Show();	
 }
 

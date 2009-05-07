@@ -22,13 +22,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Messaggi
-#define TEXT_CHANGED 'txch'
-#define FONT_BOLD 'fntb'
+// Messages
+#define TEXT_CHANGED 	'txch'
+#define FONT_BOLD 		'fntb'
 
-// Costruttore
+// Constructor
 NoteView :: NoteView(BRect frame,BRect frameText, char *name, BHandler *handler )
-	   	   : BTextView(frame, name, frameText, B_FOLLOW_ALL, B_FRAME_EVENTS | B_WILL_DRAW){
+	   	 : BTextView(frame, name, frameText, B_FOLLOW_ALL, B_FRAME_EVENTS | B_WILL_DRAW){
 	   	   	   	   
 	   	   fMessenger = new BMessenger(handler);
 		   Init();	   	   
@@ -41,9 +41,10 @@ NoteView :: NoteView (BMessage *msg)
 
 }
 
+// Destructor
 NoteView :: ~NoteView(){}
 
-
+// Initialization
 void NoteView :: Init(){
 
 		// Variable
@@ -65,9 +66,10 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		result = BTextView ::Archive(msg,deep);
 		
 		if (result == B_OK){
-		
 			result = msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
-			if (result == B_OK) result = msg->AddString("class","NoteView");
+			
+			if (result == B_OK) 
+				result = msg->AddString("class","NoteView");
 		
 		}
 		
@@ -77,14 +79,15 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 
 BArchivable* NoteView :: Instantiate(BMessage *msg){
 
-		if (!validate_instantiation(msg,"NoteView")) return NULL;
+		if (!validate_instantiation(msg,"NoteView")) 
+			return NULL;
 		return new NoteView(msg);
 		
 }
 
 void NoteView :: AboutRequested(){
 
-		//Variable
+		// Variable
 		BAlert *alert;
 
 		alert = new BAlert("TakeNotes","A program to take notes","OK");
@@ -101,6 +104,7 @@ void NoteView :: MessageReceived(BMessage *message){
 			case B_ABOUT_REQUESTED:
 				AboutRequested();
 				break;
+				
 			default:
 				BView::MessageReceived(message);
 		}
@@ -115,9 +119,11 @@ void NoteView :: SetBackgroundColor(rgb_color color){
 
 
 void NoteView :: InsertText(const char* text, int32 length, int32 offset, const text_run_array *runs) {
+	// Variables
+	BMessage *message;
 
-    BMessage *msg = new BMessage (TEXT_CHANGED);
-	fMessenger->SendMessage(msg);	
+    message = new BMessage (TEXT_CHANGED);
+	fMessenger->SendMessage(message);	
 	BTextView::InsertText(text,length,offset,runs);
 
 }

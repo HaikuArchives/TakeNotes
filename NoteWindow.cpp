@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <time.h> 
 
-// Costanti
+// Constants
 #define MENU_CHANGE_COLOR 'mcg'
 #define COLOR_CHANGED 'ccrq'
 #define FONT_SIZE 'fnts'
@@ -39,17 +39,17 @@
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
 
-// Strutture
+// Structures
 const struct tm gettime() {
     time_t    t=time(NULL);
     return *localtime(&t);
 }
 
-// Costruttore
+// Constructor
 NoteWindow::NoteWindow(BRect frame)
 	: BWindow (frame, "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
 	
-	//Variables
+	// Variables
 	BMessage	*message;
 	
 	BRect 		menuBarRect,
@@ -76,34 +76,31 @@ NoteWindow::NoteWindow(BRect frame)
 				fontSizes[] = {9,10,11,12,14,18,24,36,48,72};
 
 	rgb_color 	black = {0,0,0},
-				red = {0,255,0},
+				red = {255,0,0},
 				green = {0,255,0},
 				blue = {0,0,255},
 				yellow = {254,254,92};
 	rgb_color   colors[] = {black, red, green, blue, yellow};
 	
 		
-	// Struttura dati
+	// Data of the data structure
 	fDati.Id = 1;
 	fDati.Titolo = "Titolo";
 
 	
 	
-	//flag di undo
+	// Undo flags
+	fCanUndo = false;		// If there's no text I can't do undo
+	fUndoFlag = false;
 	
-	fCanUndo=false;		//se non c'è testo non posso fare undo
-	fUndoFlag=false;
 	
-	
-	// Barra del Menu
-	
+	// Menu bar	
 	menuBarRect = Bounds();
 	menuBarRect.bottom = MENU_BAR_HEIGHT;
 	fNoteMenuBar = new BMenuBar(menuBarRect,"Barra del menu");
 	
 	
-	// Menu
-	
+	// Menu	
 	fFontMenu = new BMenu("Font");
 	fEditMenu = new BMenu ("Edit");
 	fSettingsMenu = new BMenu ("Settings");
@@ -116,10 +113,9 @@ NoteWindow::NoteWindow(BRect frame)
 	
 	fFontMenu -> SetRadioMode(true);
 	
-	// Menu Item
+	/*************** Menu Item ***************/
 	
-	// Settings
-	
+	// Settings	
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Change background color",
 			new BMessage (MENU_CHANGE_COLOR)));
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Add date and time",
@@ -127,10 +123,10 @@ NoteWindow::NoteWindow(BRect frame)
 	fSettingsMenu -> AddItem (fSetAlarmItem = new BMenuItem ("Set alarm",
 			new BMessage (SET_ALARM)));					
 	
-	//Edit
+	// Edit
 
 	fEditMenu -> AddItem (fUndoItem = new BMenuItem("Can't Undo", new BMessage(B_UNDO), 'Z'));
-	fUndoItem -> SetEnabled(false);		//senza un messaggio TEXT_CHANGED, non deve essere possibile fare undo
+	fUndoItem -> SetEnabled(false);		// I can't do undo without the message TEXT_CHANGED
 	
 	fEditMenu -> AddSeparatorItem();
 	
@@ -146,8 +142,7 @@ NoteWindow::NoteWindow(BRect frame)
 	fEditMenu -> AddItem (fSelectAllItem = new BMenuItem("Select All", new BMessage(B_SELECT_ALL), 'A'));
 	fSelectAllItem -> SetTarget(this);
 	
-	// Font: Size
-	
+	// Font: Size	
 	sizeFont = new BMenu ("Size");
 	sizeFont -> SetRadioMode (true);
 	fFontMenu -> AddItem (sizeFont);
@@ -171,8 +166,7 @@ NoteWindow::NoteWindow(BRect frame)
 	
 
 	
-	// Stampa del menu
-	
+	// Printing the menu...	
 	delete message;
 	
 	for (uint32 i = 0; i < sizeof(colors) / sizeof(colors[0]); i++ ){
@@ -203,15 +197,14 @@ NoteWindow::NoteWindow(BRect frame)
 				break;
 		}
 		colorFont -> AddItem (menuItem = new BMenuItem (label, message));
-			// Marco l'item come utilizzato
+			// Set the item as "in use"
 			if (i == 0)
 				menuItem -> SetMarked(true);
 	}
 	
 	fFontMenu -> AddSeparatorItem();
 	
-	// Tipo di carattere
-	
+	// Font type	
 	fCurrentFont = 0;
 	
 	be_plain_font -> GetFamilyAndStyle (&plainFamily,&plainStyle);
@@ -221,7 +214,7 @@ NoteWindow::NoteWindow(BRect frame)
 		
 			if (get_font_family(i,&family) == B_OK) {
 				fontMenu = new BMenu (family);
-				fontMenu -> SetRadioMode (true);	// Click esclusivo
+				fontMenu -> SetRadioMode (true);	// I can set only one item as "in use"
 				fFontMenu -> AddItem (menuItem = new BMenuItem (fontMenu,
 					new BMessage (FONT_FAMILY)));
 				if (!strcmp (plainFamily,family)) {
@@ -243,7 +236,7 @@ NoteWindow::NoteWindow(BRect frame)
 	
 		
 	
-	// View principale	
+	// Main view	
 	frameView = Bounds();
 	
 	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
@@ -257,7 +250,7 @@ NoteWindow::NoteWindow(BRect frame)
 	frameText.OffsetTo(B_ORIGIN);
 	frameText.InsetBy(TEXT_INSET,TEXT_INSET);
 	
-	fNoteView = new NoteView (frameView, frameText, "TakeNotes",this); // necessario per gli about
+	fNoteView = new NoteView (frameView, frameText, "TakeNotes",this); // Useful for the "About"
 	fNoteView->SetDoesUndo(true);
 	fNoteView->MakeFocus(); 
 	fNoteView->SetStylable(true);
@@ -265,7 +258,7 @@ NoteWindow::NoteWindow(BRect frame)
 	// ScrollView
 	fScrollView = new BScrollView("scrollview", fNoteView, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
 	
-	// Associamolo alla Window
+	// It will be associated to the window
 	AddChild(fNoteMenuBar);
 	AddChild(fScrollView);
 
@@ -273,9 +266,8 @@ NoteWindow::NoteWindow(BRect frame)
 	
 }
 	
-// Funzione per il cambio di tipo di font
+// Function for the changes in the "type of font"
 void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) {
-	
 	// Variables
 	BMenuItem 	*superItem;
 	BMenuItem	*menuItem;
@@ -290,12 +282,11 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 	
 	
 	fNoteView -> GetFontAndColor (&font, &sameProperties, &sameColor);
-	font.GetFamilyAndStyle (&oldFamily, &oldStyle); // raccolgo famiglia e
-													// stile attuali
-	if (strcmp (oldFamily, fontFamily)) {// Se richeisto il font in uso
+	font.GetFamilyAndStyle (&oldFamily, &oldStyle); // Copying the current font family and font style
+	if (strcmp (oldFamily, fontFamily)) {		
 		BMenuItem *oldItem = fFontMenu -> FindItem (oldFamily);
 		if (oldItem != NULL)
-			oldItem -> SetMarked (false);	// Gli tolgo la marcatura
+			oldItem -> SetMarked (false);	// Removing the check
 	}		
 	font.SetFamilyAndStyle (fontFamily, fontStyle);
 	fNoteView -> SetFontAndColor (&font);
@@ -303,15 +294,14 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 	
 	superItem = fFontMenu -> FindItem (fontFamily);
 		if (superItem != NULL )
-			superItem -> SetMarked (true);	// Marco quello selezionato
+			superItem -> SetMarked (true);	// Ckeck the one that was selected
 	menuItem = fFontMenu -> FindItem("Black");
 	menuItem -> SetMarked(true);
 }
 
-// Funzione per la ricezione di messaggi
+// Function for the reception of the messages
 void NoteWindow :: MessageReceived(BMessage* message) {
-	
-	//Variables
+	//	Variables
 		BFont	  font;
 		BRect	  aRect;	
 	
@@ -334,18 +324,20 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		rgb_color colore,
 			 	  sameColor;
 			  
-	
+	// Receiving the messages...	
 	switch (message -> what) {
-		case MENU_CHANGE_COLOR:{
-			
+	
+		case MENU_CHANGE_COLOR:{	
+				
 			aRect.Set(300,300,700,700);
 			
-			// Evito che ci siano due finestre di scelta colore			
+			// Checking if there are more than one color window		
 			if (be_app->CountWindows() == 1)
 				fColorWindow = new ColorWindow(aRect,this);
 			}
-			break;	
-		// Colore di background
+			break;
+				
+		// Background color
 		case COLOR_CHANGED: {
 				
 			message->FindInt8("red", &c);
@@ -356,17 +348,16 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			colore.blue = (uint8)c;
 			fNoteView -> SetBackgroundColor(colore);
 			
-			// STRUTTURA DATI
+			// DATA STRUCTURE
 			fDati.ColoreBack = colore;
 			
 		}
 		break;	
 		
-		// Dimensione del font
+		// Font size
 		case FONT_SIZE: {
 		
-			if (message -> FindFloat ("size", &fontSize) == B_OK){
-			
+			if (message -> FindFloat ("size", &fontSize) == B_OK){			
 				fNoteView -> GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
 				fNoteView -> SetFontAndColor (&font, B_FONT_SIZE);
@@ -374,7 +365,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}
 		break;
 		
-		// Colore del font
+		// Font Color
 		case FONT_COLOR: {
 		
 			message->FindInt8("red", &c);
@@ -389,8 +380,9 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}
 		break;
 		
-		// Tipo di font
+		// Font type
 		case FONT_FAMILY: {
+		
 			fontFamily = NULL;
 			fontStyle = NULL;
 			
@@ -400,7 +392,10 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			SetFontStyle (fontFamily, fontStyle);
 		}
 		break;
+		
+		// Font style
 		case FONT_STYLE: {
+		
 			fontFamily = NULL;
 			fontStyle = NULL;
 			
@@ -417,7 +412,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}
 		break;
 		
-		//Messaggi per l'edit		
+		//Edit messages		
 		case B_CUT:
 			fNoteView->Cut(be_clipboard);
 		break;
@@ -434,8 +429,9 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fNoteView->SelectAll();
 		break;
 		
-		//Messaggio per il cambiamento del testo (serve per il can't undo)
+		// Message that tells if the text is changes (it is used for the "can't undo")
 		case TEXT_CHANGED:
+		
 			if (fUndoFlag) {
 			
 				fCanUndo = false;
@@ -454,37 +450,39 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				fRedoFlag = false;
 			
 		    }
-		    // Modifico la struttura dati
+		    // Modifying the data structure
 		    fDati.Contenuto = (char*)fNoteView -> Text();
 		break;
 				
-		//Messaggio per la funzione di undo	
-		case B_UNDO:		//se ho ricevuto un B_UNDO message...
-		if (fCanUndo)	//...e sono in uno stato in cui posso fare undo
+		// Message for the undo function	
+		case B_UNDO:		// If I have received a B_UNDO message...
+		if (fCanUndo)	//...and I can do "Undo"
 			fUndoFlag = true;
-		if (fCanRedo)	//...e sono in uno stato in cui posso fare redo
+		if (fCanRedo)	//...and I can do "Redo"
 			fRedoFlag = true;
 			
 		fNoteView->Undo(be_clipboard);
 		break;
 		
+		// Adding the date
 		case ADD_DATA: {
 			day = gettime().tm_mday;
 			month = gettime().tm_mon + 1;
 			year = gettime().tm_year+1900;
 			second = gettime().tm_sec;
-			min = gettime().tm_min;
+			minute = gettime().tm_min;
 			hour = gettime().tm_hour;
 			
 			
 			sprintf(stringa, "%d/%d/%d - %d:%d:%d", day,
-					month, year, hour, min, second);
+					month, year, hour, minute, second);
 			
 			fNoteView -> MakeFocus();
 			fNoteView -> Insert(stringa);
 		}
 		break;
 		
+		// Setting the alarm with the window opened
 		case SET_ALARM: {
 			
 			aRect.Set(300,300,800,600);
@@ -492,10 +490,9 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}		
 		break;
 		
-		// Setto i campi di data e ora scadenza
+		// Setting the alarm in the data structure
 		case ALARM_MSG: {
-			
-			
+				
 			message -> FindInt16("year", &i);
 			fDati.Anno = i;
 			message -> FindInt16("month", &i);
@@ -514,7 +511,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	}
 }
 	
-// Metodo per la chiusura della finestra
+// Closing the window
 bool NoteWindow::QuitRequested(){
 
 	be_app->PostMessage(B_QUIT_REQUESTED);

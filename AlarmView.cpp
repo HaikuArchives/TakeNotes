@@ -14,7 +14,9 @@
 
 #include "AlarmView.h"
 
-AlarmView::AlarmView(BRect rect, char *name) : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW) {
+// Constructor
+AlarmView::AlarmView(BRect rect, char *name) 
+		 : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW) {
 
 }
 

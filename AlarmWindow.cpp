@@ -17,43 +17,38 @@
 #include <stdlib.h>
 
 #define BUTTON_ALARM_OK 'alok'
-#define SET_ALARM 'salr'
-#define ALARM_MSG 'alrm'
+#define SET_ALARM 		'salr'
+#define ALARM_MSG 		'alrm'
 
 AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler) 
 			: BWindow (frame, "Set alarm for this note", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 	
     fMessenger = new BMessenger(handler);
 
-	//Istanzio la view AlarmView e la associo ad AlarmWindow
-	
+	// We allocate the view AlarmView and associate it to the AlarmWindow	
 	frame.OffsetTo(B_ORIGIN);
 	fAlarmView = new AlarmView(frame,"AlarmView");
 	fAlarmView->SetViewColor(216, 216, 216);
 	AddChild(fAlarmView);
 
-	//Istanzio i text field per l'inserimento dei dati
-	
-	hour=new BTextControl(BRect(20,30,100,35),   "hour",     "hour:", "", NULL);
-	minute=new BTextControl(BRect(20,70,100,35), "minute",  "min:", "", NULL);
-	day=new BTextControl(BRect(20,110,100,35),   "day",     "day:", "", NULL);
-	month=new BTextControl(BRect(20,150,100,35), "month",    "month:", "", NULL);
-	year=new BTextControl(BRect(20,190,100,35),  "year",     "year:", "", NULL);
+	// Text fields for the data
+	hour = new BTextControl(BRect(20,30,100,35),   "hour",     "hour:", "", NULL);
+	minute = new BTextControl(BRect(20,70,100,35), "minute",  "min:", "", NULL);
+	day = new BTextControl(BRect(20,110,100,35),   "day",     "day:", "", NULL);
+	month = new BTextControl(BRect(20,150,100,35), "month",    "month:", "", NULL);
+	year = new BTextControl(BRect(20,190,100,35),  "year",     "year:", "", NULL);
 
-	//faccio in modo che il label del text field sia visibile
+	// Text field label: visible
+	hour -> SetDivider(hour->StringWidth("hour:") + 5);
+	minute -> SetDivider(minute->StringWidth("min:") + 5);
+	day -> SetDivider(day->StringWidth("day:") + 5);
+	month -> SetDivider(month->StringWidth("month:") + 5);
+	year -> SetDivider(year->StringWidth("year:") + 5);
 
-	hour->SetDivider(hour->StringWidth("hour:")+5);
-	minute->SetDivider(minute->StringWidth("min:")+5);
-	day->SetDivider(day->StringWidth("day:")+5);
-	month->SetDivider(month->StringWidth("month:")+5);
-	year->SetDivider(year->StringWidth("year:")+5);
-
-	//istanzio il bottone OK	
-	
+	// We allocate the ok button
 	fButtonOk = new BButton (BRect(400,230,450,240),"ok", "OK", new BMessage(BUTTON_ALARM_OK));
 
-	//associo le text field e i bottoni alla view	
-	
+	// Macking all the objects part of the view	
 	fAlarmView->AddChild(hour);
 	fAlarmView->AddChild(minute);
 	fAlarmView->AddChild(day);
@@ -65,31 +60,34 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	Show();
 }
 
-
+// Receiving the messages...
 void AlarmWindow :: MessageReceived(BMessage* message) {
+	// Variables
+	BMessage 	*msg;
+	int16 		i;
+
 	switch (message -> what) {
 
-		case BUTTON_ALARM_OK: {
-		
-			//quando premo il bottone OK parte il messaggio che "riempie" la struct
-			//preparo i dati da includere nel messaggio
-		
+		case BUTTON_ALARM_OK: {		
+			/*
+			 * When I press OK I throw the message that "fill" the struct
+			 * We prepare the data to be included in the message	
+			 */
 			const char *hourTextField;
 			const char *minuteTextField;
 			const char *dayTextField;
 			const char *monthTextField;
 			const char *yearTextField;
 
-			hourTextField = hour->Text();
-			minuteTextField = minute->Text();
-			dayTextField = day->Text();
-			monthTextField = month->Text();
-			yearTextField = year->Text();
+			hourTextField = hour -> Text();
+			minuteTextField = minute -> Text();
+			dayTextField = day -> Text();
+			monthTextField = month -> Text();
+			yearTextField = year -> Text();
 
-			//si dovranno mettere un bel po' di controlli: stringhe vuote e dati inconsistenti
+			// ToDo: controls!
 
-			BMessage *msg = new BMessage (ALARM_MSG);
-			int16 i;
+			msg = new BMessage (ALARM_MSG);
 		
 			i = atoi (hourTextField);
 			msg -> AddInt16 ("hour", i);
@@ -106,18 +104,15 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			i = atoi (yearTextField);
 			msg -> AddInt16 ("year", i);
 		
-			//...........
-		
+			// Sending the message	
 			fMessenger->SendMessage(msg);
 
-			// Alla fine la finestra viene chiusa
-		
+			// Closing the window		
 			Quit();			
 		
 		}
 			
-		default:
-			
+		default:			
 			BWindow::MessageReceived(message);
 	}
 }

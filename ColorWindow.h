@@ -21,7 +21,7 @@
 #include <Window.h>
 
 
-// Dichiarazione della classe
+// Declaration of the class
 class ColorWindow : public BWindow {
 	
 	public:

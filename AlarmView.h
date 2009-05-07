@@ -18,10 +18,12 @@
 #include <View.h>
 
 class AlarmView : public BView {
+
 	public:
-		AlarmView (BRect frame, char *name);
-		virtual void AttachedToWindow ();
-		virtual void Draw(BRect updateRect);
+	
+						AlarmView (BRect frame, char *name);
+		virtual void 	AttachedToWindow ();
+		virtual void 	Draw(BRect updateRect);
 };
 
 #endif

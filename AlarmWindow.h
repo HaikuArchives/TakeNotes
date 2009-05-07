@@ -23,12 +23,11 @@
 #include <Button.h>
 #include <Messenger.h>
 
-
+// Window that allows the user to insert the alarm
 class AlarmWindow : public BWindow {
 	
 	public:
-		
-		
+			
 					 AlarmWindow(BRect frame, BHandler *handler);
 		virtual void MessageReceived(BMessage* message);
 	

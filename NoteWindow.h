@@ -26,36 +26,36 @@
 #include <MenuItem.h>
 
 
-/* == STRUTTURA DATI ==
- * Struttura contenente tutte le informazioni inerenti al post-it corrente
- * Informazioni contenute:
- * - ID - Per ora statico (da definire come impostarlo)
- * - Titolo - Per ora statico (si inserisce quando si trasforma in XML)
- * - Contenuto
- * - Font corrente
- * - Colore del font corrente
- * - Dimensione del carattere corrente
- * - Colore dello sfondo corrente
- * - Data di scadenza (giorno - mese - anno)
- * - Ora di scadenza (ora - minuto - secondo)
- * - = IN FUTURO: tags! =
+/* == DATA STRUCTURE ==
+ * Structure containing all the informations about the current post-it
+ * Information that it contains:
+ * - ID - Now we're using it statically; =DEFINE HOW TO CHANGE IT=
+ * - Title - Now we're using it statically =INSERT IT WHEN THE POST-IT IS DETACHED=
+ * - Content
+ * - Current Font
+ * - Current Font color
+ * - Current Font size
+ * - Current background color
+ * - Alarm date (day - month - year)
+ * - Alarm hour (hour - minute)
+ * - = TODO: TAGS! =
  */
 struct DatiPostIt {
-	int Id;					// Id del post-it
-	char* Titolo;			// Titolo del post-it
-	char* Contenuto;		// Contenuto (testo) del post-it
-	BFont Font;				// Font corrente DA DECIDERE
-	rgb_color ColoreFont;	// Colore del font DA DECIDERE
-	int DimFont;			// Dimensione del carattere DA DECIDERE
-	rgb_color ColoreBack;	// Colore dello sfondo
-	int Giorno;				// Giorno di scadenza
-	int Mese;				// Mese di scadenza
-	int Anno;				// Anno di scadenza
-	int Ora;				// Ora di scadenza
-	int Minuto;				// Minuto di scadenza
+	int Id;					// Post-it id
+	char* Titolo;			// Post-it title
+	char* Contenuto;		// Post-it content
+	BFont Font;				// Current font TODO
+	rgb_color ColoreFont;	// Font color TIDI
+	int DimFont;			// Font size TODO
+	rgb_color ColoreBack;	// Background color
+	int Giorno;				// Alarm - Day
+	int Mese;				// Alarm - Month
+	int Anno;				// Alarm - Year
+	int Ora;				// Alarm - Hour
+	int Minuto;				// Alarm - Minute
 };
 
-// Costruttore
+// Constructor
 class NoteWindow : public BWindow {
 
 	public:		
@@ -77,7 +77,7 @@ class NoteWindow : public BWindow {
 		BMenuItem 	*fCurrentFont;
 		BScrollView	*fScrollView;
 		
-		//MenuItems (menu Edit)
+		// MenuItems (Edit menu)
 		
 		BMenuItem 	*fUndoItem;
 		BMenuItem 	*fCutItem;
@@ -85,18 +85,18 @@ class NoteWindow : public BWindow {
 		BMenuItem 	*fPasteItem;
 		BMenuItem 	*fSelectAllItem;
 		
-		//MenuItems (menu Settings)
+		// MenuItems (Settings menu)
 		
 		BMenuItem 	*fChangeBackgroundColorItem;
 		BMenuItem 	*fSetAlarmItem;
 		
-		//flag di undo
+		// Undo flags
 		bool 		fUndoFlag;
 		bool 		fCanUndo;
 		bool 		fCanRedo;
 		bool 		fRedoFlag;
 		
-		// Struttura Dati
+		// Data structure
 		DatiPostIt 	fDati;
 };
 

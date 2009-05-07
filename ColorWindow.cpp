@@ -14,11 +14,10 @@
 
 #include "ColorWindow.h"
 
-
-// Costruttore
-// Me la crea tenendo la dimensione del rettangolo BRect
+// Constructor
+// It is created with the dimensions of BRect
 ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
-		: BWindow (frame, "Change the background color", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
+			: BWindow (frame, "Change the background color", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 	
 	frame.OffsetTo(B_ORIGIN);
 	fColorView = new ColorView (frame, "ColorView",handler);
@@ -27,7 +26,7 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
 	Show();
 }
 
-// Funzione attivata quando chiudo la finestra
+// Function that is activated when I close the window
 bool ColorWindow :: QuitRequested() {
 	return (true);
 }

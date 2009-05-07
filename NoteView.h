@@ -24,6 +24,7 @@
 
 
 class NoteView : public BTextView {
+
 	public:
 						
 							NoteView (BRect frame, BRect frameText, char *name,BHandler *handler);

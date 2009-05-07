@@ -21,13 +21,15 @@
 #include <Application.h>
 
 
-// Definizione della classe applicazione
+// Definition of the class
 class NoteApplication : public BApplication {
 
 	public:
+	
 			NoteApplication();
 	
 	private:
+	
 		NoteWindow * fNoteWindow;
 }; 
 

@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 17th April 2009
+ * Last revision: Ilio Catallo, 13th May 2009
  *
  * Description: TODO
  */
@@ -17,31 +17,31 @@
 #ifndef NOTE_VIEW_H
 #define NOTE_VIEW_H
 
+#include "NoteText.h"
+
 #include <View.h>
-#include <TextView.h>
 #include <Messenger.h>
 #include <String.h>
 
 
-class NoteView : public BTextView {
+class NoteView : public BView {
 
 	public:
 						
-							NoteView (BRect frame, BRect frameText, char *name,BHandler *handler);
+							NoteView (BRect frame, char *name);
 							NoteView (BMessage *msg);
-	   				   	   ~NoteView();
-	   		void			Init();
+	   				   	   ~NoteView(); 		
 	static 	BArchivable*	Instantiate(BMessage *msg);
 			void			AboutRequested();	   
 	    	status_t		Archive(BMessage *msg, bool deep=true) const;
 			void			MessageReceived(BMessage *message);
 		
 			void 			SetBackgroundColor(rgb_color color);
-	virtual	void 			InsertText(const char *text, int32 length, int32 offset, const text_run_array *runs=NULL);
 
 	private:
 	
-		BHandler 	*handler;
+		bool		fReplicated;
+		NoteText	*fNoteText;
 		BMessenger 	*fMessenger;
 		BString 	*message;
 	

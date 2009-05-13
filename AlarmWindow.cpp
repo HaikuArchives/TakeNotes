@@ -70,7 +70,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 
 		case BUTTON_ALARM_OK: {		
 			/*
-			 * When I press OK I throw the message that "fill" the struct
+			 * When I press OK I throw the message that fills the struct
 			 * We prepare the data to be included in the message	
 			 */
 			const char *hourTextField;

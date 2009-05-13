@@ -240,27 +240,33 @@ NoteWindow::NoteWindow(BRect frame)
 	frameView = Bounds();
 	
 	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
+	
+	
+	fNoteView = new NoteView (frameView, "TakeNotes"); // Useful for the "About"
+
+
+	frameView = fNoteView -> Bounds();	
+	frameView.top += 10;
 	frameView.right -= B_V_SCROLL_BAR_WIDTH;
 	frameView.bottom -= B_H_SCROLL_BAR_HEIGHT;
 	frameView.left = 0;
-	
-	
 	frameText = frameView;
 	
 	frameText.OffsetTo(B_ORIGIN);
-	frameText.InsetBy(TEXT_INSET,TEXT_INSET);
+	frameText.InsetBy(TEXT_INSET, TEXT_INSET);
 	
-	fNoteView = new NoteView (frameView, frameText, "TakeNotes",this); // Useful for the "About"
-	fNoteView->SetDoesUndo(true);
-	fNoteView->MakeFocus(); 
-	fNoteView->SetStylable(true);
+	fNoteText = new NoteText(frameView, frameText, "NoteText", this);
+	fNoteText->SetDoesUndo(true);
+	fNoteText->MakeFocus(); 
+	fNoteText->SetStylable(true);
 	
 	// ScrollView
-	fScrollView = new BScrollView("scrollview", fNoteView, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
+	fScrollView = new BScrollView("scrollview", fNoteText, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
 	
 	// It will be associated to the window
 	AddChild(fNoteMenuBar);
-	AddChild(fScrollView);
+	AddChild(fNoteView);
+	fNoteView -> AddChild(fScrollView);
 
 	Show();
 	
@@ -281,7 +287,7 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 	rgb_color 	sameColor;
 	
 	
-	fNoteView -> GetFontAndColor (&font, &sameProperties, &sameColor);
+	fNoteText -> GetFontAndColor (&font, &sameProperties, &sameColor);
 	font.GetFamilyAndStyle (&oldFamily, &oldStyle); // Copying the current font family and font style
 	if (strcmp (oldFamily, fontFamily)) {		
 		BMenuItem *oldItem = fFontMenu -> FindItem (oldFamily);
@@ -289,7 +295,7 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 			oldItem -> SetMarked (false);	// Removing the check
 	}		
 	font.SetFamilyAndStyle (fontFamily, fontStyle);
-	fNoteView -> SetFontAndColor (&font);
+	fNoteText -> SetFontAndColor (&font);
 	
 	
 	superItem = fFontMenu -> FindItem (fontFamily);
@@ -358,9 +364,9 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		case FONT_SIZE: {
 		
 			if (message -> FindFloat ("size", &fontSize) == B_OK){			
-				fNoteView -> GetFontAndColor(&font, &sameProperties, &sameColor);
+				fNoteText -> GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
-				fNoteView -> SetFontAndColor (&font, B_FONT_SIZE);
+				fNoteText -> SetFontAndColor (&font, B_FONT_SIZE);
 			}
 		}
 		break;
@@ -375,8 +381,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
 			
-			fNoteView -> GetFontAndColor(&font, &sameProperties);
-			fNoteView -> SetFontAndColor(&font,0,&colore);
+			fNoteText -> GetFontAndColor(&font, &sameProperties);
+			fNoteText -> SetFontAndColor(&font,0,&colore);
 		}
 		break;
 		
@@ -414,19 +420,19 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		//Edit messages		
 		case B_CUT:
-			fNoteView->Cut(be_clipboard);
+			fNoteText -> Cut(be_clipboard);
 		break;
 		
 		case B_COPY:
-			fNoteView->Copy(be_clipboard);
+			fNoteText -> Copy(be_clipboard);
 		break;
 		
 		case B_PASTE:
-			fNoteView->Paste(be_clipboard);
+			fNoteText -> Paste(be_clipboard);
 		break;
 		
 		case B_SELECT_ALL:
-			fNoteView->SelectAll();
+			fNoteText -> SelectAll();
 		break;
 		
 		// Message that tells if the text is changes (it is used for the "can't undo")
@@ -451,7 +457,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			
 		    }
 		    // Modifying the data structure
-		    fDati.Contenuto = (char*)fNoteView -> Text();
+		    fDati.Contenuto = (char*)fNoteText -> Text();
 		break;
 				
 		// Message for the undo function	
@@ -461,7 +467,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		if (fCanRedo)	//...and I can do "Redo"
 			fRedoFlag = true;
 			
-		fNoteView->Undo(be_clipboard);
+		fNoteText -> Undo(be_clipboard);
 		break;
 		
 		// Adding the date
@@ -477,8 +483,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			sprintf(stringa, "%d/%d/%d - %d:%d:%d", day,
 					month, year, hour, minute, second);
 			
-			fNoteView -> MakeFocus();
-			fNoteView -> Insert(stringa);
+			fNoteText -> MakeFocus();
+			fNoteText -> Insert(stringa);
 		}
 		break;
 		

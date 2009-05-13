@@ -5,8 +5,9 @@
  * Authors:
  *
  *			Eleonora Ciceri
+ *			Ilio Catallo
  * 
- * Last revision: Eleonora Ciceri, 20th April 2009
+ * Last revision: Ilio Catallo, 13th May 2009
  *
  * Description: TODO
  */
@@ -16,6 +17,7 @@
 #define NOTE_WINDOW_H 
 
 #include "NoteView.h"
+#include "NoteText.h"
 #include "ColorWindow.h"
 #include "AlarmWindow.h"
 
@@ -24,7 +26,6 @@
 #include <Menu.h>
 #include <MenuBar.h>
 #include <MenuItem.h>
-
 
 /* == DATA STRUCTURE ==
  * Structure containing all the informations about the current post-it
@@ -66,6 +67,7 @@ class NoteWindow : public BWindow {
 	
 	private:
 		NoteView 	*fNoteView;
+		NoteText	*fNoteText;
 		ColorWindow *fColorWindow;
 		AlarmWindow *fAlarmWindow;
 		BMenuBar 	*fNoteMenuBar;

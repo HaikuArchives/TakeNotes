@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 8th April 2009
+ * Last revision: Eleonora Ciceri, 14th May 2009
  *
  * Description: TODO
  */
@@ -30,8 +30,10 @@ class ColorWindow : public BWindow {
 		virtual bool QuitRequested();
 	
 	private:
-		
-		ColorView 	 *fColorView;
+	
+		BColorControl 	*fColorControl;	
+		ColorView 	 	*fColorView;
+		BMessenger		*fMessenger;
 };
 
 #endif

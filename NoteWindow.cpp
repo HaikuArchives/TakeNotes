@@ -336,7 +336,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	
 		case MENU_CHANGE_COLOR:{	
 				
-			aRect.Set(300,300,700,700);
+			aRect.Set(300,300,700,650);
 			
 			// Checking if there are more than one color window		
 			if (be_app->CountWindows() == 1)

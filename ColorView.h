@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 8th April 2009
+ * Last revision: Eleonora Ciceri, 14th May 2009
  *
  * Description: TODO
  */
@@ -27,11 +27,6 @@ class ColorView : public BView {
 		virtual void AttachedToWindow ();
 		virtual void Draw(BRect updateRect);
 		virtual void MouseDown(BPoint point);
-	
-	private:
-		
-		BColorControl 	*fColorControl;
-		BMessenger		*fMessenger;
 };
 
 #endif

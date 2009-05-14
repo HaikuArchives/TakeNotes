@@ -7,12 +7,13 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 8th April 2009
+ * Last revision: Eleonora Ciceri, 13th May 2009
  *
  * Description: TODO
  */
 
 #include "ColorView.h"
+#include "StringView.h"
 
 // Messages
 #define COLOR_CHANGED 'ccrq'
@@ -20,18 +21,6 @@
 // Constructor
 ColorView :: ColorView(BRect rect, char *name,BHandler *handler)
 	   	  : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW){
-	   	   // Variables
-	   	   BPoint 				leftTop(20.0, 50.0);
-	   	   color_control_layout matrix;
-	   	   long cellSide;	   	   
-	   	   
-	   	   fMessenger = new BMessenger(handler);
-	   	   
-	   	   matrix = B_CELLS_16x16;
-	   	   cellSide = 16;
-	   	   
-	   	   fColorControl = new BColorControl (leftTop, matrix, cellSide, "ColorControl");
-	   	   AddChild(fColorControl);
 }
 
 // Font
@@ -42,23 +31,18 @@ void ColorView :: AttachedToWindow() {
 
 // Drawing the window
 void ColorView :: Draw (BRect updateRect) {
-	MovePenTo(BPoint(20.0, 20.0));
-	DrawString ("Scegli!");
+	// Variables
+	BStringView *instructions;
+	BRect frame(10,20,600,35);
+	const char *text = "Close the window to apply the changes";
+
+	instructions = new BStringView (frame, "instructions", text);
+	instructions -> SetFont(be_bold_font);
+	instructions -> SetFontSize(14);
+	AddChild(instructions);	
 }
 
 // When the user clicks...
 void ColorView :: MouseDown(BPoint point) {
-	// Variables
-	rgb_color userColorChoice;
-	BMessage  *msg;
 	
-	// I catch the color that was chosen by the user
-	userColorChoice = fColorControl -> ValueAsColor();
-
-	// Sending the message...
-	msg = new BMessage (COLOR_CHANGED);
-	msg -> AddInt8 ("red", (int8)userColorChoice.red);
-	msg -> AddInt8 ("green", (int8)userColorChoice.green);
-	msg -> AddInt8 ("blue", (int8)userColorChoice.blue);
-	fMessenger->SendMessage(msg);
 }

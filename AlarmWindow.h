@@ -22,6 +22,7 @@
 #include <TextControl.h>
 #include <Button.h>
 #include <Messenger.h>
+#include <Alert.h>
 
 // Window that allows the user to insert the alarm
 class AlarmWindow : public BWindow {
@@ -43,6 +44,9 @@ class AlarmWindow : public BWindow {
 		
 		BButton			*fButtonOk;
 		BMessenger		*fMessenger;
+		
+		int32			GetDaysInMonth(int month, int year);
+		bool 			IsAfter(int min, int h, int d, int mon, int y);
 
 };
 

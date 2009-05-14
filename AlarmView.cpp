@@ -27,6 +27,6 @@ void AlarmView :: AttachedToWindow() {
 
 void AlarmView :: Draw (BRect updateRect) {
 	MovePenTo(BPoint(20.0, 20.0));
-	DrawString ("Inserisci data ed ora per impostare l'allarme:");
+	DrawString ("Insert date and time to set an alarm");
 }
 

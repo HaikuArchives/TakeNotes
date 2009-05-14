@@ -68,7 +68,7 @@ void NoteText :: Draw(BRect updateRect){
 status_t NoteText :: Archive (BMessage *msg, bool deep) const{
 
 	BTextView :: Archive(msg,deep);
-	
+	
 	msg->AddString("class","NoteText");
 	
 	if (fBitmap){

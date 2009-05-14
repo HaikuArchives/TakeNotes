@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Eleonora Ciceri, 20th April 2009
+ * Last revision: Ilio Catallo, 14th May 2009
  *
  * Description: TODO
  */
@@ -259,9 +259,10 @@ NoteWindow::NoteWindow(BRect frame)
 	fNoteText->SetDoesUndo(true);
 	fNoteText->MakeFocus(); 
 	fNoteText->SetStylable(true);
-	
+
 	// ScrollView
 	fScrollView = new BScrollView("scrollview", fNoteText, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
+	
 	
 	// It will be associated to the window
 	AddChild(fNoteMenuBar);

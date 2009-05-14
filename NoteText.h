@@ -17,6 +17,13 @@
  
 #include <TextView.h>
 #include <Messenger.h>
+#include <Bitmap.h>
+#include <TranslationUtils.h>
+#include <Path.h>
+#include <Entry.h>
+#include <Window.h> 
+#include <stdio.h>
+ 
  
 class NoteText : public BTextView {
  
@@ -24,8 +31,11 @@ class NoteText : public BTextView {
  	
  								NoteText(BRect frame, BRect frameText, char *name,BHandler *handler);
  								NoteText(BMessage *message);
+ 							 	~NoteText();
  		static	BArchivable*	Instantiate(BMessage *msg);
  		virtual void			InsertText(const char *text, int32 length, int32 offset, const text_run_array *runs=NULL);
+ 				void			Draw(BRect updateRect);
+ 				void			MessageReceived(BMessage *message);
  				status_t		Archive(BMessage *msg, bool deep=true) const;
  			
  		
@@ -34,6 +44,7 @@ class NoteText : public BTextView {
  		bool		fReplicated;
  		BHandler	*handler;
  		BMessenger	*fMessenger;
+ 		BBitmap		*fBitmap;
 };
  
  

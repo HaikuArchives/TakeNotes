@@ -6,7 +6,7 @@
  *
  *			Ilio Catallo
  * 
- * Last revision: Ilio Catallo, 13th May 2009
+ * Last revision: Ilio Catallo, 14th May 2009
  *
  * Description: TODO
  */
@@ -15,9 +15,12 @@
 #include "NoteText.h"
 
 #include <Message.h>
- 
+
 // Messages 
-#define TEXT_CHANGED 	'txch'
+#define TEXT_CHANGED 'txch'
+
+//Constants
+#define TEXT_INSET 10
 
 //Costructor
 NoteText :: NoteText(BRect frame, BRect frameText, char *name, BHandler *handler)
@@ -27,6 +30,7 @@ NoteText :: NoteText(BRect frame, BRect frameText, char *name, BHandler *handler
 		 fReplicated = false;
 		 
 		 SetViewColor(254, 254, 92, 255);
+		 MakeResizable(true);
 }
 
 
@@ -34,15 +38,45 @@ NoteText :: NoteText (BMessage *message)
 		 : BTextView (message){
 		 
 		 fReplicated = true;
+		 fBitmap = new BBitmap(message);
 		 
+}
+
+NoteText :: ~NoteText(){
+
+	delete fBitmap;
+
+}
+
+
+void NoteText :: Draw(BRect updateRect){
+	
+	
+	if (fBitmap){
+			
+		 BPoint coordinates(PointAt(TextLength()));	
+		 coordinates.x = 0;
+		 coordinates.y += LineHeight();
+		 DrawBitmap(fBitmap,coordinates);
+	
+	}
+	
+	BTextView :: Draw(updateRect);
+
 }
 
 status_t NoteText :: Archive (BMessage *msg, bool deep) const{
 
 	BTextView :: Archive(msg,deep);
-	
-	//msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
+	
 	msg->AddString("class","NoteText");
+	
+	if (fBitmap){
+	
+		fBitmap->Lock();
+		fBitmap->Archive(msg);
+		fBitmap->Unlock();
+	}
 	
 	return B_OK;
 
@@ -54,6 +88,42 @@ BArchivable* NoteText :: Instantiate(BMessage *msg){
 	
 }
 
+void NoteText :: MessageReceived(BMessage *message){
+
+	switch (message->what){
+	
+		case B_SIMPLE_DATA:{
+		
+			//Variables
+			entry_ref	ref;
+				
+			message->FindRef("refs",&ref);
+			BEntry entry(&ref);
+			BPath path(&entry);
+			
+			delete fBitmap;
+			fBitmap = BTranslationUtils::GetBitmap(path.Path());
+			
+			if (fBitmap != NULL){
+			
+				BRect rect = fBitmap->Bounds();
+				if (!fReplicated)
+					Window()->ResizeTo(rect.right,rect.bottom);
+				
+				ResizeTo(rect.right, rect.bottom);
+				Invalidate();
+				MakeEditable(false);
+				
+			}
+		}
+		break;
+		
+		default:
+			BTextView :: MessageReceived(message);
+		break;
+	}
+}
+	
 void NoteText :: InsertText(const char* text, int32 length, int32 offset, const text_run_array *runs) {
 	// Variables
 	BMessage *message;

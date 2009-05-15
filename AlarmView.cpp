@@ -6,7 +6,7 @@
  *
  *			Stefano Celentano
  * 
- * Last revision: Stefano Celentano, 19th April 2009
+ * Last revision: Stefano Celentano, 15th May 2009
  *
  * Description: TODO
  */
@@ -27,6 +27,7 @@ void AlarmView :: AttachedToWindow() {
 
 void AlarmView :: Draw (BRect updateRect) {
 	MovePenTo(BPoint(20.0, 20.0));
-	DrawString ("Insert date and time to set an alarm");
+	DrawString ("Insert time and date to set an alarm");
 }
+
 

@@ -47,6 +47,8 @@ class AlarmWindow : public BWindow {
 		
 		int32			GetDaysInMonth(int month, int year);
 		bool 			IsAfter(int min, int h, int d, int mon, int y);
+		int				GetTime(int element);
+
 
 };
 

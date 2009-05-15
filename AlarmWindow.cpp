@@ -6,7 +6,7 @@
  *
  *			Stefano Celentano
  * 
- * Last revision: Stefano Celentano, 20th May 2009
+ * Last revision: Stefano Celentano, 15th May 2009
  *
  * Description: TODO
  */
@@ -15,6 +15,7 @@
 #include "AlarmWindow.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #define BUTTON_ALARM_OK 'alok'
 #define SET_ALARM 		'salr'
@@ -25,6 +26,18 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 			: BWindow (frame, "Set alarm for this note", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 	
     fMessenger = new BMessenger(handler);
+    
+    char	dayDefaultField[3];
+    char 	monthDefaultField[3];
+    char 	yearDefaultField[3];
+    char 	minuteDefaultField[3];
+    char 	hourDefaultField[3];
+
+	sprintf(minuteDefaultField, "%d", GetTime(0));
+	sprintf(hourDefaultField, "%d", GetTime(1));
+	sprintf(dayDefaultField, "%d", GetTime(2));
+	sprintf(monthDefaultField, "%d", GetTime(3));
+	sprintf(yearDefaultField, "%d", GetTime(4));
 
 	// We allocate the view AlarmView and associate it to the AlarmWindow	
 	frame.OffsetTo(B_ORIGIN);
@@ -33,11 +46,11 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	AddChild(fAlarmView);
 
 	// Text fields for the data
-	hour = new BTextControl(BRect(20,30,100,35),   "hour",     "hour:", NULL, NULL);
-	minute = new BTextControl(BRect(20,70,100,35), "minute",  "min:", NULL, NULL);
-	day = new BTextControl(BRect(20,110,100,35),   "day",     "day:", NULL, NULL);
-	month = new BTextControl(BRect(20,150,100,35), "month",    "month:", NULL, NULL);
-	year = new BTextControl(BRect(20,190,100,35),  "year",     "year:", NULL, NULL);
+	hour = new BTextControl(BRect(20,40,100,35),   "hour",     "hour:", hourDefaultField , NULL);
+	minute = new BTextControl(BRect(120,40,200,35), "minute",  "min:", minuteDefaultField, NULL);
+	day = new BTextControl(BRect(20,100,100,35),   "day",     "day:", dayDefaultField, NULL);
+	month = new BTextControl(BRect(120,100,200,35), "month",    "month:", monthDefaultField, NULL);
+	year = new BTextControl(BRect(220,100,300,35),  "year",     "year:", yearDefaultField, NULL);
 
 	// Text field label: visible
 	hour -> SetDivider(hour->StringWidth("hour:") + 5);
@@ -46,7 +59,7 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	month -> SetDivider(month->StringWidth("month:") + 5);
 	year -> SetDivider(year->StringWidth("year:") + 5);
 
-	// We allocate the ok button
+	// Allocate the OK button
 	fButtonOk = new BButton (BRect(400,230,450,240),"ok", "OK", new BMessage(BUTTON_ALARM_OK));
 
 	// Making all the objects part of the view	
@@ -99,6 +112,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			yearN = atoi(yearTextField);
 
 			// Starting controls for time and date
+			// Notice: I won't send ALARM_MSG if one of these checks is missed
 			
 			// First check if there are any values (in a correct range)
 			if( (hourN > 0 && hourN < 24)  && (minuteN > 0 && minuteN < 60) && (dayN > 0) && (monthN > 0  && monthN <= 12) && (yearN >= 1970 && yearN <= 2150) ) {			
@@ -110,7 +124,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 				if(dayN > daysInMonth) {
 					
 					BAlert *myAlert = new BAlert("Incorrect days in month", "Insert a correct day for selected month", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-					int32 button_index = myAlert -> Go();
+					myAlert -> Go();
 					break;
 				}
 				
@@ -119,7 +133,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 				if ( !(IsAfter(minuteN,hourN,dayN,monthN,yearN)) ) {
 					
 					BAlert *myAlert = new BAlert("Previous date-time", "Date-time should come after system time", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-					int32 button_index = myAlert -> Go();
+					myAlert -> Go();
 					break;				
 				
 				}
@@ -151,7 +165,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			} else {
 			
 				BAlert *myAlert = new BAlert("Missing values", "Fill all the fields with correct values", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-				int32 button_index = myAlert -> Go();
+				myAlert -> Go();
 			
 			}	
 		
@@ -203,7 +217,7 @@ int32 AlarmWindow :: GetDaysInMonth(int month, int year) {
 bool AlarmWindow :: IsAfter(int min, int h, int d, int mon, int y) {
 
 
-	// Declare a timer
+	// Declare two timers
 	
 	time_t rawtime;
 	time_t userTime;
@@ -243,6 +257,33 @@ bool AlarmWindow :: IsAfter(int min, int h, int d, int mon, int y) {
 	else {
 		return false;
 	}	
+}
+
+int AlarmWindow :: GetTime(int element) {
 
 
+	struct tm *now = NULL;
+	time_t time_value = 0;
+	
+	// Get time value
+	time_value = time(NULL);
+	
+	// Get time and date structure
+	now = localtime(&time_value);	
+
+	switch(element) {
+		case 0: 
+			return now -> tm_min;
+		case 1: 
+			return now -> tm_hour;
+		case 2: 
+			return now -> tm_mday;
+		case 3: 
+			return now -> tm_mon + 1;
+		case 4: 
+			return now -> tm_year + 1900;
+		default:
+			return 0;
+			
+	}	
 }

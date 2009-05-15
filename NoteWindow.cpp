@@ -56,7 +56,7 @@ NoteWindow::NoteWindow(BRect frame)
 				frameView,
 				frameText;
 				
-	BMenuItem 	*menuItem;
+	BMenuItem 	*menuItem = NULL;
 	
 	BMenu		*sizeFont,
 				*colorFont,
@@ -147,13 +147,15 @@ NoteWindow::NoteWindow(BRect frame)
 	sizeFont -> SetRadioMode (true);
 	fFontMenu -> AddItem (sizeFont);
 	
-	for (uint32 i = 0; i < sizeof(fontSizes) / sizeof(fontSizes[0]); i++ ){
+	for (uint32 i = 0; i <= sizeof(fontSizes) / sizeof(fontSizes[0]); i++ ){
 		message = new BMessage (FONT_SIZE);
 		message -> AddFloat ("size", fontSizes[i]);
 		
-		char label[64];
-		snprintf(label, sizeof(label), "%ld", fontSizes[i]);
-		sizeFont -> AddItem (menuItem = new BMenuItem (label, message));
+		if (i != sizeof(fontSizes) / sizeof(fontSizes[0]) ){
+			char label[64];
+			snprintf(label, sizeof(label), "%ld", fontSizes[i]);
+			sizeFont -> AddItem (menuItem = new BMenuItem (label, message));
+		}
 		
 			if (i == 3)
 				menuItem -> SetMarked(true);
@@ -364,7 +366,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		// Font size
 		case FONT_SIZE: {
 		
-			if (message -> FindFloat ("size", &fontSize) == B_OK){			
+			if (message -> FindFloat ("size", &fontSize) == B_OK){		
 				fNoteText -> GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
 				fNoteText -> SetFontAndColor (&font, B_FONT_SIZE);

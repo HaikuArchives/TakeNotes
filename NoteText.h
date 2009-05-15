@@ -6,7 +6,7 @@
  *
  *			Ilio Catallo
  * 
- * Last revision: Ilio Catallo, 13th May 2009
+ * Last revision: Ilio Catallo, 14th May 2009
  *
  * Description: TODO
  */
@@ -34,8 +34,9 @@ class NoteText : public BTextView {
  							 	~NoteText();
  		static	BArchivable*	Instantiate(BMessage *msg);
  		virtual void			InsertText(const char *text, int32 length, int32 offset, const text_run_array *runs=NULL);
- 				void			Draw(BRect updateRect);
- 				void			MessageReceived(BMessage *message);
+ 		virtual	void			Draw(BRect updateRect);
+ 		virtual	void			MessageReceived(BMessage *message);
+ 		virtual	void			KeyDown(const char* bytes, int32 numBytes);		
  				status_t		Archive(BMessage *msg, bool deep=true) const;
  			
  		

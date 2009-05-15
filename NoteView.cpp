@@ -59,7 +59,7 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
 		msg->AddString("class","NoteView");
 		
-		msg->PrintToStream();
+		//msg->PrintToStream();
 		
 		return B_OK;
 
@@ -84,6 +84,8 @@ void NoteView :: AboutRequested(){
 
 
 void NoteView :: MessageReceived(BMessage *message){
+
+		message->PrintToStream();
 
 		switch(message->what){
 		

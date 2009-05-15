@@ -51,6 +51,7 @@ NoteText :: ~NoteText(){
 
 void NoteText :: Draw(BRect updateRect){
 	
+	BTextView :: Draw(updateRect);
 	
 	if (fBitmap){
 			
@@ -61,7 +62,7 @@ void NoteText :: Draw(BRect updateRect){
 	
 	}
 	
-	BTextView :: Draw(updateRect);
+	
 
 }
 
@@ -69,6 +70,7 @@ status_t NoteText :: Archive (BMessage *msg, bool deep) const{
 
 	BTextView :: Archive(msg,deep);
 	
+	msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
 	msg->AddString("class","NoteText");
 	
 	if (fBitmap){
@@ -112,7 +114,7 @@ void NoteText :: MessageReceived(BMessage *message){
 				
 				ResizeTo(rect.right, rect.bottom);
 				Invalidate();
-				MakeEditable(false);
+				//MakeEditable(false);
 				
 			}
 		}
@@ -123,6 +125,15 @@ void NoteText :: MessageReceived(BMessage *message){
 		break;
 	}
 }
+	
+
+void NoteText :: KeyDown(const char* bytes, int32 numBytes){
+		
+		BTextView :: KeyDown(bytes, numBytes);
+		Invalidate();
+		//Window()->UpdateIfNeeded();
+		
+}	
 	
 void NoteText :: InsertText(const char* text, int32 length, int32 offset, const text_run_array *runs) {
 	// Variables

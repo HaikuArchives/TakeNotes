@@ -8,13 +8,14 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 14th May 2009
+ * Last revision: Eleonora Ciceri, 16th May 2009
  *
  * Description: TODO
  */
 
 
 #include "NoteWindow.h"
+#include "ColorMenuItem.h"
 
 #include <Clipboard.h>
 #include <Autolock.h>
@@ -37,6 +38,7 @@
 #define SET_ALARM 'salr'
 #define ALARM_MSG 'alrm'
 #define GO_TO_LINK 'gtlk'
+#define ABOUT 'bout'
 
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
@@ -81,7 +83,8 @@ NoteWindow::NoteWindow(BRect frame)
 				red = {255,0,0},
 				green = {0,255,0},
 				blue = {0,0,255},
-				yellow = {254,254,92};
+				yellow = {254,254,92},
+				color;
 	rgb_color   colors[] = {black, red, green, blue, yellow};
 	
 		
@@ -124,7 +127,7 @@ NoteWindow::NoteWindow(BRect frame)
 			new BMessage (ADD_DATA)));
 	fSettingsMenu -> AddItem (fSetAlarmItem = new BMenuItem ("Set alarm",
 			new BMessage (SET_ALARM)));
-	fSettingsMenu -> AddItem (fLink = new BMenuItem ("Go to selected link...", new BMessage (GO_TO_LINK)));					
+	fSettingsMenu -> AddItem (fLink = new BMenuItem ("Go to the selected link...", new BMessage (GO_TO_LINK)));					
 	
 	// Edit
 
@@ -168,9 +171,6 @@ NoteWindow::NoteWindow(BRect frame)
 	colorFont = new BMenu ("Color");
 	colorFont -> SetRadioMode (true);
 	fFontMenu -> AddItem (colorFont);
-	
-
-	
 	// Printing the menu...	
 	delete message;
 	
@@ -183,25 +183,35 @@ NoteWindow::NoteWindow(BRect frame)
 		
 		label = NULL;
 		switch (i) {
-			case 0:
+			case 0: {
 				label = "Black";
-				break;
-			case 1:
+				color = black;
+			}
+			break;
+			case 1: {
 				label = "Red";
-				break;
-			case 2:
+				color = red;
+			}
+			break;
+			case 2: {
 				label = "Green";
-				break;
-			case 3:
+				color = green;
+			}
+			break;
+			case 3: {
 				label = "Blue";
-				break;
-			case 4:
+				color = blue;
+			}
+			break;
+			case 4: {
 				label = "Yellow";
-				break;
+				color = yellow;
+			}
+			break;
 			default:
 				break;
 		}
-		colorFont -> AddItem (menuItem = new BMenuItem (label, message));
+		colorFont -> AddItem (menuItem = new ColorMenuItem (label, color, message));
 			// Set the item as "in use"
 			if (i == 0)
 				menuItem -> SetMarked(true);
@@ -239,7 +249,8 @@ NoteWindow::NoteWindow(BRect frame)
 			}
 	}
 	
-		
+	// About menu
+	fAboutMenu -> AddItem (menuItem = new BMenuItem ("About TakeNotes...", new BMessage (ABOUT)));	
 	
 	// Main view	
 	frameView = Bounds();
@@ -330,20 +341,30 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				  hour,
 				  day,
 				  month,
-				  year;
+				  year,
+				  found;
 		uint32	  sameProperties;
 		int8	  c;
 		int16 	  i;
 		int32 	  k,
 		          j,
 		          length,
-		          offset;
+		          offset,
+		          count = 0;
 		float     fontSize;
 	
 		rgb_color colore,
 			 	  sameColor;
 			 	  
 		entry_ref reference;
+		
+		BAlert 	  *myAlert;
+		
+		BList     *aList;
+		
+		app_info  *appInfo;
+        		
+        team_id         who;
 			  
 	// Receiving the messages...	
 	switch (message -> what) {
@@ -375,17 +396,82 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}
 		break;	
 		
+		// About
+		case ABOUT: {
+			myAlert = new BAlert("About TakeNotes", 
+				"Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved", 
+				"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+			myAlert -> Go();		
+		}
+		break;
+		
+		// Mail and Browser
 		case GO_TO_LINK: {
-				
-				signature = strdup("application/x-vnd.Mozilla-Firefox");								
-								
-				// Estrazione del link selezionato
+		
+		        // Copying the selected link
 				fNoteText -> GetSelection(&k,&j);
 				length = j - k + 1;
 				offset = k;
 				fNoteText -> GetText(offset, length, param[0]);
 				
-				be_roster -> Launch(signature, 1, param, NULL);
+				found = 0;
+				
+				// Verifying if the link passed is an email or a link
+				for (count = 0; param[0][count] != NULL; count++){
+					if(param[0][count] == '@') {
+						found = 1;
+						break;
+					}
+				}
+								
+				if (found == 0)			
+					// Signature of BeZilla
+					signature = strdup("application/x-vnd.Mozilla-Firefox");
+				else {
+					// Signature of mail
+					signature = strdup("application/x-vnd.Be-MAIL");
+					// ACTUAL PROBLEM: Mail doesn't seem to take my parameters!
+					// First solution: the user will rewrite the address on "Mail", that is opened automatically
+					myAlert = new BAlert("Mail is opening", 
+						"You have selected an E-Mail address.\n\nThe program will open after you'll click the 'OK' button. \nRewrite your address in the 'Mail' window", 
+						"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+					myAlert -> Go();
+				}
+				
+				// Flag
+				found = 0;
+				
+				// Initialization
+        		aList = new BList;
+        		appInfo = new app_info();
+
+		        // Obtaining the applications that are running
+		        be_roster->GetAppList(aList); 
+
+					// We look for the current instances of BeZilla that are running
+	       			for (count=0;count< aList->CountItems();count++){
+
+		                who = (team_id)aList->ItemAt(count);
+   		 	            be_roster->GetRunningAppInfo(who,appInfo);
+   		 	            
+   		 	            // Is there an instance that is running?
+        		        if (strcmp (appInfo->signature, signature) == 0) {
+							myAlert = new BAlert("BeZilla is opened", 
+								"Close the browser first, then open this link", 
+								"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+							myAlert -> Go();
+							found = 1;
+							break;
+						}
+        			} 
+        			
+        			// BeZilla is not running 
+        			if (found == 0) {
+				
+						// We launch the application
+						be_roster -> Launch(signature, 1, param, NULL);
+        			}
+								
 		}
 		break;
 		

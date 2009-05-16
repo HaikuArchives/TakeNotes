@@ -145,7 +145,6 @@ void NoteText :: InsertText(const char* text, int32 length, int32 offset, const 
 		fMessenger->SendMessage(message);	
 	
 	}
-	
 	BTextView::InsertText(text,length,offset,runs);
 
 }

@@ -19,6 +19,7 @@
 #include <Clipboard.h>
 #include <Autolock.h>
 #include <Application.h>
+#include <Roster.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +36,7 @@
 #define ADD_DATA 'addd'
 #define SET_ALARM 'salr'
 #define ALARM_MSG 'alrm'
+#define GO_TO_LINK 'gtlk'
 
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
@@ -121,7 +123,8 @@ NoteWindow::NoteWindow(BRect frame)
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Add date and time",
 			new BMessage (ADD_DATA)));
 	fSettingsMenu -> AddItem (fSetAlarmItem = new BMenuItem ("Set alarm",
-			new BMessage (SET_ALARM)));					
+			new BMessage (SET_ALARM)));
+	fSettingsMenu -> AddItem (fLink = new BMenuItem ("Go to selected link...", new BMessage (GO_TO_LINK)));					
 	
 	// Edit
 
@@ -315,7 +318,10 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		BRect	  aRect;	
 	
   const char 	  *fontFamily,
-  				  *fontStyle;
+  				  *fontStyle,
+  				  *signature;
+  		
+		char	  * param[1];
   		char	  stringa[2];		  
   		void	  *ptr;		  
 	
@@ -328,10 +334,16 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		uint32	  sameProperties;
 		int8	  c;
 		int16 	  i;
+		int32 	  k,
+		          j,
+		          length,
+		          offset;
 		float     fontSize;
 	
 		rgb_color colore,
 			 	  sameColor;
+			 	  
+		entry_ref reference;
 			  
 	// Receiving the messages...	
 	switch (message -> what) {
@@ -362,6 +374,20 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			
 		}
 		break;	
+		
+		case GO_TO_LINK: {
+				
+				signature = strdup("application/x-vnd.Mozilla-Firefox");								
+								
+				// Estrazione del link selezionato
+				fNoteText -> GetSelection(&k,&j);
+				length = j - k + 1;
+				offset = k;
+				fNoteText -> GetText(offset, length, param[0]);
+				
+				be_roster -> Launch(signature, 1, param, NULL);
+		}
+		break;
 		
 		// Font size
 		case FONT_SIZE: {

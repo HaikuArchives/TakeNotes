@@ -91,6 +91,7 @@ class NoteWindow : public BWindow {
 		
 		BMenuItem 	*fChangeBackgroundColorItem;
 		BMenuItem 	*fSetAlarmItem;
+		BMenuItem   *fLink;
 		
 		// Undo flags
 		bool 		fUndoFlag;

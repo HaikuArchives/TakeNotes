@@ -21,6 +21,7 @@
 #include <Autolock.h>
 #include <Application.h>
 #include <Roster.h>
+#include <MessageRunner.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,6 +40,7 @@
 #define ALARM_MSG 'alrm'
 #define GO_TO_LINK 'gtlk'
 #define ABOUT 'bout'
+#define CHECK_ALARM 'chal'
 
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
@@ -49,6 +51,10 @@ const struct tm gettime() {
     return *localtime(&t);
 }
 
+// Flags
+
+bool alarm_set = false;
+
 // Constructor
 NoteWindow::NoteWindow(BRect frame)
 	: BWindow (frame, "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
@@ -56,6 +62,10 @@ NoteWindow::NoteWindow(BRect frame)
 	// Variables
 	BMessage	*message;
 	
+	BMessage	*check_alarm_msg;
+	
+	bigtime_t 	interval = 10000;
+		
 	BRect 		menuBarRect,
 				frameView,
 				frameText;
@@ -67,6 +77,7 @@ NoteWindow::NoteWindow(BRect frame)
 				*fontMenu;
 	
 	char		*label;
+
 	
 	font_family plainFamily,
 	 			family;
@@ -92,7 +103,19 @@ NoteWindow::NoteWindow(BRect frame)
 	fDati.Id = 1;
 	fDati.Titolo = "Titolo";
 
+
+	// Initialize the messenger: the handler is the window itself
 	
+	fMessenger = BMessenger(this);
+	
+	// Create an empty message
+	
+	check_alarm_msg = new BMessage(CHECK_ALARM);
+	
+	// Initialize the message runner
+	
+	runner = new BMessageRunner(fMessenger, check_alarm_msg, interval);
+		
 	
 	// Undo flags
 	fCanUndo = false;		// If there's no text I can't do undo
@@ -614,6 +637,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		// Setting the alarm in the data structure
 		case ALARM_MSG: {
 				
+			alarm_set = true;
+				
 			message -> FindInt16("year", &i);
 			fDati.Anno = i;
 			message -> FindInt16("month", &i);
@@ -624,6 +649,69 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fDati.Ora = i;
 			message -> FindInt16("minute", &i);
 			fDati.Minuto = i;
+		}
+		break;
+		
+		// Check for alarm to show (after the user has set one)
+		case CHECK_ALARM: {
+		
+			// First check if an alarm has been set
+			
+			if(!(alarm_set)) {
+				break;
+			} 
+			
+			// Second check if the runner has been correctly started
+			
+			if(runner -> InitCheck() < B_NO_ERROR) {		
+				break;			
+			}
+			
+		
+			// Check if date/time saved in data struct comes after system time
+			
+			// Declaring two timers: rawtime represents system time, userTime represents user input saved in the struct
+	
+			time_t rawtime;
+			time_t userTime;
+	
+			// Declare a time struct
+	
+			struct tm *timeinfo;
+	
+			// Get the current time (number of seconds from the "epoch"), stores it in the timer
+		
+			time( &rawtime );
+	
+			// Convert time_t time value to a tm struct
+	
+			timeinfo = localtime ( &rawtime );
+		
+			// Fill the timeinfo struct with data saved in data struct
+	
+			timeinfo -> tm_year = fDati.Anno - 1900;
+			timeinfo -> tm_mon = fDati.Mese - 1;
+			timeinfo -> tm_mday = fDati.Giorno;
+			timeinfo -> tm_hour = fDati.Ora;
+			timeinfo -> tm_min = fDati.Minuto;
+			timeinfo -> tm_sec = 0;	
+	
+			// Convert from struct tm to data type time_t
+	
+			userTime = mktime(timeinfo);	
+
+			// Compare user time and system time
+	
+			if( difftime(userTime, time( &rawtime) ) < 0 ) {
+			
+				myAlert = new BAlert("Alarm activated", "NOTICE: an alarm has been activated!", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+				myAlert -> Go();
+				
+			// WARNING!!!! We have to think about this: when an alarm has been activated, remember to "delete" it otherwise the alarm will appear over and over
+				
+				alarm_set = false;
+
+			}				
 		}
 		break;
 			

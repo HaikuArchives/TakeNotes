@@ -101,6 +101,11 @@ class NoteWindow : public BWindow {
 		
 		// Data structure
 		DatiPostIt 	fDati;
+		
+		//Messaging
+		BMessenger fMessenger;
+		BMessageRunner *runner;
+
 };
 
 #endif

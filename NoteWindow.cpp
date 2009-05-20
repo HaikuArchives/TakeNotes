@@ -355,7 +355,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
   				  *fontStyle,
   				  *signature;
   		
-		char	  * param[1];
+		char	  *param[1];
   		char	  stringa[2];		  
   		void	  *ptr;		  
 	
@@ -365,7 +365,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				  day,
 				  month,
 				  year,
-				  found;
+				  found,
+				  mail;
 		uint32	  sameProperties;
 		int8	  c;
 		int16 	  i;
@@ -447,18 +448,30 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 					}
 				}
 								
-				if (found == 0)			
+				if (found == 0) {
 					// Signature of BeZilla
 					signature = strdup("application/x-vnd.Mozilla-Firefox");
+					mail = 0;
+				}
 				else {
 					// Signature of mail
 					signature = strdup("application/x-vnd.Be-MAIL");
-					// ACTUAL PROBLEM: Mail doesn't seem to take my parameters!
-					// First solution: the user will rewrite the address on "Mail", that is opened automatically
-					myAlert = new BAlert("Mail is opening", 
-						"You have selected an E-Mail address.\n\nThe program will open after you'll click the 'OK' button. \nRewrite your address in the 'Mail' window", 
-						"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-					myAlert -> Go();
+					mail = 1;
+				}
+				
+				// We write "mailto:mail" as required by the program "Mail"
+				if (mail == 1) {
+					char mail[100] = "";
+					
+					fNoteText -> GetSelection(&k,&j);
+					length = j - k + 1;
+					offset = k;
+					fNoteText -> GetText(offset, length, mail);
+					
+					/***************************************************/
+					// CRASH:PERCHE'???????????????????
+					sprintf(param[0], "mailto:%s", mail);
+					/***************************************************/
 				}
 				
 				// Flag

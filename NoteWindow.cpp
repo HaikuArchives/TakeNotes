@@ -355,7 +355,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
   				  *fontStyle,
   				  *signature;
   		
-		char	  *param[1];
+		char	  *param[1],
+				  *str;
   		char	  stringa[2];		  
   		void	  *ptr;		  
 	
@@ -461,51 +462,58 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				
 				// We write "mailto:mail" as required by the program "Mail"
 				if (mail == 1) {
-					char mail[100] = "";
+					char m[50];
 					
+					// Copying the email
 					fNoteText -> GetSelection(&k,&j);
 					length = j - k + 1;
 					offset = k;
-					fNoteText -> GetText(offset, length, mail);
+					fNoteText -> GetText(offset, length, m);
 					
-					/***************************************************/
-					// CRASH:PERCHE'???????????????????
-					sprintf(param[0], "mailto:%s", mail);
-					/***************************************************/
+					// Writing "mailto:mail"
+					BString string;
+					string.SetTo("mailto:");
+					string.Append(m, sizeof(m));
+					string.Append("\0", 1);
+					param[0] = (char*) string.String();
+					// Launching the application
+					be_roster -> Launch(signature, 1, param, NULL);
 				}
+				else {
+					// Browser
 				
-				// Flag
-				found = 0;
+					// Flag
+					found = 0;
 				
-				// Initialization
-        		aList = new BList;
-        		appInfo = new app_info();
+					// Initialization
+        			aList = new BList;
+        			appInfo = new app_info();
 
-		        // Obtaining the applications that are running
-		        be_roster->GetAppList(aList); 
+		        	// Obtaining the applications that are running
+		        	be_roster->GetAppList(aList); 
 
-					// We look for the current instances of BeZilla that are running
-	       			for (count=0;count< aList->CountItems();count++){
+						// We look for the current instances of BeZilla that are running
+	       				for (count=0;count< aList->CountItems();count++){
 
-		                who = (team_id)aList->ItemAt(count);
-   		 	            be_roster->GetRunningAppInfo(who,appInfo);
+		            	    who = (team_id)aList->ItemAt(count);
+   		 	          	  	be_roster->GetRunningAppInfo(who,appInfo);
    		 	            
-   		 	            // Is there an instance that is running?
-        		        if (strcmp (appInfo->signature, signature) == 0) {
-							myAlert = new BAlert("BeZilla is opened", 
-								"Close the browser first, then open this link", 
-								"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-							myAlert -> Go();
-							found = 1;
-							break;
-						}
-        			} 
+   		 	          	 	// Is there an instance that is running?
+        		       		 if (strcmp (appInfo->signature, signature) == 0) {
+								myAlert = new BAlert("BeZilla is opened", 
+									"Close the browser first, then open this link", 
+									"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+								myAlert -> Go();
+								found = 1;
+								break;
+							}
+        				} 
         			
-        			// BeZilla is not running 
-        			if (found == 0) {
-				
-						// We launch the application
-						be_roster -> Launch(signature, 1, param, NULL);
+        				// BeZilla is not running 
+        				if (found == 0) {						
+							// We launch the application
+							be_roster -> Launch(signature, 1, param, NULL);
+        				}
         			}
 								
 		}

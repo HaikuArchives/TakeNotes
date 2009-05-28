@@ -37,6 +37,8 @@ class NoteText : public BTextView {
  		virtual	void			Draw(BRect updateRect);
  		virtual	void			MessageReceived(BMessage *message);
  		virtual	void			KeyDown(const char* bytes, int32 numBytes);		
+ 		virtual void			FrameResized(float width, float height);		
+ 				
  				status_t		Archive(BMessage *msg, bool deep=true) const;
  			
  		
@@ -45,7 +47,7 @@ class NoteText : public BTextView {
  		bool		fReplicated;
  		BHandler	*handler;
  		BMessenger	*fMessenger;
- 		BBitmap		*fBitmap;
+ 		//BBitmap		*fBitmap;
 };
  
  

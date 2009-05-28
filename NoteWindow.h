@@ -7,7 +7,7 @@
  *			Eleonora Ciceri
  *			Ilio Catallo
  * 
- * Last revision: Ilio Catallo, 13th May 2009
+ * Last revision: Ilio Catallo, 28th May 2009
  *
  * Description: TODO
  */
@@ -46,7 +46,7 @@ struct DatiPostIt {
 	char* Titolo;			// Post-it title
 	char* Contenuto;		// Post-it content
 	BFont Font;				// Current font TODO
-	rgb_color ColoreFont;	// Font color TIDI
+	rgb_color ColoreFont;	// Font color TODO
 	int DimFont;			// Font size TODO
 	rgb_color ColoreBack;	// Background color
 	int Giorno;				// Alarm - Day
@@ -60,10 +60,15 @@ struct DatiPostIt {
 class NoteWindow : public BWindow {
 
 	public:		
-							NoteWindow(BRect frame);
+							NoteWindow(int32 id);
+							NoteWindow(entry_ref *ref);
 			virtual void	MessageReceived(BMessage* message);
+			virtual void	Quit();
 			virtual bool	QuitRequested();
+				
+					void	InitWindow();
 					void 	SetFontStyle (const char* fontFamily, const char *fontStyle);
+					
 	
 	private:
 		NoteView 	*fNoteView;

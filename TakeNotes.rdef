@@ -1,1 +1,11 @@
+/*
+ * TakeNotes.rdef
+ */
+
 resource app_signature "application/x-vnd.ccc-TakeNotes";
+
+resource app_flags B_SINGLE_LAUNCH;
+
+resource file_types message {
+		"types" = "application/takenotes"
+};

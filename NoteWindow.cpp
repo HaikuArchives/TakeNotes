@@ -8,20 +8,25 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Eleonora Ciceri, 16th May 2009
+ * Last revision: Ilio Catallo, 28th May 2009
  *
  * Description: TODO
  */
 
 
+#include "NoteApplication.h"
 #include "NoteWindow.h"
 #include "ColorMenuItem.h"
 
-#include <Clipboard.h>
-#include <Autolock.h>
 #include <Application.h>
-#include <Roster.h>
+#include <Autolock.h>
+#include <Clipboard.h>
+#include <Entry.h>
+#include <File.h>
+#include <Message.h>
 #include <MessageRunner.h>
+#include <Path.h>
+#include <Roster.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,9 +61,107 @@ const struct tm gettime() {
 bool alarm_set = false;
 
 // Constructor
-NoteWindow::NoteWindow(BRect frame)
-	: BWindow (frame, "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
+NoteWindow::NoteWindow(int32 id)
+	: BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
 	
+	//Variables
+	BRect		frameView,
+				frameText;
+	// Initialize the messenger: the handler is the window itself
+	fMessenger = BMessenger(this);
+	
+	//Init the windows to create the menu
+	InitWindow();
+	
+	// Main view	
+	frameView = Bounds();
+	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
+	
+	fNoteView = new NoteView (frameView); 
+	
+	//Text and Scroll View
+	frameView = fNoteView -> Bounds();	
+	frameView.top += 10;
+	frameView.right -= B_V_SCROLL_BAR_WIDTH;
+	frameView.bottom -= B_H_SCROLL_BAR_HEIGHT;
+	frameView.left = 0;
+	frameText = frameView;
+	
+	frameText.OffsetTo(B_ORIGIN);
+	frameText.InsetBy(TEXT_INSET, TEXT_INSET);
+	
+	fNoteText = new NoteText(frameView, frameText, "NoteText", this);
+	fNoteText->SetDoesUndo(true);
+	fNoteText->MakeFocus(); 
+	fNoteText->SetStylable(true);
+
+	// ScrollView
+	fScrollView = new BScrollView("scrollview", fNoteText, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
+	
+	//Set the title
+	
+	BString title("Untitled Note ");
+	title << id;
+	SetTitle(title.String());
+	
+	// It will be associated to the window
+
+	AddChild(fNoteView);
+	fNoteView -> AddChild(fScrollView);
+
+	Show();
+	
+}
+
+
+NoteWindow :: NoteWindow(entry_ref *ref)
+		   : BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
+
+				BMessage *msg = new BMessage;
+				BFile	f;
+				status_t result;
+				
+				// Initialize the messenger: the handler is the window itself
+				fMessenger = BMessenger(this);
+				
+				InitWindow();
+				
+				result = f.SetTo(ref, B_READ_ONLY);
+				switch(result){
+				
+					case B_OK: printf("ok\n");
+					break;
+					
+					case B_BAD_VALUE: printf("path nullo\n");
+					break;
+					
+					case B_ENTRY_NOT_FOUND:{
+					
+						printf("file not found\n");
+						BAlert *alert = new BAlert("File Not Found","file not found","damn!");
+						alert->Go();
+					}
+					break;
+				
+				}
+				
+				
+				BEntry entry(ref);
+				char name[B_FILE_NAME_LENGTH];
+				
+				entry.GetName(name);
+				SetTitle(name);
+				
+				msg->Unflatten(&f);
+				fNoteView = new NoteView(msg);
+				
+				AddChild(fNoteView);
+				Show();
+		
+}
+
+void NoteWindow :: InitWindow(){
+
 	// Variables
 	BMessage	*message;
 	
@@ -66,9 +169,8 @@ NoteWindow::NoteWindow(BRect frame)
 	
 	bigtime_t 	interval = 10000;
 		
-	BRect 		menuBarRect,
-				frameView,
-				frameText;
+	BRect 		menuBarRect;
+				
 				
 	BMenuItem 	*menuItem = NULL;
 	
@@ -102,31 +204,21 @@ NoteWindow::NoteWindow(BRect frame)
 	// Data of the data structure
 	fDati.Id = 1;
 	fDati.Titolo = "Titolo";
-
-
-	// Initialize the messenger: the handler is the window itself
-	
-	fMessenger = BMessenger(this);
 	
 	// Create an empty message
-	
 	check_alarm_msg = new BMessage(CHECK_ALARM);
 	
 	// Initialize the message runner
-	
 	runner = new BMessageRunner(fMessenger, check_alarm_msg, interval);
 		
-	
 	// Undo flags
 	fCanUndo = false;		// If there's no text I can't do undo
 	fUndoFlag = false;
-	
 	
 	// Menu bar	
 	menuBarRect = Bounds();
 	menuBarRect.bottom = MENU_BAR_HEIGHT;
 	fNoteMenuBar = new BMenuBar(menuBarRect,"Barra del menu");
-	
 	
 	// Menu	
 	fFontMenu = new BMenu("Font");
@@ -275,42 +367,11 @@ NoteWindow::NoteWindow(BRect frame)
 	// About menu
 	fAboutMenu -> AddItem (menuItem = new BMenuItem ("About TakeNotes...", new BMessage (ABOUT)));	
 	
-	// Main view	
-	frameView = Bounds();
-	
-	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
-	
-	
-	fNoteView = new NoteView (frameView, "TakeNotes"); // Useful for the "About"
-
-
-	frameView = fNoteView -> Bounds();	
-	frameView.top += 10;
-	frameView.right -= B_V_SCROLL_BAR_WIDTH;
-	frameView.bottom -= B_H_SCROLL_BAR_HEIGHT;
-	frameView.left = 0;
-	frameText = frameView;
-	
-	frameText.OffsetTo(B_ORIGIN);
-	frameText.InsetBy(TEXT_INSET, TEXT_INSET);
-	
-	fNoteText = new NoteText(frameView, frameText, "NoteText", this);
-	fNoteText->SetDoesUndo(true);
-	fNoteText->MakeFocus(); 
-	fNoteText->SetStylable(true);
-
-	// ScrollView
-	fScrollView = new BScrollView("scrollview", fNoteText, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
-	
-	
-	// It will be associated to the window
+	//Add the menu to the window
 	AddChild(fNoteMenuBar);
-	AddChild(fNoteView);
-	fNoteView -> AddChild(fScrollView);
 
-	Show();
-	
 }
+
 	
 // Function for the changes in the "type of font"
 void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) {
@@ -742,8 +803,15 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 }
 	
 // Closing the window
-bool NoteWindow::QuitRequested(){
+bool NoteWindow :: QuitRequested(){
 
-	be_app->PostMessage(B_QUIT_REQUESTED);
+	Quit();
 	return(true);
 }
+
+void NoteWindow :: Quit(){
+
+	note_app->CloseNote();
+	BWindow::Quit();
+
+} 

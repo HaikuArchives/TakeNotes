@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 13th May 2009
+ * Last revision: Ilio Catallo, 28th May 2009
  *
  * Description: TODO
  */
@@ -16,8 +16,10 @@
 
 #include "NoteView.h"
 
-#include <Dragger.h>
 #include <Alert.h>
+#include <Dragger.h>
+#include <File.h>
+#include <NodeInfo.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,8 +28,8 @@
 #define FONT_BOLD 		'fntb'
 
 // Constructor
-NoteView :: NoteView(BRect frame, char *name)
-	   	 : BView(frame, name, B_FOLLOW_ALL, B_FRAME_EVENTS | B_WILL_DRAW){
+NoteView :: NoteView(BRect frame)
+	   	 : BView(frame, "TakeNotes", B_FOLLOW_ALL, B_FRAME_EVENTS | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE){
 	   	   	   	   
 	   	// Variable
 		BDragger *dragger;	
@@ -54,12 +56,27 @@ NoteView :: ~NoteView(){}
 		
 status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 				
+		//Variables
+		BFile 		file;
+		BNodeInfo 	nodeinfo;
+		
 		BView ::Archive(msg,deep);
 		
 		msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
 		msg->AddString("class","NoteView");
 		
-		//msg->PrintToStream();
+	
+		
+		if (file.SetTo("/boot/home/Desktop/nota.tkn", B_CREATE_FILE | B_WRITE_ONLY) != B_OK)
+				printf("errore\n");
+		
+		msg->Flatten(&file);
+		msg->PrintToStream();
+		
+		nodeinfo.SetTo(&file);
+		nodeinfo.SetType("application/takenotes");
+		
+		file.Unset();
 		
 		return B_OK;
 

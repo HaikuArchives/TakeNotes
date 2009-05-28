@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 8th April 2009
+ * Last revision: Ilio Catallo, 28th May 2009
  *
  * Description: TODO
  */
@@ -19,18 +19,31 @@
 #include "NoteWindow.h"
 
 #include <Application.h>
-
+#include <String.h>
 
 // Definition of the class
 class NoteApplication : public BApplication {
 
 	public:
 	
-			NoteApplication();
+						NoteApplication();
+		virtual void	ArgvReceived(int32 argc, char** argv);
+		virtual void	RefsReceived(BMessage *message);
+		virtual void	MessageReceived(BMessage *message);
+		virtual void	ReadyToRun();
+		
+				void 	OpenNote();
+				void	OpenNote(entry_ref *ref);
+				void	CloseNote();
+				void	CheckMime();
 	
 	private:
 	
-		NoteWindow * fNoteWindow;
+		int32		fWindowCount;
+		int32		fWindowCountUntitled;	
+
 }; 
+
+extern NoteApplication *note_app;
 
 #endif

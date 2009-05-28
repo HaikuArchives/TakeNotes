@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 13th May 2009
+ * Last revision: Ilio Catallo, 28th May 2009
  *
  * Description: TODO
  */
@@ -19,16 +19,17 @@
 
 #include "NoteText.h"
 
-#include <View.h>
 #include <Messenger.h>
 #include <String.h>
+#include <View.h>
 
+class _EXPORT NoteView;
 
 class NoteView : public BView {
 
 	public:
 						
-							NoteView (BRect frame, char *name);
+							NoteView (BRect frame);
 							NoteView (BMessage *msg);
 	   				   	   ~NoteView(); 		
 	static 	BArchivable*	Instantiate(BMessage *msg);

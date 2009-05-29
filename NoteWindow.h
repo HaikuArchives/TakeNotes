@@ -110,6 +110,9 @@ class NoteWindow : public BWindow {
 		//Messaging
 		BMessenger fMessenger;
 		BMessageRunner *runner;
+		
+		//Alarm flag
+		bool alarm_set;
 
 };
 

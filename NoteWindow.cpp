@@ -56,9 +56,6 @@ const struct tm gettime() {
     return *localtime(&t);
 }
 
-// Flags
-
-bool alarm_set = false;
 
 // Constructor
 NoteWindow::NoteWindow(int32 id)
@@ -210,6 +207,9 @@ void NoteWindow :: InitWindow(){
 	
 	// Initialize the message runner
 	runner = new BMessageRunner(fMessenger, check_alarm_msg, interval);
+	
+	//Initialize the alarm flag to false (no one has set any alarm)
+	alarm_set = false;
 		
 	// Undo flags
 	fCanUndo = false;		// If there's no text I can't do undo

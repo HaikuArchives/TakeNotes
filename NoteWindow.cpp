@@ -786,7 +786,12 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	
 			if( difftime(userTime, time( &rawtime) ) < 0 ) {
 			
-				myAlert = new BAlert("Alarm activated", "NOTICE: an alarm has been activated!", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+				BString string;
+				string.SetTo("Alarm activated for note: ");
+				string.Append(fDati.Titolo);
+				string.Append("\0",1);
+				char *alertstr = (char*) string.String();
+				myAlert = new BAlert("Alarm activated", alertstr, "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 				myAlert -> Go();
 				
 			// WARNING!!!! We have to think about this: when an alarm has been activated, remember to "delete" it otherwise the alarm will appear over and over

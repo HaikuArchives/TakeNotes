@@ -29,7 +29,7 @@ class NoteView : public BView {
 
 	public:
 						
-							NoteView (BRect frame);
+							NoteView (BRect frame, BHandler *handler);
 							NoteView (BMessage *msg);
 	   				   	   ~NoteView(); 		
 	static 	BArchivable*	Instantiate(BMessage *msg);

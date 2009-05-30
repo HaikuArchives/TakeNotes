@@ -20,6 +20,7 @@
 #include "NoteText.h"
 #include "ColorWindow.h"
 #include "AlarmWindow.h"
+#include "ChoiceWindow.h"
 
 #include <Window.h>
 #include <ScrollView.h>
@@ -33,9 +34,7 @@
  * - ID - Now we're using it statically; =DEFINE HOW TO CHANGE IT=
  * - Title - Now we're using it statically =INSERT IT WHEN THE POST-IT IS DETACHED=
  * - Content
- * - Current Font
- * - Current Font color
- * - Current Font size
+ * - Application associated
  * - Current background color
  * - Alarm date (day - month - year)
  * - Alarm hour (hour - minute)
@@ -45,15 +44,13 @@ struct DatiPostIt {
 	int Id;					// Post-it id
 	char* Titolo;			// Post-it title
 	char* Contenuto;		// Post-it content
-	BFont Font;				// Current font TODO
-	rgb_color ColoreFont;	// Font color TODO
-	int DimFont;			// Font size TODO
 	rgb_color ColoreBack;	// Background color
 	int Giorno;				// Alarm - Day
 	int Mese;				// Alarm - Month
 	int Anno;				// Alarm - Year
 	int Ora;				// Alarm - Hour
 	int Minuto;				// Alarm - Minute
+	char* Application;
 };
 
 // Constructor
@@ -71,19 +68,20 @@ class NoteWindow : public BWindow {
 					status_t	Save (BMessage*);
 	
 	private:
-		NoteView 	*fNoteView;
-		NoteText	*fNoteText;
-		ColorWindow *fColorWindow;
-		AlarmWindow *fAlarmWindow;
-		BMenuBar 	*fNoteMenuBar;
-		BMenu		*fFileMenu;
-		BMenu 		*fFontMenu;
-		BMenu 		*fEditMenu;
-		BMenu 		*fSettingsMenu;
-		BMenu 		*fAboutMenu;
-		BWindow 	*fTagWindow;
-		BMenuItem 	*fCurrentFont;
-		BScrollView	*fScrollView;
+		NoteView 		*fNoteView;
+		NoteText		*fNoteText;
+		ColorWindow 	*fColorWindow;
+		AlarmWindow 	*fAlarmWindow;
+		ChoiceWindow 	*fChoiceWindow;
+		BMenuBar 		*fNoteMenuBar;
+		BMenu			*fFileMenu;
+		BMenu 			*fFontMenu;
+		BMenu 			*fEditMenu;
+		BMenu 			*fSettingsMenu;
+		BMenu 			*fAboutMenu;
+		BWindow 		*fTagWindow;
+		BMenuItem 		*fCurrentFont;
+		BScrollView		*fScrollView;
 		
 		// Menu Items: file menu
 		BMenuItem	*fSaveItem;

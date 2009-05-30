@@ -49,6 +49,8 @@
 #define CHECK_ALARM 'chal'
 #define SAVE_NOTE 'svnt'
 #define QUIT_APPL 'qtpp'
+#define CHOOSE_APPL 'cspp'
+#define RADIO_CHECKED 'rdck'
 
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
@@ -80,7 +82,7 @@ NoteWindow::NoteWindow(int32 id)
 	frameView = Bounds();
 	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
 	
-	fNoteView = new NoteView (frameView); 
+	fNoteView = new NoteView (frameView, this); 
 	
 	//Text and Scroll View
 	frameView = fNoteView -> Bounds();	
@@ -487,9 +489,17 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		app_info  *appInfo;
         		
         team_id         who;
+        
+        message->PrintToStream();        
 			  
 	// Receiving the messages...	
 	switch (message -> what) {
+	
+		case CHOOSE_APPL: {
+			aRect.Set(300,300,700,650);
+			fChoiceWindow = new ChoiceWindow(aRect, this);
+		}
+		break;
 	
 		// Show the panel
 		case SAVE_NOTE: {
@@ -506,6 +516,22 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		// Close the application
 		case QUIT_APPL: {
 			Quit();
+		}
+		break;
+		
+		// Associate an application to the post-it
+		case RADIO_CHECKED: {
+			const char* stringa;
+			BString string;
+						
+			message -> FindString("signature", &stringa);
+			
+			myAlert = new BAlert("Signature", stringa, 
+				"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+			myAlert -> Go();	
+			
+			// Saving in the data structure
+			fDati.Application = (char*)stringa;			
 		}
 		break;
 		

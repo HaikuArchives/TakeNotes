@@ -27,9 +27,10 @@
 
 // Messages
 #define FONT_BOLD 		'fntb'
+#define CHOOSE_APPL		'cspp'
 
 // Constructor
-NoteView :: NoteView(BRect frame)
+NoteView :: NoteView(BRect frame, BHandler *handler)
 	   	 : BView(frame, "TakeNotes", B_FOLLOW_ALL, B_FRAME_EVENTS | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE){
 	   	   	   	   
 	   	// Variable
@@ -40,7 +41,9 @@ NoteView :: NoteView(BRect frame)
 		dragger = new BDragger(BRect(0,0,7,7),this,B_FOLLOW_NONE);
 		AddChild(dragger);
 		
-		SetViewColor(254,254,92,255);  
+		SetViewColor(254,254,92,255); 
+		
+		fMessenger = new BMessenger(handler); 
 		   
 }
 
@@ -65,6 +68,7 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		status_t	err;
 		const char*	name;
 		BDirectory	dir;
+		BMessage	*message;
 		
 		BView ::Archive(msg,deep);
 		
@@ -76,11 +80,16 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 			dir.SetTo(&ref);
 			if (err = dir.InitCheck() != B_OK)
 				return err;
-			printf("%s\n", name);
 			file.SetTo(&dir, name, B_READ_WRITE | B_CREATE_FILE);
 		}
-		else
+		else {
 			file.SetTo("/boot/home/Desktop/nota.tkn", B_CREATE_FILE | B_WRITE_ONLY);
+					
+			// Message used to say that a choice of an application is required
+			message = new BMessage(CHOOSE_APPL);
+			fMessenger -> SendMessage(message);
+			printf("QUI è lanciato\n");
+		}
 		
 		/*if (file.SetTo("/boot/home/Desktop/nota.tkn", B_CREATE_FILE | B_WRITE_ONLY) != B_OK)
 				printf("errore\n");*/

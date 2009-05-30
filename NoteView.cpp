@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 28th May 2009
+ * Last revision: Eleonora Ciceri, 30th May 2009
  *
  * Description: TODO
  */
@@ -20,6 +20,7 @@
 #include <Dragger.h>
 #include <File.h>
 #include <NodeInfo.h>
+#include <FilePanel.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,16 +60,30 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		//Variables
 		BFile 		file;
 		BNodeInfo 	nodeinfo;
+		BString		string;
+		entry_ref	ref;
+		status_t	err;
+		const char*	name;
+		BDirectory	dir;
 		
 		BView ::Archive(msg,deep);
 		
 		msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
 		msg->AddString("class","NoteView");
 		
-	
+		if (msg->FindRef("directory",&ref) == B_OK
+			&& msg -> FindString("name", &name) == B_OK) {
+			dir.SetTo(&ref);
+			if (err = dir.InitCheck() != B_OK)
+				return err;
+			printf("%s\n", name);
+			file.SetTo(&dir, name, B_READ_WRITE | B_CREATE_FILE);
+		}
+		else
+			file.SetTo("/boot/home/Desktop/nota.tkn", B_CREATE_FILE | B_WRITE_ONLY);
 		
-		if (file.SetTo("/boot/home/Desktop/nota.tkn", B_CREATE_FILE | B_WRITE_ONLY) != B_OK)
-				printf("errore\n");
+		/*if (file.SetTo("/boot/home/Desktop/nota.tkn", B_CREATE_FILE | B_WRITE_ONLY) != B_OK)
+				printf("errore\n");*/
 		
 		msg->Flatten(&file);
 		msg->PrintToStream();

@@ -7,7 +7,7 @@
  *			Eleonora Ciceri
  *			Ilio Catallo
  * 
- * Last revision: Ilio Catallo, 28th May 2009
+ * Last revision: Eleonora Ciceri, 30th May 2009
  *
  * Description: TODO
  */
@@ -60,15 +60,15 @@ struct DatiPostIt {
 class NoteWindow : public BWindow {
 
 	public:		
-							NoteWindow(int32 id);
-							NoteWindow(entry_ref *ref);
-			virtual void	MessageReceived(BMessage* message);
-			virtual void	Quit();
-			virtual bool	QuitRequested();
+								NoteWindow(int32 id);
+								NoteWindow(entry_ref *ref);
+			virtual void		MessageReceived(BMessage* message);
+			virtual void		Quit();
+			virtual bool		QuitRequested();
 				
-					void	InitWindow();
-					void 	SetFontStyle (const char* fontFamily, const char *fontStyle);
-					
+					void		InitWindow();
+					void 		SetFontStyle (const char* fontFamily, const char *fontStyle);
+					status_t	Save (BMessage*);
 	
 	private:
 		NoteView 	*fNoteView;
@@ -76,6 +76,7 @@ class NoteWindow : public BWindow {
 		ColorWindow *fColorWindow;
 		AlarmWindow *fAlarmWindow;
 		BMenuBar 	*fNoteMenuBar;
+		BMenu		*fFileMenu;
 		BMenu 		*fFontMenu;
 		BMenu 		*fEditMenu;
 		BMenu 		*fSettingsMenu;
@@ -83,6 +84,10 @@ class NoteWindow : public BWindow {
 		BWindow 	*fTagWindow;
 		BMenuItem 	*fCurrentFont;
 		BScrollView	*fScrollView;
+		
+		// Menu Items: file menu
+		BMenuItem	*fSaveItem;
+		BMenuItem	*fQuitItem;
 		
 		// MenuItems (Edit menu)
 		
@@ -113,6 +118,9 @@ class NoteWindow : public BWindow {
 		
 		//Alarm flag
 		bool alarm_set;
+		
+		// Save panel
+		BFilePanel	*fSavePanel;
 
 };
 

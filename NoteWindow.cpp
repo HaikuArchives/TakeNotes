@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 28th May 2009
+ * Last revision: Eleonora Ciceri, 30th May 2009
  *
  * Description: TODO
  */
@@ -27,6 +27,7 @@
 #include <MessageRunner.h>
 #include <Path.h>
 #include <Roster.h>
+#include <FilePanel.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,6 +47,8 @@
 #define GO_TO_LINK 'gtlk'
 #define ABOUT 'bout'
 #define CHECK_ALARM 'chal'
+#define SAVE_NOTE 'svnt'
+#define QUIT_APPL 'qtpp'
 
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
@@ -64,6 +67,9 @@ NoteWindow::NoteWindow(int32 id)
 	//Variables
 	BRect		frameView,
 				frameText;
+	entry_ref	*directory = NULL;
+	BRefFilter	*refFilter = NULL;				
+				
 	// Initialize the messenger: the handler is the window itself
 	fMessenger = BMessenger(this);
 	
@@ -105,6 +111,10 @@ NoteWindow::NoteWindow(int32 id)
 
 	AddChild(fNoteView);
 	fNoteView -> AddChild(fScrollView);
+	
+	// Creating the file panel
+	fSavePanel = new BFilePanel (B_SAVE_PANEL, new BMessenger (this), directory, B_FILE_NODE, false, NULL,
+				refFilter, false, true);
 
 	Show();
 	
@@ -221,11 +231,13 @@ void NoteWindow :: InitWindow(){
 	fNoteMenuBar = new BMenuBar(menuBarRect,"Barra del menu");
 	
 	// Menu	
+	fFileMenu = new BMenu("File");
 	fFontMenu = new BMenu("Font");
 	fEditMenu = new BMenu ("Edit");
 	fSettingsMenu = new BMenu ("Settings");
 	fAboutMenu = new BMenu("About");
 	
+	fNoteMenuBar -> AddItem (fFileMenu);
 	fNoteMenuBar -> AddItem (fEditMenu);
 	fNoteMenuBar -> AddItem (fFontMenu);
 	fNoteMenuBar -> AddItem (fSettingsMenu);
@@ -234,6 +246,13 @@ void NoteWindow :: InitWindow(){
 	fFontMenu -> SetRadioMode(true);
 	
 	/*************** Menu Item ***************/
+	
+	// File menu
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save as...",
+		new BMessage(SAVE_NOTE)));
+	fFileMenu -> AddSeparatorItem();
+	fFileMenu -> AddItem (fQuitItem = new BMenuItem ("Quit",
+		new BMessage (QUIT_APPL)));
 	
 	// Settings	
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Change background color",
@@ -406,6 +425,23 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 	menuItem -> SetMarked(true);
 }
 
+// Function that saves the note
+status_t NoteWindow :: Save(BMessage *message) {
+	// Variables
+	entry_ref 	ref;
+	const char 	*name;
+	status_t 	err;
+	
+	if (err = message->FindRef("directory",&ref) != B_OK)
+		return err;
+	if (err = message -> FindString("name", &name) != B_OK)
+		return err;
+	
+	fNoteView -> Archive(message, 1);
+	
+	return err;
+}
+
 // Function for the reception of the messages
 void NoteWindow :: MessageReceived(BMessage* message) {
 	//	Variables
@@ -455,6 +491,24 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	// Receiving the messages...	
 	switch (message -> what) {
 	
+		// Show the panel
+		case SAVE_NOTE: {
+			fSavePanel -> Show();
+		}
+		break;
+		
+		// Save the note
+		case B_SAVE_REQUESTED: {
+			Save(message);
+		}
+		break;
+		
+		// Close the application
+		case QUIT_APPL: {
+			Quit();
+		}
+		break;
+		
 		case MENU_CHANGE_COLOR:{	
 				
 			aRect.Set(300,300,700,650);

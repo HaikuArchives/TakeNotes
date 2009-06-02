@@ -20,6 +20,7 @@
 
 #include <Application.h>
 #include <String.h>
+#include <image.h>
 
 // Definition of the class
 class NoteApplication : public BApplication {
@@ -45,5 +46,7 @@ class NoteApplication : public BApplication {
 }; 
 
 extern NoteApplication *note_app;
+
+status_t our_image(image_info &image);
 
 #endif

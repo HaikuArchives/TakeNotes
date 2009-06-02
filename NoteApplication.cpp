@@ -27,6 +27,25 @@
 
 NoteApplication *note_app;
 
+status_t our_image(image_info& image){
+	
+	int32 cookie = 0;
+	
+	while (get_next_image_info(B_CURRENT_TEAM, &cookie, &image) == B_OK) {
+	
+		printf("our_image %s\n",(char *)our_image);
+	
+		if ((char *)our_image >= (char *)image.text
+			&& (char *)our_image <= (char *)image.text + image.text_size)
+			return B_OK;
+	}
+
+	return B_ERROR;
+}
+
+
+
+
 NoteApplication :: NoteApplication()
 			    : BApplication("application/x-vnd.ccc-TakeNotes"){	
 	
@@ -53,7 +72,10 @@ void NoteApplication :: ReadyToRun(){
 void NoteApplication :: CheckMime(){
 
 		//Variables
-		BMimeType takenotes("application/takenotes");
+		BMimeType 	takenotes("application/takenotes");
+		image_info 	info;
+		entry_ref	ref;
+		
 		//	takenotes.SetTo("application/takenotes");
 		
 		if (takenotes.InitCheck() == B_OK){
@@ -85,6 +107,17 @@ void NoteApplication :: CheckMime(){
 			if (takenotes.SetPreferredApp("application/x-vnd.ccc-TakeNotes") != B_OK){
 				printf("errore nel settare l'app preferred\n");
 				exit(-1);
+			}
+			
+			//Set the Hint application
+			if (our_image(info) == B_OK && get_ref_for_path(info.name, &ref) == B_OK){
+			
+					BPath prova(&ref);
+					printf("path %s\n",prova.Path());
+					
+					if (takenotes.SetAppHint(&ref) != B_OK)
+						printf("errore nell'app hint\n");
+			
 			}
 			
 			//Add some extra attributes in order to manage custom tags

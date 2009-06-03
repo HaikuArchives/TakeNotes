@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Eleonora Ciceri, 30th May 2009
+ * Last revision: Ilio Catallo, 3rd June 2009
  *
  * Description: TODO
  */
@@ -34,23 +34,24 @@
 #include <time.h> 
 
 // Constants
-#define MENU_CHANGE_COLOR 'mcg'
-#define COLOR_CHANGED 'ccrq'
-#define FONT_SIZE 'fnts'
-#define FONT_COLOR 'fntc'
-#define FONT_FAMILY 'fntf'
-#define FONT_STYLE 'ftst'
-#define TEXT_CHANGED 'txch'
-#define ADD_DATA 'addd'
-#define SET_ALARM 'salr'
-#define ALARM_MSG 'alrm'
-#define GO_TO_LINK 'gtlk'
-#define ABOUT 'bout'
-#define CHECK_ALARM 'chal'
-#define SAVE_NOTE 'svnt'
-#define QUIT_APPL 'qtpp'
-#define CHOOSE_APPL 'cspp'
-#define RADIO_CHECKED 'rdck'
+#define MENU_CHANGE_COLOR 	'mcg'
+#define COLOR_CHANGED 		'ccrq'
+#define FONT_SIZE 			'fnts'
+#define FONT_COLOR 			'fntc'
+#define FONT_FAMILY 		'fntf'
+#define FONT_STYLE 			'ftst'
+#define TEXT_CHANGED 		'txch'
+#define ADD_DATA 			'addd'
+#define SET_ALARM 			'salr'
+#define ALARM_MSG 			'alrm'
+#define GO_TO_LINK 			'gtlk'
+#define ABOUT 				'bout'
+#define CHECK_ALARM 		'chal'
+#define SAVE_AS 			'svas'
+#define SAVE				'save'
+#define QUIT_APPL 			'qtpp'
+#define CHOOSE_APPL 		'cspp'
+#define RADIO_CHECKED 		'rdck'
 
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
@@ -78,7 +79,7 @@ NoteWindow::NoteWindow(int32 id)
 	//Init the windows to create the menu
 	InitWindow();
 	
-	// Main view	
+	// The main view is created 	
 	frameView = Bounds();
 	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
 	
@@ -126,6 +127,7 @@ NoteWindow::NoteWindow(int32 id)
 NoteWindow :: NoteWindow(entry_ref *ref)
 		   : BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
 
+				//Variables
 				BMessage *msg = new BMessage;
 				BFile	f;
 				status_t result;
@@ -133,8 +135,10 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 				// Initialize the messenger: the handler is the window itself
 				fMessenger = BMessenger(this);
 				
+				//Initialize all the "static" elements like MenuBar,Menu,MenuItems and so on
 				InitWindow();
 				
+				// Check if the file exists and if it is loadable
 				result = f.SetTo(ref, B_READ_ONLY);
 				switch(result){
 				
@@ -154,19 +158,56 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 				
 				}
 				
+				//Set the message that will store the path of the current note on FS
 				
+				fSaveMessage = new BMessage(B_SAVE_REQUESTED);
+				if (fSaveMessage){
+				
+					//Add the required information to the fSaveMessage: the parent directory and the name of the file
+					
+					//Variables
+					BEntry entry(ref, true); //create a BEntry object of the note
+					BEntry parent;			 // initialization of a BEntry object for the parent directory
+					entry_ref parentRef;
+					char name[B_FILE_NAME_LENGTH];
+		
+					entry.GetParent(&parent);		// We fill the BEntry parent object
+					entry.GetName(name);			// We obtain the name of the note
+					parent.GetRef(&parentRef);		// We fill the entry_ref parentRef struct
+		
+		
+					// Actually add the necessary informations 
+					fSaveMessage->AddRef("directory", &parentRef);
+					fSaveMessage->AddString("name", name);
+				
+				
+				}
+				
+				
+				// Create the view from the flatten message stored in the FS
+				
+				//Variables
 				BEntry entry(ref);
 				char name[B_FILE_NAME_LENGTH];
 				
+				//Set the title as the name of the file
 				entry.GetName(name);
 				SetTitle(name);
 				
+				//Fetch and load the view from the file 
 				msg->Unflatten(&f);
 				fNoteView = new NoteView(msg);
 				
+				//Add the view as a child and show the window
 				AddChild(fNoteView);
 				Show();
 		
+}
+
+NoteWindow :: ~NoteWindow(){
+
+		delete fSaveMessage;
+
 }
 
 void NoteWindow :: InitWindow(){
@@ -250,8 +291,9 @@ void NoteWindow :: InitWindow(){
 	/*************** Menu Item ***************/
 	
 	// File menu
-	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save as...",
-		new BMessage(SAVE_NOTE)));
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save as",
+		new BMessage(SAVE_AS)));
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save", new BMessage(SAVE)));
 	fFileMenu -> AddSeparatorItem();
 	fFileMenu -> AddItem (fQuitItem = new BMenuItem ("Quit",
 		new BMessage (QUIT_APPL)));
@@ -434,12 +476,23 @@ status_t NoteWindow :: Save(BMessage *message) {
 	const char 	*name;
 	status_t 	err;
 	
+	if (!message){
+		message = fSaveMessage;
+	}
+	
 	if (err = message->FindRef("directory",&ref) != B_OK)
 		return err;
 	if (err = message -> FindString("name", &name) != B_OK)
 		return err;
 	
 	fNoteView -> Archive(message, 1);
+	
+	if (fSaveMessage != message) {
+		delete fSaveMessage;
+		fSaveMessage = new BMessage(*message);
+	}
+
+	
 	
 	return err;
 }
@@ -502,8 +555,19 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		break;
 	
 		// Show the panel
-		case SAVE_NOTE: {
+		case SAVE_AS: {
 			fSavePanel -> Show();
+		}
+		break;
+		
+		case SAVE:{
+			if (!fSaveMessage){
+			
+				 fSavePanel -> Show(); // male
+			} else {
+				
+				Save(fSaveMessage);
+			}
 		}
 		break;
 		

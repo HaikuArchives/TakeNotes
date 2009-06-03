@@ -7,7 +7,7 @@
  *			Eleonora Ciceri
  *			Ilio Catallo
  * 
- * Last revision: Eleonora Ciceri, 30th May 2009
+ * Last revision: Ilio Catallo, 3rd June 2009
  *
  * Description: TODO
  */
@@ -27,6 +27,7 @@
 #include <Menu.h>
 #include <MenuBar.h>
 #include <MenuItem.h>
+#include <Message.h>
 
 /* == DATA STRUCTURE ==
  * Structure containing all the informations about the current post-it
@@ -59,6 +60,7 @@ class NoteWindow : public BWindow {
 	public:		
 								NoteWindow(int32 id);
 								NoteWindow(entry_ref *ref);
+								~NoteWindow();
 			virtual void		MessageReceived(BMessage* message);
 			virtual void		Quit();
 			virtual bool		QuitRequested();
@@ -111,8 +113,9 @@ class NoteWindow : public BWindow {
 		DatiPostIt 	fDati;
 		
 		//Messaging
-		BMessenger fMessenger;
-		BMessageRunner *runner;
+		BMessage		*fSaveMessage;
+		BMessenger 		fMessenger;
+		BMessageRunner 	*runner;
 		
 		//Alarm flag
 		bool alarm_set;

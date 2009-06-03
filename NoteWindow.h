@@ -21,6 +21,7 @@
 #include "ColorWindow.h"
 #include "AlarmWindow.h"
 #include "ChoiceWindow.h"
+#include "TagsWindow.h"
 
 #include <Window.h>
 #include <ScrollView.h>
@@ -66,6 +67,7 @@ class NoteWindow : public BWindow {
 			virtual bool		QuitRequested();
 				
 					void		InitWindow();
+					void		CreateOtherWindows();
 					void 		SetFontStyle (const char* fontFamily, const char *fontStyle);
 					status_t	Save (BMessage*);
 	
@@ -75,6 +77,7 @@ class NoteWindow : public BWindow {
 		ColorWindow 	*fColorWindow;
 		AlarmWindow 	*fAlarmWindow;
 		ChoiceWindow 	*fChoiceWindow;
+		TagsWindow		*fTagsWindow;
 		BMenuBar 		*fNoteMenuBar;
 		BMenu			*fFileMenu;
 		BMenu 			*fFontMenu;
@@ -100,6 +103,8 @@ class NoteWindow : public BWindow {
 		// MenuItems (Settings menu)
 		
 		BMenuItem 	*fChangeBackgroundColorItem;
+		BMenuItem	*fAddDateAndTimeItem;
+		BMenuItem	*fSetTagsItem;
 		BMenuItem 	*fSetAlarmItem;
 		BMenuItem   *fLink;
 		

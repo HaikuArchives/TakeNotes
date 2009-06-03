@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio catallo, 28th May 2009
+ * Last revision: Ilio catallo, 3rd June 2009
  *
  * Description: TODO
  */
@@ -27,6 +27,9 @@
 
 NoteApplication *note_app;
 
+
+// This function fills the image_info image struct with the app image of itself
+// and eventually return B_OK
 status_t our_image(image_info& image){
 	
 	int32 cookie = 0;
@@ -109,7 +112,8 @@ void NoteApplication :: CheckMime(){
 				exit(-1);
 			}
 			
-			//Set the Hint application
+			//Set the Hint application, using the our_image function we are able to find
+			//the current path of the application and pass it to the FileType DB
 			if (our_image(info) == B_OK && get_ref_for_path(info.name, &ref) == B_OK){
 			
 					BPath prova(&ref);

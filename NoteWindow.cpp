@@ -18,6 +18,7 @@
 #include "NoteWindow.h"
 #include "ColorMenuItem.h"
 
+#include <Alert.h>
 #include <Application.h>
 #include <Autolock.h>
 #include <Clipboard.h>
@@ -43,6 +44,7 @@
 #define TEXT_CHANGED 		'txch'
 #define ADD_DATA 			'addd'
 #define SET_ALARM 			'salr'
+#define SET_TAGS			'stag'
 #define ALARM_MSG 			'alrm'
 #define GO_TO_LINK 			'gtlk'
 #define ABOUT 				'bout'
@@ -78,6 +80,9 @@ NoteWindow::NoteWindow(int32 id)
 	
 	//Init the windows to create the menu
 	InitWindow();
+	
+	//Create the Alarm, Choice, Background and Tags Window
+	CreateOtherWindows();
 	
 	// The main view is created 	
 	frameView = Bounds();
@@ -137,6 +142,9 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 				
 				//Initialize all the "static" elements like MenuBar,Menu,MenuItems and so on
 				InitWindow();
+				
+				//Create the Alarm, Choice, Background and Tags Window
+				CreateOtherWindows();
 				
 				// Check if the file exists and if it is loadable
 				result = f.SetTo(ref, B_READ_ONLY);
@@ -301,10 +309,11 @@ void NoteWindow :: InitWindow(){
 	// Settings	
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Change background color",
 			new BMessage (MENU_CHANGE_COLOR)));
-	fSettingsMenu -> AddItem (fChangeBackgroundColorItem = new BMenuItem ("Add date and time",
+	fSettingsMenu -> AddItem (fAddDateAndTimeItem = new BMenuItem ("Add date and time",
 			new BMessage (ADD_DATA)));
 	fSettingsMenu -> AddItem (fSetAlarmItem = new BMenuItem ("Set alarm",
 			new BMessage (SET_ALARM)));
+	fSettingsMenu -> AddItem (fSetTagsItem = new BMenuItem("Set Tags",new BMessage(SET_TAGS)));
 	fSettingsMenu -> AddItem (fLink = new BMenuItem ("Go to the selected link...", new BMessage (GO_TO_LINK)));					
 	
 	// Edit
@@ -435,6 +444,12 @@ void NoteWindow :: InitWindow(){
 
 }
 
+void NoteWindow :: CreateOtherWindows(){
+	
+			fTagsWindow = NULL;
+			// TODO			
+
+}
 	
 // Function for the changes in the "type of font"
 void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) {
@@ -601,8 +616,9 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		case MENU_CHANGE_COLOR:{	
 				
-				aRect.Set(300,300,700,650);
-				fColorWindow = new ColorWindow(aRect,this);
+				//aRect.Set(300,300,700,650);
+				fColorWindow = new ColorWindow(BRect(300,300,700,650),this);
+				fColorWindow -> Show();
 			}
 			break;
 				
@@ -848,6 +864,28 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fNoteText -> Insert(stringa);
 		}
 		break;
+		
+		case SET_TAGS: {
+		
+			if (!fSaveMessage){
+			
+				BAlert *alert = new BAlert("Warning","You must save your note before!","OK");
+				alert->Go();
+			
+			} else {
+			
+			//	if (fTagsWindow)
+//					delete fTagsWindow;
+				
+				fTagsWindow = new TagsWindow();
+				fTagsWindow -> Show();  
+			
+			}
+			
+		
+		}
+		break;
+		
 		
 		// Setting the alarm with the window opened
 		case SET_ALARM: {

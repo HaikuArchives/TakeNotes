@@ -16,6 +16,7 @@
  
  #include <Button.h>
  #include <Window.h>
+ #include <TextControl.h>
  
  class TagsWindow : public BWindow{
  
@@ -26,8 +27,11 @@
  
  	private:
  	
- 		BButton		*fDoneButton;
- 		BButton		*fUndoButton;
+ 		BButton			*fDoneButton;
+ 		BButton			*fUndoButton;
+ 		BTextControl 	*fTag1;
+		BTextControl 	*fTag2;
+		BTextControl    *fTag3;
  	
  
  };

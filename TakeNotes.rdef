@@ -1,6 +1,16 @@
 /*
- * TakeNotes.rdef
+ * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
+ * Distribuited under the terms of the GPL v2 license
+ * 
+ * Authors:
+ *
+ *			Ilio Catallo
+ * 
+ * Last revision: Ilio Catallo, 4th June 2009
+ *
+ * Description: TODO
  */
+ 
 
 resource app_signature "application/x-vnd.ccc-TakeNotes";
 

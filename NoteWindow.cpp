@@ -258,6 +258,9 @@ void NoteWindow :: InitWindow(){
 				color;
 	rgb_color   colors[] = {black, red, green, blue, yellow};
 	
+	
+	//Initialize the fSaveMessage
+	fSaveMessage = NULL;
 		
 	// Data of the data structure
 	fDati.Id = 1;

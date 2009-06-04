@@ -118,6 +118,21 @@ void TagsWindow :: MessageReceived(BMessage *message){
 				
 				case BUTTON_UNDO: {
 				
+						BNode node = BNode("/boot/home/Desktop/nota.tkn");
+						if(node.InitCheck() != B_OK) {
+							printf("The object wasn't correctly inizialized\n");
+						}
+				
+						if(node.WriteAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, NULL, 20) == 0) {
+							printf("no bytes written for tag one\n");
+						}
+						if(node.WriteAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, NULL, 20) == 0) {
+							printf("no bytes written for tag two\n");
+						}
+						if(node.WriteAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, NULL, 20) == 0) {
+							printf("no bytes written for tag three\n");
+						}
+				
 				}
 				break;
 			

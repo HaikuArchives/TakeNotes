@@ -58,6 +58,8 @@
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
 
+entry_ref ref_tags;
+
 // Structures
 const struct tm gettime() {
     time_t    t=time(NULL);
@@ -502,6 +504,8 @@ status_t NoteWindow :: Save(BMessage *message) {
 		return err;
 	if (err = message -> FindString("name", &name) != B_OK)
 		return err;
+		
+	ref_tags = ref;
 	
 	fNoteView -> Archive(message, 1);
 	

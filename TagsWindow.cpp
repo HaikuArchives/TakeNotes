@@ -13,9 +13,12 @@
  
 
 #include "TagsWindow.h"
+#include "NoteWindow.h"
 
 #include <View.h>
 #include <Node.h>
+#include <Alert.h>
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +34,10 @@ TagsWindow :: TagsWindow()
 		//Variables
 		
 		BView			*fTagsView;
-		
+		char			buffer_tag1[30];
+		char			buffer_tag2[30];
+		char			buffer_tag3[30];
+									
 		//Create the main view
 		
 		fTagsView = new BView(Bounds(), "TagsView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
@@ -60,6 +66,23 @@ TagsWindow :: TagsWindow()
 		fTagsView -> AddChild(fDoneButton);
 		fTagsView -> AddChild(fUndoButton);
 		
+		//Initialize text field to old values
+
+		BNode node = BNode(&ref_tags);
+			if(node.InitCheck() != B_OK) {
+				printf("The object wasn't correctly inizialized\n");
+		}	
+		
+		node.ReadAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, &buffer_tag1, 30);
+		node.ReadAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, &buffer_tag2, 30);
+		node.ReadAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, &buffer_tag3, 30);
+
+		printf(buffer_tag1);
+		printf("\n");
+			
+		fTag1 -> SetText(buffer_tag1);
+		fTag2 -> SetText(buffer_tag2);
+		fTag3 -> SetText(buffer_tag3);		
 
 }
 
@@ -68,12 +91,17 @@ void TagsWindow :: MessageReceived(BMessage *message){
 			switch(message->what){
 				case BUTTON_OK: {
 				
+						//Variables
+						
+				
 						//Obtain the BNode object (I need to obtain the generic entry_ref, I still don't know how!)
 				
-						BNode node = BNode("/boot/home/Desktop/nota.tkn");
+						BNode node = BNode(&ref_tags);
 						if(node.InitCheck() != B_OK) {
 							printf("The object wasn't correctly inizialized\n");
 						}
+						
+						
 		
 						//Print all the attribute associated with the BNode object (only for debugging)
 					
@@ -83,56 +111,71 @@ void TagsWindow :: MessageReceived(BMessage *message){
 						while(node.GetNextAttrName(buffer) == B_OK) {
 							printf(">Attr name: %s \n", buffer);
 						}
-						
-						
+																	
 						//Set each attribute to text field's content (NOTICE: add some check, like empty check field)
+												
 						
 						if(node.WriteAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, fTag1 -> Text(), 20) == 0) {
 							printf("no bytes written for tag one\n");
 						}
+								
 						if(node.WriteAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, fTag2 -> Text(), 20) == 0) {
 							printf("no bytes written for tag two\n");
 						}
+								
 						if(node.WriteAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, fTag3 -> Text(), 20) == 0) {
 							printf("no bytes written for tag three\n");
-						}
+						}													
 						
 						//Print ALL the attributes (only for debugging)
 						
 						char buffer2[60];
 						
 						node.ReadAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, &buffer2, 30);
+						printf("First tag is: ");
 						printf(buffer2);
 						printf("\n");
 						
 						node.ReadAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, &buffer2, 30);
+						printf("Second tag is: ");
 						printf(buffer2);
 						printf("\n");
 						
 						node.ReadAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, &buffer2, 30);
+						printf("Third tag is: ");
 						printf(buffer2);
-						printf("\n");		
-														
+						printf("\n");	
+			
+						//Closing window
+						
+						Quit();		
+	
+																											
 				}
 				break;
 				
 				case BUTTON_UNDO: {
 				
-						BNode node = BNode("/boot/home/Desktop/nota.tkn");
+						//Variables
+						
+						BAlert *myAlert;
+								
+						BNode node = BNode(&ref_tags);
 						if(node.InitCheck() != B_OK) {
 							printf("The object wasn't correctly inizialized\n");
 						}
 				
-						if(node.WriteAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, NULL, 20) == 0) {
-							printf("no bytes written for tag one\n");
-						}
-						if(node.WriteAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, NULL, 20) == 0) {
-							printf("no bytes written for tag two\n");
-						}
-						if(node.WriteAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, NULL, 20) == 0) {
-							printf("no bytes written for tag three\n");
-						}
+						node.WriteAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, NULL, 30);
+						node.WriteAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, NULL, 30);
+						node.WriteAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, NULL, 30);
 				
+						fTag1 -> SetText("");
+						fTag2 -> SetText("");
+						fTag3 -> SetText("");
+	
+						myAlert = new BAlert("Undo tags", "Tags deleted!", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_INFO_ALERT);
+						myAlert -> Go();
+
 				}
 				break;
 			

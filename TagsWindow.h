@@ -18,6 +18,7 @@
  #include <Window.h>
  #include <TextControl.h>
  
+ 
  class TagsWindow : public BWindow{
  
  	public:

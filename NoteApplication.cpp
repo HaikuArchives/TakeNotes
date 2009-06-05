@@ -127,12 +127,26 @@ void NoteApplication :: CheckMime(){
 			//Add some extra attributes in order to manage custom tags
 			attr->AddString("attr:name","TAKENOTES:refapp");
 			attr->AddString("attr:name","TAKENOTES:type");
+			attr->AddString("attr:name","TAKENOTES:tagone");
+			attr->AddString("attr:name","TAKENOTES:tagtwo");
+			attr->AddString("attr:name","TAKENOTES:tagthree");
 			attr->AddString("attr:public_name","refapp");
 			attr->AddString("attr:public_name","type");
+			attr->AddString("attr:public_name","tagone");
+			attr->AddString("attr:public_name","tagtwo");
+			attr->AddString("attr:public_name","three");
 			attr->AddInt32("attr:type",B_STRING_TYPE);
+			attr->AddInt32("attr:type",B_STRING_TYPE);
+ 			attr->AddInt32("attr:type",B_STRING_TYPE);
+ 			attr->AddInt32("attr:type",B_STRING_TYPE);
 			attr->AddInt32("attr:type",B_STRING_TYPE);
 			attr->AddBool("attr:editable",true);
 			attr->AddBool("attr:editable",true);
+			attr->AddBool("attr:editable",true);
+			attr->AddBool("attr:editable",true);
+			attr->AddBool("attr:editable",true);
+
+
 		
 			//attr->PrintToStream();
 		

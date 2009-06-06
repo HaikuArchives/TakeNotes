@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio catallo, 3rd June 2009
+ * Last revision: Ilio catallo, 6th June 2009
  *
  * Description: TODO
  */
@@ -36,7 +36,7 @@ status_t our_image(image_info& image){
 	
 	while (get_next_image_info(B_CURRENT_TEAM, &cookie, &image) == B_OK) {
 	
-		printf("our_image %s\n",(char *)our_image);
+		//printf("our_image %s\n",(char *)our_image);
 	
 		if ((char *)our_image >= (char *)image.text
 			&& (char *)our_image <= (char *)image.text + image.text_size)
@@ -134,7 +134,7 @@ void NoteApplication :: CheckMime(){
 			attr->AddString("attr:public_name","type");
 			attr->AddString("attr:public_name","tagone");
 			attr->AddString("attr:public_name","tagtwo");
-			attr->AddString("attr:public_name","three");
+			attr->AddString("attr:public_name","tagthree");
 			attr->AddInt32("attr:type",B_STRING_TYPE);
 			attr->AddInt32("attr:type",B_STRING_TYPE);
  			attr->AddInt32("attr:type",B_STRING_TYPE);

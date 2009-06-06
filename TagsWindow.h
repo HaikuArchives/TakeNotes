@@ -16,6 +16,7 @@
  
  #include <Button.h>
  #include <Window.h>
+ #include <File.h>
  #include <TextControl.h>
  
  
@@ -23,7 +24,8 @@
  
  	public:
  	
- 						TagsWindow();
+ 						TagsWindow(BMessage *fSaveMessage);
+ 						~TagsWindow();
  		virtual void	MessageReceived(BMessage *message);	
  
  	private:
@@ -33,6 +35,8 @@
  		BTextControl 	*fTag1;
 		BTextControl 	*fTag2;
 		BTextControl    *fTag3;
+		
+		BFile			fFile;
  	
  
  };

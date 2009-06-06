@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 3rd June 2009
+ * Last revision: Ilio Catallo, 6th June 2009
  *
  * Description: TODO
  */
@@ -565,7 +565,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
         		
         team_id         who;
         
-        message->PrintToStream();        
+       // message->PrintToStream();        
 			  
 	// Receiving the messages...	
 	switch (message -> what) {
@@ -880,11 +880,9 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				alert->Go();
 			
 			} else {
-			
-			//	if (fTagsWindow)
-//					delete fTagsWindow;
+	
 				
-				fTagsWindow = new TagsWindow();
+				fTagsWindow = new TagsWindow(fSaveMessage);
 				fTagsWindow -> Show();  
 			
 			}

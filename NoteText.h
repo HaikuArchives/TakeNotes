@@ -38,7 +38,7 @@ class NoteText : public BTextView {
  		virtual	void			MessageReceived(BMessage *message);
  		virtual	void			KeyDown(const char* bytes, int32 numBytes);		
  		virtual void			FrameResized(float width, float height);		
- 				
+ 		virtual void			MouseDown(BPoint point); 				
  				status_t		Archive(BMessage *msg, bool deep=true) const;
  			
  		

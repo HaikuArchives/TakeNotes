@@ -17,13 +17,10 @@
 #include <Message.h>
 #include <MenuItem.h>
 #include <PopUpMenu.h>
+#include <Clipboard.h>
 
 // Messages 
 #define TEXT_CHANGED 'txch'
-#define CUT 'mcut'
-#define COPY 'mcop'
-#define PASTE 'mpas'
-
 
 //Constants
 #define TEXT_INSET 10
@@ -99,6 +96,20 @@ BArchivable* NoteText :: Instantiate(BMessage *msg){
 void NoteText :: MessageReceived(BMessage *message){
 
 	switch (message->what){
+	
+	//Edit messages
+		case B_CUT:{
+			this -> Cut(be_clipboard);
+		}
+		break;
+		
+		case B_COPY:
+			this -> Copy(be_clipboard);
+		break;
+		
+		case B_PASTE:
+			this -> Paste(be_clipboard);
+		break;
 	
 //		case B_SIMPLE_DATA:{
 //		
@@ -200,15 +211,17 @@ void NoteText :: MouseDown(BPoint point){
 			popupmenu = new BPopUpMenu("popupmenu");
 	
 			//Populate the pop up menu with menu items
-			popupmenu -> AddItem(item1 = new BMenuItem("Cut", new BMessage(CUT)));
-			popupmenu -> AddItem(item2 = new BMenuItem("Copy", new BMessage(COPY)));
-			popupmenu -> AddItem(item3 = new BMenuItem("Paste", new BMessage(PASTE)));
-				
+			popupmenu -> AddItem(item1 = new BMenuItem("Cut", new BMessage(B_CUT)));
+			item1->SetTarget(this);
+			popupmenu -> AddItem(item2 = new BMenuItem("Copy", new BMessage(B_COPY)));
+			item2->SetTarget(this);
+			popupmenu -> AddItem(item3 = new BMenuItem("Paste", new BMessage(B_PASTE)));
+			item3->SetTarget(this);
 			//Convert mouse position to screen coordinates
 			ConvertToScreen(&point);
 
 			//Show the pop up menu and get the selected item
-			selected = popupmenu -> Go(point, false, true, false);
+			selected = popupmenu -> Go(point, true, true, true);
 			
 		}
 	

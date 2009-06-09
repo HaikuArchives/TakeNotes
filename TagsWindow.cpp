@@ -125,7 +125,7 @@ void TagsWindow :: MessageReceived(BMessage *message){
 				
 				case BUTTON_UNDO: {
 				
-						BAlert* alert = new BAlert("", "The tags haven't been saved yet, do you really wanto to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+						BAlert* alert = new BAlert("", "The tags haven't been saved yet, do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 						alert->SetShortcut(0, B_ESCAPE);
 
 						if (alert->Go() == 0) {

@@ -7,7 +7,7 @@
  *			Eleonora Ciceri
  *			Ilio Catallo
  * 
- * Last revision: Ilio Catallo, 3rd June 2009
+ * Last revision: Ilio Catallo, 7th June 2009
  *
  * Description: TODO
  */
@@ -105,6 +105,7 @@ class NoteWindow : public BWindow {
 		BMenuItem 	*fChangeBackgroundColorItem;
 		BMenuItem	*fAddDateAndTimeItem;
 		BMenuItem	*fSetTagsItem;
+		BMenuItem	*fSetAppItem;
 		BMenuItem 	*fSetAlarmItem;
 		BMenuItem   *fLink;
 		

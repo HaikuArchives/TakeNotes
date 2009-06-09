@@ -15,6 +15,7 @@
 #define CHOICE_VIEW_H
 
 #include <View.h>
+#include <Button.h>
 #include <Messenger.h>
 
 class ChoiceView : public BView {
@@ -24,11 +25,15 @@ class ChoiceView : public BView {
 					 ChoiceView (BRect frame, char *name, BHandler *handler);
 		virtual void AttachedToWindow ();
 		virtual void Draw(BRect updateRect);
-		virtual void MouseDown(BPoint point);
+		//virtual void MouseDown(BPoint point);
 		virtual void MessageReceived(BMessage* );
 		
 	private:
+	
+		
 		BMessenger	*fMessenger;
+		BButton		*fOkayButton;
+		BButton		*fUndoButton;
 };
 
 #endif

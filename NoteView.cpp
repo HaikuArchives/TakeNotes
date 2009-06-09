@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Eleonora Ciceri, 30th May 2009
+ * Last revision: Ilio Catallo, 7th June 2009
  *
  * Description: TODO
  */
@@ -86,9 +86,9 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 			file.SetTo("/boot/home/Desktop/nota.tkn", B_CREATE_FILE | B_WRITE_ONLY);
 					
 			// Message used to say that a choice of an application is required
-			message = new BMessage(CHOOSE_APPL);
+			/*message = new BMessage(CHOOSE_APPL);
 			fMessenger -> SendMessage(message);
-			printf("QUI è lanciato\n");
+			printf("QUI è lanciato\n");*/
 		}
 		
 		/*if (file.SetTo("/boot/home/Desktop/nota.tkn", B_CREATE_FILE | B_WRITE_ONLY) != B_OK)

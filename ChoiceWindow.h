@@ -19,7 +19,7 @@
 
 #include <Window.h>
 #include <Messenger.h>
-
+#include <Message.h>
 
 // Declaration of the class
 class ChoiceWindow : public BWindow {
@@ -31,7 +31,8 @@ class ChoiceWindow : public BWindow {
 		virtual void MessageReceived(BMessage*);
 	
 	private:
-	
+		
+		BMessage		*fCurrentCheckedMessage;
 		ChoiceView 	 	*fChoiceView;
 		BMessenger		*fMessenger;
 };

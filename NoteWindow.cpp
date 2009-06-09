@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 6th June 2009
+ * Last revision: Ilio Catallo, 7th June 2009
  *
  * Description: TODO
  */
@@ -45,6 +45,7 @@
 #define ADD_DATA 			'addd'
 #define SET_ALARM 			'salr'
 #define SET_TAGS			'stag'
+#define SET_APP				'stap'
 #define ALARM_MSG 			'alrm'
 #define GO_TO_LINK 			'gtlk'
 #define ABOUT 				'bout'
@@ -319,6 +320,7 @@ void NoteWindow :: InitWindow(){
 	fSettingsMenu -> AddItem (fSetAlarmItem = new BMenuItem ("Set alarm",
 			new BMessage (SET_ALARM)));
 	fSettingsMenu -> AddItem (fSetTagsItem = new BMenuItem("Set Tags",new BMessage(SET_TAGS)));
+	fSettingsMenu -> AddItem (fSetAppItem = new BMenuItem("Set Preferred Application",new BMessage(SET_APP)));
 	fSettingsMenu -> AddItem (fLink = new BMenuItem ("Go to the selected link...", new BMessage (GO_TO_LINK)));					
 	
 	// Edit
@@ -571,8 +573,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	switch (message -> what) {
 	
 		case CHOOSE_APPL: {
-			aRect.Set(300,300,700,650);
-			fChoiceWindow = new ChoiceWindow(aRect, this);
+			//aRect.Set(300,300,700,650);
+			
 		}
 		break;
 	
@@ -869,6 +871,27 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			
 			fNoteText -> MakeFocus();
 			fNoteText -> Insert(stringa);
+		}
+		break;
+		
+		case SET_APP: {
+		
+			if (!fSaveMessage){
+			
+				BAlert *alert = new BAlert("Warning","You must save your note before!","OK");
+				alert->Go();
+			
+			} else {
+	
+				
+				fChoiceWindow = new ChoiceWindow(BRect(300,300,800,750), this);
+				fChoiceWindow -> Show();  
+			
+			}
+			
+		
+		
+		
 		}
 		break;
 		

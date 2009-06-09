@@ -117,7 +117,9 @@ void NoteView :: AboutRequested(){
 		// Variable
 		BAlert *alert;
 
-		alert = new BAlert("TakeNotes","A program to take notes","OK");
+		alert = new BAlert("About TakeNotes", 
+				"Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved", 
+				"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 		alert->SetShortcut(0,B_ESCAPE);
 		alert->Go();
 

@@ -4,9 +4,10 @@
  * 
  * Authors:
  *
+ *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Eleonora Ciceri, 30th May 2009
+ * Last revision: Ilio Catallo, 9th June 2009
  *
  * Description: TODO
  */
@@ -25,8 +26,7 @@ class ChoiceView : public BView {
 					 ChoiceView (BRect frame, char *name, BHandler *handler);
 		virtual void AttachedToWindow ();
 		virtual void Draw(BRect updateRect);
-		//virtual void MouseDown(BPoint point);
-		virtual void MessageReceived(BMessage* );
+
 		
 	private:
 	

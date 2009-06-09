@@ -7,17 +7,18 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 7th June 2009
+ * Last revision: Ilio Catallo, 9th June 2009
  *
  * Description: TODO
  */
 
 #include "ChoiceWindow.h"
+
 #include <Alert.h>
 #include <Message.h>
 #include <stdio.h>
 
-#define RADIO_CHECKED 'rdck'
+#define RADIO_CHECKED 	'rdck'
 #define BUTTON_OK		'btok'
 #define BUTTON_UNDO		'btun'
 
@@ -27,7 +28,7 @@ ChoiceWindow :: ChoiceWindow (BRect frame, BHandler *handler)
 			: BWindow (frame, "Choose an application", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 	
 	//Inizialization
-	fCurrentCheckedMessage = new BMessage(RADIO_CHECKED);
+	fCurrentCheckedMessage = NULL;
 	
 	//Create a Messenger and set its target as NoteWindow
 	fMessenger = new BMessenger(handler);
@@ -57,15 +58,21 @@ void ChoiceWindow :: MessageReceived(BMessage* message) {
 	switch(message -> what) {
 	
 		case RADIO_CHECKED:{
-		
-			fCurrentCheckedMessage = message;
 			
+			// If a new Radio Button is checked we change the message which stores the current selection
+			if (fCurrentCheckedMessage != message){
+			
+				delete fCurrentCheckedMessage;
+				fCurrentCheckedMessage = new BMessage(*message);
+			
+			}
 		}
 		break;
 		
 		case BUTTON_OK:{
-			fCurrentCheckedMessage->PrintToStream();
-			//fMessenger->SendMessage(fCurrentCheckedMessage);
+			
+			// Send the user choice to NoteWindow and quit
+			fMessenger->SendMessage(fCurrentCheckedMessage);
 			Quit();
 		
 		}
@@ -73,6 +80,7 @@ void ChoiceWindow :: MessageReceived(BMessage* message) {
 		
 		case BUTTON_UNDO:{
 		
+			//Ask before quit
 			BAlert* alert = new BAlert("", "Do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 

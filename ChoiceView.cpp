@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 7th June 2009
+ * Last revision: Ilio Catallo, 9th June 2009
  *
  * Description: TODO
  */
@@ -120,49 +120,3 @@ void ChoiceView :: Draw (BRect updateRect) {
 
 }
 
-/*
-// When the user clicks...
-void ChoiceView :: MouseDown(BPoint point) {
-	
-}
-*/
-
-void ChoiceView :: MessageReceived(BMessage* message) {
-	
-	message->PrintToStream();
-	
-	switch(message->what){
-	/*
-		case RADIO_CHECKED:{
-		
-			fCurrentCheckedMessage = message;
-			
-		}
-		break;
-		
-		case BUTTON_OK:{
-		
-			fMessenger->SendMessage(fCurrentCheckedMessage);
-			Window()->PostMessage(B_QUIT_REQUESTED);
-		
-		}
-		break;
-		
-		case BUTTON_UNDO:{
-		
-			BAlert* alert = new BAlert("", "Do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-			alert->SetShortcut(0, B_ESCAPE);
-
-			if (alert->Go() == 0) {
-				//Discard all the changes
-				Window()->PostMessage(B_QUIT_REQUESTED);
-			}
-	
-		}*/
-		default:
-			BView::MessageReceived(message);
-		break;
-	
-	}
-
-}

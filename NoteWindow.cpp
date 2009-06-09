@@ -533,7 +533,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
   		
 		char	  *param[1],
 				  *str;
-  		char	  stringa[2];		  
+  		char	  stringa[2];	
+		char	  buffer[50];	  
   		void	  *ptr;		  
 	
 		int		  second,
@@ -565,7 +566,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		app_info  *appInfo;
         		
-        team_id         who;
+        team_id   who;
         
        // message->PrintToStream();        
 			  
@@ -663,18 +664,31 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		        // Copying the selected link
 				fNoteText -> GetSelection(&k,&j);
 				length = j - k + 1;
+				
+				
+				//printf("length: %d", length);
+				//printf("\n");
+				
+				//If nothing was selected we need to break
+				if(length <= 1) break;
+								
 				offset = k;
-				fNoteText -> GetText(offset, length, param[0]);
+				
+				fNoteText -> GetText(offset, length, buffer);
 				
 				found = 0;
 				
+				printf(buffer);printf("\n");
+				
 				// Verifying if the link passed is an email or a link
-				for (count = 0; param[0][count] != NULL; count++){
-					if(param[0][count] == '@') {
+				for (count = 0; buffer[count] != '\0'; count++){
+					if(buffer[count] == '@') {
 						found = 1;
 						break;
 					}
 				}
+				
+				printf("found: %d", found); printf("\n");
 								
 				if (found == 0) {
 					// Signature of BeZilla
@@ -739,7 +753,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
         				// BeZilla is not running 
         				if (found == 0) {						
 							// We launch the application
-							be_roster -> Launch(signature, 1, param, NULL);
+							char* buffer2 = buffer;
+							be_roster -> Launch(signature, 1, &buffer2, NULL);
         				}
         			}
 								

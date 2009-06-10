@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 7th June 2009
+ * Last revision: Ilio Catallo, 10th June 2009
  *
  * Description: TODO
  */
@@ -22,6 +22,7 @@
 #include <Application.h>
 #include <Autolock.h>
 #include <Clipboard.h>
+#include <Directory.h>
 #include <Entry.h>
 #include <File.h>
 #include <Message.h>
@@ -521,6 +522,71 @@ status_t NoteWindow :: Save(BMessage *message) {
 	return err;
 }
 
+
+status_t NoteWindow :: _SaveDB(const char* signature){
+
+	// It works only if the ~/config/settings/TakeNotes directory already exists! WE NEED TO FIX IT!
+	if (signature){
+		
+			//Variable
+			BFile		config;
+			BEntry		entry;
+			BPath		path;
+			status_t	err;
+			entry_ref	ref;
+			const char*	name;
+			
+			off_t		length;
+			
+			BString		toWrite;
+			
+			//Initialize a BEntry object starting from the informations stored in fSaveMessage
+			if ( err = fSaveMessage->FindRef("directory",&ref) != B_OK)
+					return err;
+			if ( err = fSaveMessage->FindString("name", &name) != B_OK)
+					return err;
+			
+			entry.SetTo(new BDirectory(&ref),name);
+			
+			//Finally obtain the BPath object that will allow us to retrain the path string
+			path.SetTo(&entry);
+			
+			
+		
+			//Open the config file, if it doesn't exist we create it
+			if (err = config.SetTo("/boot/home/config/settings/TakeNotes/config.txt", B_READ_WRITE | B_CREATE_FILE) != B_OK){
+			
+					return err;
+			
+			}
+	
+			//Prepare the string 
+			config.GetSize(&length);
+			toWrite.SetTo(":");
+			toWrite.Append(signature);
+			toWrite.Append(":");
+			toWrite.Append(path.Path());
+
+			
+			//Obtain the length of the file
+			config.GetSize(&length);
+			
+			//Write the new value
+			config.WriteAt(length-1, toWrite.String(), toWrite.Length());
+			
+			//Unload the file and return
+			config.Unset();
+			return B_OK;
+			
+	
+	} else {
+	
+		return B_ERROR;
+		
+	}
+
+}
+
 // Function for the reception of the messages
 void NoteWindow :: MessageReceived(BMessage* message) {
 	//	Variables
@@ -573,11 +639,11 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	// Receiving the messages...	
 	switch (message -> what) {
 	
-		case CHOOSE_APPL: {
-			//aRect.Set(300,300,700,650);
-			
-		}
-		break;
+		//case CHOOSE_APPL: {
+//			//aRect.Set(300,300,700,650);
+//			
+//		}
+//		break;
 	
 		// Show the panel
 		case SAVE_AS: {
@@ -588,7 +654,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		case SAVE:{
 			if (!fSaveMessage){
 			
-				 fSavePanel -> Show(); // male
+				 fSavePanel -> Show(); 
 			} else {
 				
 				Save(fSaveMessage);
@@ -610,17 +676,17 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		// Associate an application to the post-it
 		case RADIO_CHECKED: {
+			
 			const char* stringa;
-			BString string;
+			//BString string;
 						
 			message -> FindString("signature", &stringa);
 			
-			myAlert = new BAlert("Signature", stringa, 
-				"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-			myAlert -> Go();	
+			//Save the new association into the config file	
+			_SaveDB(stringa);
 			
 			// Saving in the data structure
-			fDati.Application = (char*)stringa;			
+			//fDati.Application = (char*)stringa;			
 		}
 		break;
 		

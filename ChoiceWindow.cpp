@@ -43,6 +43,12 @@ ChoiceWindow :: ChoiceWindow (BRect frame, BHandler *handler)
 	Show();
 }
 
+ChoiceWindow :: ~ChoiceWindow(){
+
+	delete fCurrentCheckedMessage;
+
+}
+
 // Function that is activated when I close the window
 bool ChoiceWindow :: QuitRequested() {
 	Quit();	

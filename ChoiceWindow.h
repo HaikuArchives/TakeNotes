@@ -27,6 +27,7 @@ class ChoiceWindow : public BWindow {
 	public:
 		
 					 ChoiceWindow(BRect frame, BHandler *handler);
+					 ~ChoiceWindow();
 		virtual bool QuitRequested();
 		virtual void MessageReceived(BMessage*);
 	

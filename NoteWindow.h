@@ -7,7 +7,7 @@
  *			Eleonora Ciceri
  *			Ilio Catallo
  * 
- * Last revision: Ilio Catallo, 7th June 2009
+ * Last revision: Ilio Catallo, 10th June 2009
  *
  * Description: TODO
  */
@@ -70,6 +70,7 @@ class NoteWindow : public BWindow {
 					void		CreateOtherWindows();
 					void 		SetFontStyle (const char* fontFamily, const char *fontStyle);
 					status_t	Save (BMessage*);
+					status_t	_SaveDB(const char* signature);
 	
 	private:
 		NoteView 		*fNoteView;

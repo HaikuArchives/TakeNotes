@@ -92,7 +92,7 @@ NoteWindow::NoteWindow(int32 id)
 	frameView = Bounds();
 	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
 	
-	fNoteView = new NoteView (frameView, this); 
+	fNoteView = new NoteView (frameView, B_FOLLOW_LEFT | B_FOLLOW_TOP, false, this); 
 	
 	//Text and Scroll View
 	frameView = fNoteView -> Bounds();	
@@ -562,10 +562,11 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 	
 			//Prepare the string 
 			config.GetSize(&length);
-			toWrite.SetTo(":");
+			//toWrite.SetTo(":");
+			toWrite.Append(path.Path());
+			toWrite.Append(":");
 			toWrite.Append(signature);
 			toWrite.Append(":");
-			toWrite.Append(path.Path());
 
 			
 			//Obtain the length of the file

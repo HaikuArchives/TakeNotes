@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 28th May 2009
+ * Last revision: Ilio Catallo, 13th June 2009
  *
  * Description: TODO
  */
@@ -22,6 +22,7 @@
 #include <String.h>
 #include <image.h>
 
+
 // Definition of the class
 class NoteApplication : public BApplication {
 
@@ -32,6 +33,8 @@ class NoteApplication : public BApplication {
 		virtual void	RefsReceived(BMessage *message);
 		virtual void	MessageReceived(BMessage *message);
 		virtual void	ReadyToRun();
+		
+				void	_InstallReplicantInDeskbar();
 		
 				void 	OpenNote();
 				void	OpenNote(entry_ref *ref);
@@ -46,6 +49,9 @@ class NoteApplication : public BApplication {
 }; 
 
 extern NoteApplication *note_app;
+
+extern const char 	*kSignature;
+extern const char 	*kDeskbarItemName;
 
 status_t our_image(image_info &image);
 

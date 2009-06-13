@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio catallo, 6th June 2009
+ * Last revision: Ilio catallo, 13th June 2009
  *
  * Description: TODO
  */
@@ -16,6 +16,7 @@
 
 #include <Alert.h>
 #include <Autolock.h>
+#include <Deskbar.h>
 #include <Entry.h>
 #include <File.h>
 #include <Mime.h>
@@ -26,6 +27,11 @@
 #define FONT_BOLD 		'fntb'
 
 NoteApplication *note_app;
+
+//Usuful constants (we don't want to repeat these hard to remember strings everywhere!)
+const char*	kSignature = "application/x-vnd.ccc-TakeNotes";
+const char*	kDeskbarSignature = "application/x-vnd.Be-TSKB";
+const char*	kDeskbarItemName = "TakeNotes";
 
 
 // This function fills the image_info image struct with the app image of itself
@@ -63,6 +69,22 @@ NoteApplication :: NoteApplication()
 }	
 
 void NoteApplication :: ReadyToRun(){
+
+		//Variables
+		BDeskbar	deskbar;
+		
+		//Check if the replicant isn't already installed in the Deskbar
+		if (!deskbar.HasItem(kDeskbarItemName)){
+		
+			BAlert* alert = new BAlert("", "Do you want TakeNotes to live in the Deskbar?", "Don't", "Install", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			alert->SetShortcut(0, B_ESCAPE);
+
+			if (alert->Go() == 1) {
+				_InstallReplicantInDeskbar();
+				return;
+			}
+			
+		}
 
 		if (fWindowCount > 0)
 			return;
@@ -271,6 +293,46 @@ void NoteApplication :: MessageReceived(BMessage *message){
 		}
 
 }
+
+void NoteApplication :: _InstallReplicantInDeskbar(){
+
+		//Variables
+		image_info info;
+		entry_ref	ref;
+		
+		//If it succeded in finding itself
+		if (our_image(info) == B_OK && get_ref_for_path(info.name, &ref) == B_OK){
+		
+			printf("tento di installare\n");
+			
+			//Find itself in the file system
+			BPath path(&ref);
+			printf("path %s\n",path.Path());
+			
+			//Initialize the deskbar object
+			BDeskbar deskbar;
+			
+			//If the deskbar is running we finally install 
+			if (!deskbar.IsRunning())
+				printf("la deskbar NON sta andando\n");
+			
+			if (deskbar.AddItem(&ref) != B_OK)
+				printf("errore nell'additem\n");
+		
+		} else {
+		
+			printf("errore\n");
+		
+		}
+		
+		//Quit the application, an indipendent instance of TakeNotes is now running
+		//as a replicant in the Deskbar
+		Quit();
+
+
+}
+
+
 
 // Main
 int main(){

@@ -218,7 +218,7 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 
 NoteWindow :: ~NoteWindow(){
 
-		delete fSaveMessage;
+		/*delete fSaveMessage;*/
 
 }
 
@@ -554,7 +554,7 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 			
 		
 			//Open the config file, if it doesn't exist we create it
-			if (err = config.SetTo("/boot/home/config/settings/TakeNotes/config.txt", B_READ_WRITE | B_CREATE_FILE) != B_OK){
+			if (err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE | B_CREATE_FILE) != B_OK){
 			
 					return err;
 			
@@ -571,9 +571,12 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 			
 			//Obtain the length of the file
 			config.GetSize(&length);
-			
-			//Write the new value
-			config.WriteAt(length-1, toWrite.String(), toWrite.Length());
+				
+			if (length == 0)
+				config.Write (toWrite.String(), toWrite.Length());	
+			else				
+				//Write the new value
+				config.WriteAt(length, toWrite.String(), toWrite.Length());
 			
 			//Unload the file and return
 			config.Unset();
@@ -635,7 +638,6 @@ void NoteWindow :: MessageReceived(BMessage* message) {
         		
         team_id   who;
         
-       // message->PrintToStream();        
 			  
 	// Receiving the messages...	
 	switch (message -> what) {
@@ -965,8 +967,16 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			
 			} else {
 	
+        		aList = new BList;
+
+		        // Obtaining the applications that are running
+		        be_roster->GetAppList(aList); 
+		        int countApps = aList -> CountItems();
+		        
+		        int h = countApps * 17 + 300;
+		        printf("Altezza: %d\n", h);
 				
-				fChoiceWindow = new ChoiceWindow(BRect(300,300,800,750), this);
+				fChoiceWindow = new ChoiceWindow(BRect(300,300,800,h), this);
 				fChoiceWindow -> Show();  
 			
 			}

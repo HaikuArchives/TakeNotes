@@ -60,9 +60,6 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 			AddChild(dragger);
 		}
 		
-		//Load the Database of association signature/note
-		_LoadDB();
-		
 		   
 }
 
@@ -95,13 +92,10 @@ NoteView :: ~NoteView(){}
 
 void NoteView :: MouseDown(BPoint point){
 
-	/*
-	fHash = new AppHashTable();
-	fHash -> AddNote ("application/x-vnd.Mozilla-Firefox","/boot/home/Desktop/nota.tkn");
-	fHash -> AddNote ("application/x-vnd.Mozilla-Firefox", "/boot/home/Desktop/saved.tkn");
-	fHash -> AddNote ("application/x-vnd.Be-MAIL", "/boot/home/Desktop/noteTag.tkn");
 
-	*/
+	// Load the database of notes
+	fHash = new AppHashTable();
+	_LoadDB();
 
 	BPopUpMenu* menu = new BPopUpMenu(B_EMPTY_STRING, false, false);
 	menu->SetAsyncAutoDestruct(true);
@@ -305,17 +299,10 @@ void NoteView :: _LoadDB(){
 	
 	int32	firstComma;
 	int32	lastComma;
-	
-
-	//Check if the fDatabase handler has been previously set
-	if (fDatabase.InitCheck() == B_NO_INIT){
-		
-		// Check if the file exists and if it is readable
-		if (fDatabase.SetTo("/boot/home/config/settings/TakeNotes/config.txt", B_READ_ONLY) != B_OK){
 			
-			BAlert *myAlert = new BAlert("file","file not found","OK");
-			myAlert->Go();
-			return;
+		// Check if the file exists and if it is readable
+		if (fDatabase.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_ONLY) != B_OK){
+
 		}
 		
 		//Obtain the length of the file and sufficent memory is allocated for the file's contents
@@ -366,15 +353,6 @@ void NoteView :: _LoadDB(){
 			
 			fHash->AddNote(signature,path);
 		}
-		
-	
-	
-	} else {
-	
-			BAlert *myAlert = new BAlert("file","file gia caricato","OK");
-			myAlert->Go();
-			return;
-	} 	
 
 }
 

@@ -11,7 +11,7 @@
  *			Meanwhile
  *
  *
- * Last revision: Ilio Catallo, 9th June 2009
+ * Last revision: Ilio Catallo, 14th June 2009
  *
  * Description: TODO
  */
@@ -25,7 +25,7 @@ resource file_types message {
 		"types" = "application/takenotes"
 };
 
-resource vector_icon {
+resource(1) vector_icon {
 	$"6E636966170500020006023B55F13C5CD2BE755C3D78964A454E48FFCB00D3F5"
 	$"91FF05C0800200040200FFFFFEFFFDFE9D05FF04016D03E0E19503E8EA75054B"
 	$"056B03F9FBB00200040200FFFFFFFFA2A19903EAE03B0500050003A4D2EA0369"

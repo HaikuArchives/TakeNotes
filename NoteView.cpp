@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 13th June 2009
+ * Last revision: Ilio Catallo, 14th June 2009
  *
  * Description: TODO
  */
@@ -23,10 +23,12 @@
 #include <Dragger.h>
 #include <File.h>
 #include <FilePanel.h>
+#include <IconUtils.h>
 #include <MenuItem.h>
 #include <NodeInfo.h>
 #include <PopUpMenu.h>
 #include <String.h>
+#include <Resources.h>
 #include <Roster.h>
 
 #include <stdio.h>
@@ -46,22 +48,92 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 	   	// Variable
 		BDragger *dragger;	
 		
-		//Initiliazation
+		//Initilization
 		fNoteText = NULL;
 		if (handler) fMessenger = new BMessenger(handler); 
 		fHash = new AppHashTable();
 		
 		//Graphical Stuff
-		SetViewColor(254,254,92,255); 
+		
+		
 		if (!inDeskbar){
 		
 			//We don't have to add the dragger if the view is in the deskbar
+			SetViewColor(254,254,92,255); 
 			dragger = new BDragger(BRect(0,0,7,7),this,B_FOLLOW_NONE);
 			AddChild(dragger);
-		}
 		
+		} else {
+			
+			
+			printf("sono nella deskbar\n");
+			InitBitmap();
+		
+		}
+
 		   
 }
+
+void NoteView :: InitBitmap(){
+
+			printf("ma qui ci entri ?\n");
+
+			//Variables
+			image_info 	info;
+			BFile		file;
+			
+	const	void*		data = NULL;
+			size_t		size;
+			
+			//Initialization
+			if (fBitmap){
+				delete fBitmap;
+			}
+			
+			fBitmap = NULL;
+			
+			//Try to locate ourselves on the FS and open in read only
+			if (our_image(info) != B_OK)
+				printf("errore nell'our_image\n");
+			
+			file.SetTo(info.name,B_READ_ONLY);
+			if (file.InitCheck() < B_OK)
+				printf("errore nell'apertura file\n");
+				
+			//Loading the resourced linked in the binary
+			BResources resources(&file);
+			if (resources.InitCheck() < B_OK)
+				printf("errore nel caricare le risorse\n");
+			
+			//Load the vectorial icon into a void pointer
+			data = resources.LoadResource(B_VECTOR_ICON_TYPE,1,&size);
+			if (data != NULL){
+			
+					//Obtain the icon from the blob
+					BBitmap *icon = new BBitmap(Bounds(), B_RGBA32);
+					
+					if (icon->InitCheck() == B_OK && BIconUtils::GetVectorIcon((const uint8 *)data,size,icon) == B_OK){
+					
+						printf("sono riuscito a caricare l'icona!\n");
+						fBitmap = icon;
+						Invalidate();
+						
+					
+					} else {
+					
+						printf("Non sono riuscito a caricare l'icona!\n");
+						delete icon;
+					
+					}
+			
+			} else {
+			
+				printf("i dati erano vuoti\n");
+			
+			}
+
+}
+
 
 NoteView :: NoteView (BMessage *msg, BHandler *handler)
 		   : BView(msg){
@@ -76,6 +148,7 @@ NoteView :: NoteView (BMessage *msg, BHandler *handler)
 			//Check if we are in the deskbar
 			if (be_app->GetAppInfo(&info) == B_OK && !strcasecmp(info.signature, "application/x-vnd.Be-TSKB")){
 				fInDeskbar = true;
+				//InitBitmap();
 				//_LoadDB();
 
 			} else {
@@ -89,6 +162,35 @@ NoteView :: NoteView (BMessage *msg, BHandler *handler)
 // Destructor
 NoteView :: ~NoteView(){}
 		
+
+void NoteView :: Draw (BRect update){
+
+	
+
+		if (!fBitmap)
+			return;
+		
+		printf("siamo nella draw\n");
+		SetDrawingMode(B_OP_ALPHA);
+		DrawBitmap(fBitmap);
+		SetDrawingMode(B_OP_COPY);
+
+
+}
+
+
+void NoteView :: AttachedToWindow(){
+
+		BView :: AttachedToWindow();
+		
+		// if there's a parent it means we're in the deskbar
+		// so we set the background color the same as the deksbar
+		// in order to obtain the alpha trasparency for the icon
+		if (Parent())
+			SetViewColor(Parent()->ViewColor());
+		
+		SetLowColor(ViewColor());
+}
 
 void NoteView :: MouseDown(BPoint point){
 

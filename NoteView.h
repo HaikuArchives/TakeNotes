@@ -20,6 +20,7 @@
 #include "AppHashTable.h"
 #include "NoteText.h"
 
+#include <Bitmap.h>
 #include <File.h>
 #include <Messenger.h>
 #include <String.h>
@@ -35,6 +36,8 @@ class NoteView : public BView {
 							NoteView (BMessage *msg, BHandler *handler = NULL);
 	   				   	   ~NoteView(); 		
 	
+	virtual	void			Draw(BRect updateRect);
+	virtual	void			AttachedToWindow();
 	virtual	void			MessageReceived(BMessage *message);
 	virtual	void			MouseDown(BPoint point);	
 	virtual	void			AboutRequested();
@@ -42,6 +45,7 @@ class NoteView : public BView {
 	static 	BArchivable*	Instantiate(BMessage *msg);		   
 	virtual	status_t		Archive(BMessage *msg, bool deep=true) const;
 		
+			void			InitBitmap();
 			void 			SetBackgroundColor(rgb_color color);
 			
 			void			_LoadDB();
@@ -58,9 +62,12 @@ class NoteView : public BView {
 		
 		BFile			fDatabase;
 		
-		NoteText		*fNoteText;
 		BMessenger 		*fMessenger;
 		BString 		*message;
+		BBitmap			*fBitmap;
+		
+		NoteText		*fNoteText;
+
 	
 
 };

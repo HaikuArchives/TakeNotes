@@ -50,6 +50,8 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 		
 		//Initilization
 		fNoteText = NULL;
+		fBitmap = NULL;
+		
 		if (handler) fMessenger = new BMessenger(handler); 
 		fHash = new AppHashTable();
 		

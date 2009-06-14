@@ -194,80 +194,80 @@ void NoteView :: AttachedToWindow(){
 
 void NoteView :: MouseDown(BPoint point){
 
+	if (fInDeskbar) {
+		// Load the database of notes
+		fHash = new AppHashTable();
+		_LoadDB();
 
-	// Load the database of notes
-	fHash = new AppHashTable();
-	_LoadDB();
+		BPopUpMenu* menu = new BPopUpMenu(B_EMPTY_STRING, false, false);
+		menu->SetAsyncAutoDestruct(true);
+		menu->SetFont(be_plain_font);
 
-	BPopUpMenu* menu = new BPopUpMenu(B_EMPTY_STRING, false, false);
-	menu->SetAsyncAutoDestruct(true);
-	menu->SetFont(be_plain_font);
-
-	menu->AddItem(new BMenuItem("Open TakeNotes" B_UTF8_ELLIPSIS,new BMessage(OPEN_TAKENOTES)));
-	menu->AddItem(new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED)));
-	menu->AddSeparatorItem();
+		menu->AddItem(new BMenuItem("Open TakeNotes" B_UTF8_ELLIPSIS,new BMessage(OPEN_TAKENOTES)));
+		menu->AddItem(new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED)));
+		menu->AddSeparatorItem();
 
 				
-	// Initialization
-    BList *aList = new BList;
-    app_info *appInfo = new app_info();
-    int count;
-    entry_ref	ref;
-    BString		name;
+		// Initialization
+    	BList *aList = new BList;
+    	app_info *appInfo = new app_info();
+    	int count;
+    	entry_ref	ref;
+    	BString		name;
 
-   	// Obtaining the applications that are running
-   	be_roster->GetAppList(aList); 
+	   	// Obtaining the applications that are running
+   		be_roster->GetAppList(aList); 
 
-	// We look for the current instances that are running
-	for (count=0;count< aList->CountItems();count++){
-   	    team_id who = (team_id)aList->ItemAt(count);
-   	  	be_roster->GetRunningAppInfo(who,appInfo);
+		// We look for the current instances that are running
+		for (count=0;count< aList->CountItems();count++){
+   	    	team_id who = (team_id)aList->ItemAt(count);
+   	  		be_roster->GetRunningAppInfo(who,appInfo);
   		 	            	
          	
-       	// Show the name of the running program istead of its signature
-        ref = appInfo->ref;
-   		name.SetTo(ref.name);
+       		// Show the name of the running program istead of its signature
+        	ref = appInfo->ref;
+   			name.SetTo(ref.name);
    		 	            	
-   		//not show the system process like the *_server program or the Deskbar / Tracker
-   		if (name.Compare("registrar") != 0 && name.Compare("Tracker") != 0 && name.Compare("Deskbar") != 0 &&
-   		 	name.Compare("net_server") != 0 && name.Compare("syslog_daemon") !=0 && name.Compare("input_server") != 0 &&
-   		 	name.Compare("midi_server") !=0 && name.Compare("print_server") !=0 && name.Compare("media_server") != 0 &&
-   		 	name.Compare("media_addon_server") != 0 && name.Compare("afp_server") != 0 && name.Compare("debug_server") != 0) {
+   			//not show the system process like the *_server program or the Deskbar / Tracker
+   			if (name.Compare("registrar") != 0 && name.Compare("Tracker") != 0 && name.Compare("Deskbar") != 0 &&
+   		 		name.Compare("net_server") != 0 && name.Compare("syslog_daemon") !=0 && name.Compare("input_server") != 0 &&
+   		 		name.Compare("midi_server") !=0 && name.Compare("print_server") !=0 && name.Compare("media_server") != 0 &&
+   		 		name.Compare("media_addon_server") != 0 && name.Compare("afp_server") != 0 && name.Compare("debug_server") != 0) {
    		 	
-   		 	// Obtain the signature number
-   			int countSignatures = fHash -> GetNumSignatures();
+   		 		// Obtain the signature number
+   				int countSignatures = fHash -> GetNumSignatures();
    			
-   			//For each signature in the list we check if it is the hash table and in case we add it to the menu
-   			for (int i = 0; i < countSignatures; i++) {
-   				char *sig = fHash -> GetSignature(i);
-   				if (strcmp (appInfo -> signature, sig) == 0) {
-   					BMenu *subMenu = new BMenu (ref.name);
+   				//For each signature in the list we check if it is the hash table and in case we add it to the menu
+   				for (int i = 0; i < countSignatures; i++) {
+   					char *sig = fHash -> GetSignature(i);
+   					if (strcmp (appInfo -> signature, sig) == 0) {
+   						BMenu *subMenu = new BMenu (ref.name);
    					
-   					// Make the list of the notes releated to that application
-   					int countNotes = fHash -> GetNumNotes(sig);
-   					for (int j = 0; j < countNotes; j++) {
-   						char *note = fHash -> GetNote(sig, j);
-   						BMessage *mess = new BMessage(OPEN_FILE);
-   						mess -> AddString("Note", note);
-   						mess -> AddPointer("team",(void *)&who); // We pass also the team_id in order to focus the application
-   						subMenu -> AddItem (new BMenuItem(note, mess));
+   						// Make the list of the notes releated to that application
+   						int countNotes = fHash -> GetNumNotes(sig);
+   						for (int j = 0; j < countNotes; j++) {
+   							char *note = fHash -> GetNote(sig, j);
+   							BMessage *mess = new BMessage(OPEN_FILE);
+   							mess -> AddString("Note", note);
+   							mess -> AddPointer("team",(void *)&who); // We pass also the team_id in order to focus the application
+   							subMenu -> AddItem (new BMenuItem(note, mess));
+   						}
+   					
+   						subMenu -> SetTargetForItems(this);
+   						menu -> AddItem (subMenu);
    					}
-   					
-   					subMenu -> SetTargetForItems(this);
-   					menu -> AddItem (subMenu);
    				}
-   			}
    		 	
    		 
-   		}   		 	
+   			}   		 	
 				
-     }  
+     	}  
 
-	menu->SetTargetForItems(this);
+		menu->SetTargetForItems(this);
 
-	ConvertToScreen(&point);
-	menu->Go(point, true, true, true);
-
+		ConvertToScreen(&point);
+		menu->Go(point, true, true, true);
+	}
 
 }
 		

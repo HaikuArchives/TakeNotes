@@ -22,6 +22,8 @@
 #include <Mime.h>
 #include <Node.h>
 #include <Path.h>
+#include <sys/stat.h>
+#include <dirent.h>
 
 #define COLOR_CHANGED 	'ccrq'
 #define FONT_BOLD 		'fntb'
@@ -60,6 +62,13 @@ NoteApplication :: NoteApplication()
 	
 		//Check (and install) the MIME type
 		CheckMime();
+		
+		// Creation of the directory with the association between notes
+		// and applications
+		DIR *dir;
+		dir = opendir("/boot/home/config/settings/TakeNotes");
+		if (dir == NULL)
+			mkdir ("/boot/home/config/settings/TakeNotes", O_CREAT);
 	
 		//private data members initialization
 		fWindowCount = 0;

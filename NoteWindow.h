@@ -68,6 +68,7 @@ class NoteWindow : public BWindow {
 				
 					void		InitWindow();
 					void		CreateOtherWindows();
+					void		_LoadDB();
 					void 		SetFontStyle (const char* fontFamily, const char *fontStyle);
 					status_t	Save (BMessage*);
 					status_t	_SaveDB(const char* signature);
@@ -129,6 +130,10 @@ class NoteWindow : public BWindow {
 		
 		// Save panel
 		BFilePanel	*fSavePanel;
+		
+		// Hash table
+		BFile		fDatabase;
+		AppHashTable	*fHash;
 
 };
 

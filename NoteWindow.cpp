@@ -522,7 +522,80 @@ status_t NoteWindow :: Save(BMessage *message) {
 	return err;
 }
 
+// Funzione per la lettura delle associazioni tra note e applicazioni
+void NoteWindow :: _LoadDB(){
+	//Variables
+	BFile	config;
+	off_t	length;
+	char*	input;
 
+	BString stringa;
+	BString	path;
+	BString signature;
+	
+	//char*	sgn;
+	//char* 	pht;
+	
+	int32	firstComma;
+	int32	lastComma;
+			
+		// Check if the file exists and if it is readable
+		if (fDatabase.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_ONLY) != B_OK){
+
+		}
+		
+		//Obtain the length of the file and sufficent memory is allocated for the file's contents
+		fDatabase.GetSize(&length);
+		input = (char *)malloc(length);
+	
+		// Actually read the database file
+		if (input && (fDatabase.Read(input, length) >= B_OK)){
+		
+			stringa.SetTo(input);
+			free(input);
+		
+		
+		} else {
+		
+			printf("errore di lettura file\n");
+			return;
+			
+		}
+		
+		//Clean the string from random error
+		printf("prima della pulizia: %s\n\n",stringa.String());
+		stringa.Remove(stringa.FindLast(":")+1,stringa.CountChars());
+		printf("dopo la pulizia: %s\n\n\n",stringa.String());
+	
+	
+		
+		while (stringa.CountChars() > 0 ){
+	
+			//Trovo i due punti iniziali
+			firstComma = stringa.FindFirst(":")+1;
+		
+			// Estrapola il path ed elimina i due punti
+			stringa.MoveInto(path, 0, firstComma);
+			path.RemoveLast(":");
+		
+			//Trova i secondi due punti
+			lastComma = stringa.FindFirst(":")+1;
+		
+			// Estrapola la signature ed elimina i due punti
+			stringa.MoveInto(signature, 0, lastComma);
+			signature.RemoveLast(":");
+		
+			printf("path: %s\n",path.String());
+			printf("signature: %s\n",signature.String());
+			printf("TODO: %s\n\n",stringa.String());
+	
+			
+			fHash->AddNote(signature,path);
+		}
+
+}
+
+// Funzione per la scrittura su file dell'associazione tra nota ed applicazione
 status_t NoteWindow :: _SaveDB(const char* signature){
 
 	// It works only if the ~/config/settings/TakeNotes directory already exists! WE NEED TO FIX IT!
@@ -535,10 +608,11 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 			status_t	err;
 			entry_ref	ref;
 			const char*	name;
-			
 			off_t		length;
-			
 			BString		toWrite;
+			int			countSignatures,
+						countNotes,
+						found = 0;
 			
 			//Initialize a BEntry object starting from the informations stored in fSaveMessage
 			if (( err = fSaveMessage->FindRef("directory",&ref)) != B_OK)
@@ -551,43 +625,71 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 			//Finally obtain the BPath object that will allow us to retrain the path string
 			path.SetTo(&entry);
 			
+			fHash = new AppHashTable();
+			_LoadDB();
 			
+			// We take the number of the signatures...
+			countSignatures = fHash -> GetNumSignatures();
+			
+			// Searching if the signature is still present with this note
+			for (int i = 0; i < countSignatures; i++) {
+				char* sig = fHash -> GetSignature(i);
+				// Signature found?
+				if (strcmp (signature, sig) == 0) {
+					// Number of notes in this signature
+					BString str(signature);
+					countNotes = fHash -> GetNumNotes(str);
+					for (int j = 0; j < countNotes; j++)
+						// Note found
+						if (strcmp(fHash -> GetNote(str, j), path.Path()) == 0) {
+							found = 1;
+							BAlert *alert;
+							alert = new BAlert("Error", 
+								"Error: This selection is in the database!", 
+								"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+							alert->SetShortcut(0,B_ESCAPE);
+							alert->Go();
+						}
+				}
+			}
 		
-			//Open the config file, if it doesn't exist we create it
-			if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
+			if (found == 0) {
+				//Open the config file, if it doesn't exist we create it
+				if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
 			
 					return err;
 			
-			}
+				}
 	
-			//Prepare the string 
-			config.GetSize(&length);
-			//toWrite.SetTo(":");
-			toWrite.Append(path.Path());
-			toWrite.Append(":");
-			toWrite.Append(signature);
-			toWrite.Append(":");
+				//Prepare the string 
+				config.GetSize(&length);
+				//toWrite.SetTo(":");
+				toWrite.Append(path.Path());
+				toWrite.Append(":");
+				toWrite.Append(signature);
+				toWrite.Append(":");
 
 			
-			//Obtain the length of the file
-			config.GetSize(&length);
+				//Obtain the length of the file
+				config.GetSize(&length);
 				
-			if (length == 0)
+				if (length == 0)
 				config.Write (toWrite.String(), toWrite.Length());	
-			else				
+				else				
 				//Write the new value
 				config.WriteAt(length, toWrite.String(), toWrite.Length());
 			
-			//Unload the file and return
-			config.Unset();
-			return B_OK;
+				//Unload the file and return
+				config.Unset();
+				return B_OK;
+			}
 			
 	
-	} else {
+		} else {
 	
-		return B_ERROR;
+			return B_ERROR;
 		
-	}
+		}
 
 }
 

@@ -1,8 +1,24 @@
+/*
+ * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
+ * Distribuited under the terms of the GPL v2 license
+ * 
+ * Authors:
+ *
+ *			Ilio Catallo
+ *			Eleonora Ciceri
+ * 
+ * Last revision: Ilio Catallo, 8th June 2009
+ *
+ * Description: TODO
+ */
+
+// Libraries
 #include "AppHashTable.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 
-// Costruttori
+// Constructors
 AppHashTable :: AppHashTable () {
 	head = NULL;
 	tail = NULL;
@@ -15,47 +31,46 @@ AppHashTable :: AppHashTable (Hash* myHead) {
 
 // Setter
 void AppHashTable :: AddNote (BString mySignature, BString myPath) {
-	// E' la prima cella da inserire
+	// This is the first node we will insert
 	if (head == NULL)  {
 		Hash *newElement = new Hash();
 		newElement -> signature = mySignature;
 		newElement -> notes[0] = myPath;
 		newElement -> numNotes = 1;
 		newElement -> nextHash = NULL;
-		// Inizializzo testa e coda
+		// Initializing head and tail
 		head = newElement;
-		tail = newElement;	// Punta all'ultimo elemento nella lista
+		tail = newElement;	// It points to the last element
 	}
-	// E' un elemento generico della lista
+	// It is a generic element in the list
 	else {
-		// Verifico che questa signature non ci sia già
+		// See if this signature is now in the list
 		Hash *temp = new Hash();
 		int found = 0;
 		
 		for (temp = head; temp != NULL; temp = temp -> nextHash) {
 			if ( (temp->signature).Compare(mySignature) == 0){//if (strcmp(temp -> signature, mySignature) == 0) {
-				// Signature trovata
+				// Signature found
 				found = 1;
 				break;
 			}				
 		}
 		
-		// Inserisco l'elemento
-		// Signature non trovata: aggiungo al fondo
+		// We insert the element
+		// Signature not found§: we insert in the tail
 		if (found == 0){
 			Hash *newElement = new Hash();
 			newElement -> signature = mySignature;
 			newElement -> notes[0] = myPath;
 			newElement -> numNotes = 1;
 			newElement -> nextHash = NULL;
-			// Sposto la coda	
+			// The tail is pushed to the next element	
 			tail -> nextHash = newElement;
 			tail = tail -> nextHash;	
 		}
-		// Signature trovata: aggiungo lì
+		// Signature found: we add there
 		else {
 			int position = temp -> numNotes;
-			//temp -> notes[position] = NULL;
 			temp -> notes[position] = myPath;
 			temp -> numNotes ++;
 		}
@@ -73,6 +88,7 @@ int AppHashTable :: GetNumSignatures() {
 	return count;
 }
 
+// Number of notes in that signature
 int AppHashTable :: GetNumNotes(BString mySignature) {
 	Hash *temp = new Hash();
 	int count = 0;
@@ -86,6 +102,7 @@ int AppHashTable :: GetNumNotes(BString mySignature) {
 	return count;
 }
 
+// Path of the note selected
 char* AppHashTable ::GetNote (BString mySignature, int position) {
 	Hash *temp = new Hash();
 	BString note = NULL;
@@ -99,6 +116,7 @@ char* AppHashTable ::GetNote (BString mySignature, int position) {
 	return (char *)note.String();
 }
 
+// A single signature, selected from the list
 char* AppHashTable :: GetSignature (int position) {
 	Hash *temp = new Hash();
 	

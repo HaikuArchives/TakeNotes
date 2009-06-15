@@ -60,8 +60,6 @@
 #define MENU_BAR_HEIGHT 18;
 #define TEXT_INSET 10
 
-entry_ref ref_tags;
-
 // Structures
 const struct tm gettime() {
     time_t    t=time(NULL);
@@ -140,6 +138,8 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 				BMessage *msg = new BMessage;
 				BFile	f;
 				status_t result;
+				entry_ref	*directory = NULL;
+				BRefFilter	*refFilter = NULL;	
 				
 				// Initialize the messenger: the handler is the window itself
 				fMessenger = BMessenger(this);
@@ -209,6 +209,10 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 				//Fetch and load the view from the file 
 				msg->Unflatten(&f);
 				fNoteView = new NoteView(msg);
+				
+				// Creating the file panel
+				fSavePanel = new BFilePanel (B_SAVE_PANEL, new BMessenger (this), directory, B_FILE_NODE, false, NULL,
+					refFilter, false, true);
 				
 				//Add the view as a child and show the window
 				AddChild(fNoteView);
@@ -507,8 +511,6 @@ status_t NoteWindow :: Save(BMessage *message) {
 		return err;
 	if ((err = message -> FindString("name", &name)) != B_OK)
 		return err;
-		
-	ref_tags = ref;
 	
 	fNoteView -> Archive(message, 1);
 	
@@ -683,13 +685,13 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 				config.Unset();
 				return B_OK;
 			}
+			else
+				return B_ERROR;
 			
 	
-		} else {
-	
+		} 
+		else
 			return B_ERROR;
-		
-		}
 
 }
 
@@ -742,12 +744,6 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			  
 	// Receiving the messages...	
 	switch (message -> what) {
-	
-		//case CHOOSE_APPL: {
-//			//aRect.Set(300,300,700,650);
-//			
-//		}
-//		break;
 	
 		// Show the panel
 		case SAVE_AS: {

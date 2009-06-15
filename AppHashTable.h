@@ -1,33 +1,41 @@
+/*
+ * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
+ * Distribuited under the terms of the GPL v2 license
+ * 
+ * Authors:
+ *
+ *			Ilio Catallo
+ *			Eleonora Ciceri
+ * 
+ * Last revision: Eleonora Ciceri, 8th June 2009
+ *
+ * Description: TODO
+ */
+
 #ifndef APP_HASH_TABLE_H
 #define APP_HASH_TABLE_H
 
 #include <String.h>
 
-// Struttura
-/*struct Hash {
-	char	*signature;
-	char	*notes[20];
-	int		numNotes;
-	Hash	*nextHash;
-};*/
-
+// Structure of a node
 struct Hash {
 	BString	signature;
 	BString	notes[20];
 	int		numNotes;
 	Hash	*nextHash;
 };
-// Definizione della classe
+// Class containing the structure with the associations between
+// the notes and the applications
 class AppHashTable {
 	public:
 						AppHashTable();
 						AppHashTable(Hash*);
 				
-				void 	AddNote(BString, BString); //AddNote(char*,char*);
+				void 	AddNote(BString, BString);
 				
-				char* 	GetNote(BString, int); //GetNote(char*, int);
+				char* 	GetNote(BString, int); 
 				char*	GetSignature (int);
-				int		GetNumNotes(BString); //GetNumNotes(char*);
+				int		GetNumNotes(BString); 
 				int		GetNumSignatures();
 				
 	private:

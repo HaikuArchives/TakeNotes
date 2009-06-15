@@ -503,9 +503,9 @@ status_t NoteWindow :: Save(BMessage *message) {
 		message = fSaveMessage;
 	}
 	
-	if (err = message->FindRef("directory",&ref) != B_OK)
+	if ((err = message->FindRef("directory",&ref)) != B_OK)
 		return err;
-	if (err = message -> FindString("name", &name) != B_OK)
+	if ((err = message -> FindString("name", &name)) != B_OK)
 		return err;
 		
 	ref_tags = ref;
@@ -541,9 +541,9 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 			BString		toWrite;
 			
 			//Initialize a BEntry object starting from the informations stored in fSaveMessage
-			if ( err = fSaveMessage->FindRef("directory",&ref) != B_OK)
+			if (( err = fSaveMessage->FindRef("directory",&ref)) != B_OK)
 					return err;
-			if ( err = fSaveMessage->FindString("name", &name) != B_OK)
+			if (( err = fSaveMessage->FindString("name", &name)) != B_OK)
 					return err;
 			
 			entry.SetTo(new BDirectory(&ref),name);
@@ -554,7 +554,7 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 			
 		
 			//Open the config file, if it doesn't exist we create it
-			if (err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE | B_CREATE_FILE) != B_OK){
+			if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
 			
 					return err;
 			
@@ -601,8 +601,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
   				  *fontStyle,
   				  *signature;
   		
-		char	  *param[1],
-				  *str;
+		char	  *param[1];
   		char	  stringa[2];	
 		char	  buffer[50];	  
   		void	  *ptr;		  

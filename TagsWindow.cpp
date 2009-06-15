@@ -71,7 +71,7 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage)
 		if (fSaveMessage->FindRef("directory",&ref) == B_OK && fSaveMessage->FindString("name", &name) == B_OK){
 			
 			dir.SetTo(&ref);
-			if (err = dir.InitCheck() != B_OK){
+			if ((err = dir.InitCheck()) != B_OK){
 			 BAlert *myalert = new BAlert("ERR","errore di inizializzazione del file","OK");
 			 myalert->Go();
 			 exit(-1);	

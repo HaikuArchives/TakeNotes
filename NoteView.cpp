@@ -287,7 +287,6 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		status_t	err;
 		const char*	name;
 		BDirectory	dir;
-		BMessage	*message;
 		
 		BView ::Archive(msg,deep);
 		
@@ -297,7 +296,7 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		if (msg->FindRef("directory",&ref) == B_OK
 			&& msg -> FindString("name", &name) == B_OK) {
 			dir.SetTo(&ref);
-			if (err = dir.InitCheck() != B_OK)
+			if ((err = dir.InitCheck()) != B_OK)
 				return err;
 			file.SetTo(&dir, name, B_READ_WRITE | B_CREATE_FILE);
 		}

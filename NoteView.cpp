@@ -67,7 +67,7 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 		
 		} else {
 			
-			
+			fReplicated = false;
 			printf("sono nella deskbar\n");
 			InitBitmap();
 		
@@ -150,8 +150,7 @@ NoteView :: NoteView (BMessage *msg, BHandler *handler)
 			//Check if we are in the deskbar
 			if (be_app->GetAppInfo(&info) == B_OK && !strcasecmp(info.signature, "application/x-vnd.Be-TSKB")){
 				fInDeskbar = true;
-				//InitBitmap();
-				//_LoadDB();
+				fReplicated = false;
 
 			} else {
 	
@@ -167,10 +166,10 @@ NoteView :: ~NoteView(){}
 
 void NoteView :: Draw (BRect update){
 
-	
+		printf("fReplicated: %d\n",fReplicated);	
 
-		if (!fBitmap)
-			return;
+		if (fReplicated)
+				return;
 		
 		printf("siamo nella draw\n");
 		SetDrawingMode(B_OP_ALPHA);
@@ -188,15 +187,17 @@ void NoteView :: AttachedToWindow(){
 		// if there's a parent it means we're in the deskbar
 		// so we set the background color the same as the deksbar
 		// in order to obtain the alpha trasparency for the icon
-		if (Parent())
+		if (Parent() && !fReplicated){
 			SetViewColor(Parent()->ViewColor());
-		
-		SetLowColor(ViewColor());
+			SetLowColor(ViewColor());
+
+		}
 }
+
 
 void NoteView :: MouseDown(BPoint point){
 
-	if (fInDeskbar) {
+	if (fInDeskbar && !fReplicated) {
 		// Load the database of notes
 		fHash = new AppHashTable();
 		_LoadDB();
@@ -336,7 +337,7 @@ void NoteView :: AboutRequested(){
 		BAlert *alert;
 
 		alert = new BAlert("About TakeNotes", 
-				"Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved", 
+				"Copyright 2009\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile", 
 				"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 		alert->SetShortcut(0,B_ESCAPE);
 		alert->Go();

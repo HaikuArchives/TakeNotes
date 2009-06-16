@@ -817,8 +817,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		// About
 		case ABOUT: {
-			myAlert = new BAlert("About TakeNotes", 
-				"Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved", 
+				myAlert = new BAlert("About TakeNotes", 
+				"Copyright 2009\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile", 
 				"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 			myAlert -> Go();		
 		}

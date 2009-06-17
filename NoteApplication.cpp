@@ -16,12 +16,16 @@
 
 #include <Alert.h>
 #include <Autolock.h>
+#include <Bitmap.h>
 #include <Deskbar.h>
 #include <Entry.h>
 #include <File.h>
+#include <IconUtils.h>
 #include <Mime.h>
 #include <Node.h>
 #include <Path.h>
+#include <Resources.h>
+
 #include <sys/stat.h>
 #include <dirent.h>
 
@@ -108,7 +112,14 @@ void NoteApplication :: CheckMime(){
 		//Variables
 		BMimeType 	takenotes("application/takenotes");
 		image_info 	info;
+		image_info	appInfo;
 		entry_ref	ref;
+		
+		size_t		size;
+		const	void		*data = NULL;
+		BBitmap		*aBitmap;
+		BFile		file;
+		BResources	resource;
 		
 		//	takenotes.SetTo("application/takenotes");
 		
@@ -177,7 +188,6 @@ void NoteApplication :: CheckMime(){
 			attr->AddBool("attr:editable",true);
 			attr->AddBool("attr:editable",true);
 
-
 		
 			//attr->PrintToStream();
 		
@@ -188,6 +198,51 @@ void NoteApplication :: CheckMime(){
 			//Add a short description for the MIME type
 			if (takenotes.SetShortDescription("TakeNotes") != B_OK)
 					printf("errore nel settare la short description\n");
+				
+			//Set the icon for the file labeled as application/takenotes
+
+			if (our_image(appInfo) != B_OK)
+				printf("errore nell'our_image\n");
+
+			file.SetTo(appInfo.name, B_READ_ONLY);
+			if (resource.SetTo(&file) != B_OK){
+			
+				printf("errore nella resource\n");
+			
+			}
+			
+			data = resource.LoadResource(B_VECTOR_ICON_TYPE,2,&size);
+			if (data != NULL){
+			
+					//Obtain the icon from the blob
+					BBitmap *icon = new BBitmap(BRect(0,0,31,31), B_CMAP8);
+					
+					if (icon->InitCheck() == B_OK && BIconUtils::GetVectorIcon((const uint8 *)data,size,icon) == B_OK){
+					
+						printf("sono riuscito a caricare l'icona!\n");
+						aBitmap = icon;
+						
+						if (takenotes.SetIcon(aBitmap,B_LARGE_ICON) != B_OK){
+						
+								printf("errore nell'installare l'icona\n");
+						}
+					
+					} else {
+					
+						printf("Non sono riuscito a caricare l'icona!\n");
+						delete icon;
+						
+			
+						
+					
+					}
+			
+			} else {
+			
+				printf("i dati erano vuoti\n");
+			
+			}
+
 				
 			//Finally we install the TakeNotes MIME type
 			if (takenotes.Install() != B_OK)

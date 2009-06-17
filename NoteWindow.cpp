@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 10th June 2009
+ * Last revision: Ilio Catallo, 16th June 2009
  *
  * Description: TODO
  */
@@ -90,8 +90,8 @@ NoteWindow::NoteWindow(int32 id)
 	frameView = Bounds();
 	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
 	
-	fNoteView = new NoteView (frameView, B_FOLLOW_LEFT | B_FOLLOW_TOP, false, this); 
-	
+	fNoteView = new NoteView (frameView, B_FOLLOW_ALL, false, this); 
+		
 	//Text and Scroll View
 	frameView = fNoteView -> Bounds();	
 	frameView.top += 10;
@@ -199,8 +199,9 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 				// Create the view from the flatten message stored in the FS
 				
 				//Variables
-				BEntry entry(ref);
-				char name[B_FILE_NAME_LENGTH];
+				BEntry 	entry(ref);
+				BRect	viewRect;
+				char 	name[B_FILE_NAME_LENGTH];
 				
 				//Set the title as the name of the file
 				entry.GetName(name);
@@ -209,6 +210,10 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 				//Fetch and load the view from the file 
 				msg->Unflatten(&f);
 				fNoteView = new NoteView(msg);
+				
+				//Resize the window to fit the real view size
+				viewRect = fNoteView->Bounds();
+				ResizeTo(viewRect.Width(), viewRect.Height());
 				
 				// Creating the file panel
 				fSavePanel = new BFilePanel (B_SAVE_PANEL, new BMessenger (this), directory, B_FILE_NODE, false, NULL,

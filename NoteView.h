@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 13th June 2009
+ * Last revision: Ilio Catallo, 18th June 2009
  *
  * Description: TODO
  */
@@ -51,6 +51,10 @@ class NoteView : public BView {
 			void			_LoadDB();
 			void			_OpenTakeNotes();
 			void			_Quit();
+			
+			
+			void			SetReplicated(bool flag);
+ 			bool			GetReplicated();
 			
 
 	private:

@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 14th June 2009
+ * Last revision: Ilio Catallo, 18th June 2009
  *
  * Description: TODO
  */
@@ -76,6 +76,50 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 		   
 }
 
+
+NoteView :: NoteView (BMessage *msg, BHandler *handler)
+		   : BView(msg){
+			
+			//Variables
+			app_info	info;
+			
+			//Initialization
+			fReplicated = true;
+			if (handler) fMessenger = new BMessenger(handler);
+			
+			//Check if we are in the deskbar
+			if (be_app->GetAppInfo(&info) == B_OK && !strcasecmp(info.signature, "application/x-vnd.Be-TSKB")){
+				fInDeskbar = true;
+				fReplicated = false;
+
+			} else {
+	
+				printf("%s\n",info.signature);
+			
+			}
+			
+}
+
+// Destructor
+NoteView :: ~NoteView(){}
+		
+
+void NoteView :: Draw (BRect update){
+
+		printf("fReplicated: %d\n",fReplicated);	
+
+		if (fReplicated || !fInDeskbar)
+				return;
+		
+		printf("siamo nella draw\n");
+		SetDrawingMode(B_OP_ALPHA);
+		DrawBitmap(fBitmap);
+		SetDrawingMode(B_OP_COPY);
+
+
+}
+
+
 void NoteView :: InitBitmap(){
 
 			printf("ma qui ci entri ?\n");
@@ -133,49 +177,6 @@ void NoteView :: InitBitmap(){
 				printf("i dati erano vuoti\n");
 			
 			}
-
-}
-
-
-NoteView :: NoteView (BMessage *msg, BHandler *handler)
-		   : BView(msg){
-			
-			//Variables
-			app_info	info;
-			
-			//Initialization
-			fReplicated = true;
-			if (handler) fMessenger = new BMessenger(handler);
-			
-			//Check if we are in the deskbar
-			if (be_app->GetAppInfo(&info) == B_OK && !strcasecmp(info.signature, "application/x-vnd.Be-TSKB")){
-				fInDeskbar = true;
-				fReplicated = false;
-
-			} else {
-	
-				printf("%s\n",info.signature);
-			
-			}
-			
-}
-
-// Destructor
-NoteView :: ~NoteView(){}
-		
-
-void NoteView :: Draw (BRect update){
-
-		printf("fReplicated: %d\n",fReplicated);	
-
-		if (fReplicated)
-				return;
-		
-		printf("siamo nella draw\n");
-		SetDrawingMode(B_OP_ALPHA);
-		DrawBitmap(fBitmap);
-		SetDrawingMode(B_OP_COPY);
-
 
 }
 
@@ -480,6 +481,19 @@ void NoteView :: _Quit(){
 	
 		be_app->PostMessage(B_QUIT_REQUESTED);
     }
+
+}
+
+
+void NoteView :: SetReplicated(bool flag){
+
+		fReplicated = flag;
+
+}
+
+bool NoteView :: GetReplicated(){
+
+		return fReplicated;
 
 }
 

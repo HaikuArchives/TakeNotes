@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 16th June 2009
+ * Last revision: Ilio Catallo, 18th June 2009
  *
  * Description: TODO
  */
@@ -207,9 +207,16 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 				entry.GetName(name);
 				SetTitle(name);
 				
-				//Fetch and load the view from the file 
+				//Fetch the view from the file 
 				msg->Unflatten(&f);
+				
+				//Restore all the references for the NoteView's children
 				fNoteView = new NoteView(msg);
+				fScrollView = (BScrollView *)fNoteView->ChildAt(1);
+				fNoteText = (NoteText *)fScrollView->ChildAt(0);
+				
+				//We use NoteView::Archive both for replicant,deskbar and save/load so we neeed to say clearly these sort of things :D
+				fNoteView->SetReplicated(false);
 				
 				//Resize the window to fit the real view size
 				viewRect = fNoteView->Bounds();

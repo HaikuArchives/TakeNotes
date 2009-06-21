@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 18th June 2009
+ * Last revision: Ilio Catallo, 21th June 2009
  *
  * Description: TODO
  */
@@ -292,38 +292,44 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		
 		BView ::Archive(msg,deep);
 		
+		//Add the information needed to restore the view as a replicant
 		msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
 		msg->AddString("class","NoteView");
 		
-		if (msg->FindRef("directory",&ref) == B_OK
-			&& msg -> FindString("name", &name) == B_OK) {
+		//If the function has been called by NoteWindow::Save we should find this information and save 
+		if (msg->FindRef("directory",&ref) == B_OK && msg -> FindString("name", &name) == B_OK) {
+			
 			dir.SetTo(&ref);
 			if ((err = dir.InitCheck()) != B_OK)
 				return err;
+			
+			//Create the note on the FS
 			file.SetTo(&dir, name, B_READ_WRITE | B_CREATE_FILE);
+		
+			//Set the icon for the note
+			if ( file.WriteAttr("BEOS:ICON",B_VECTOR_ICON_TYPE,0, fNoteIcon.icon, fNoteIcon.size) != fNoteIcon.size){
+						
+								file.RemoveAttr("BEOS:ICON");
+								printf("errore nell'installare l'icona\n");
+			}
+		
+			//File the note with the current view
+			msg->Flatten(&file);
+			msg->PrintToStream();
+		
+			//Add the MIME type information
+			nodeinfo.SetTo(&file);
+			nodeinfo.SetType("application/takenotes");
+		
+			
+			file.Unset();
+		
+			
 		}
-		else {
-			file.SetTo("/boot/home/Desktop/nota.tkn", B_CREATE_FILE | B_WRITE_ONLY);
-					
-			// Message used to say that a choice of an application is required
-			/*message = new BMessage(CHOOSE_APPL);
-			fMessenger -> SendMessage(message);
-			printf("QUI è lanciato\n");*/
-		}
 		
-		/*if (file.SetTo("/boot/home/Desktop/nota.tkn", B_CREATE_FILE | B_WRITE_ONLY) != B_OK)
-				printf("errore\n");*/
-		
-		msg->Flatten(&file);
-		msg->PrintToStream();
-		
-		nodeinfo.SetTo(&file);
-		nodeinfo.SetType("application/takenotes");
-		
-		file.Unset();
 		
 		return B_OK;
-
+		
 }
 
 BArchivable* NoteView :: Instantiate(BMessage *msg){

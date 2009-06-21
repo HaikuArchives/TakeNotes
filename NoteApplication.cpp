@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio catallo, 13th June 2009
+ * Last revision: Ilio catallo, 21th June 2009
  *
  * Description: TODO
  */
@@ -28,11 +28,13 @@
 
 #include <sys/stat.h>
 #include <dirent.h>
+#include <stdlib.h>
 
 #define COLOR_CHANGED 	'ccrq'
 #define FONT_BOLD 		'fntb'
 
 NoteApplication *note_app;
+NoteIcon		fNoteIcon;
 
 //Usuful constants (we don't want to repeat these hard to remember strings everywhere!)
 const char*	kSignature = "application/x-vnd.ccc-TakeNotes";
@@ -47,8 +49,6 @@ status_t our_image(image_info& image){
 	int32 cookie = 0;
 	
 	while (get_next_image_info(B_CURRENT_TEAM, &cookie, &image) == B_OK) {
-	
-		//printf("our_image %s\n",(char *)our_image);
 	
 		if ((char *)our_image >= (char *)image.text
 			&& (char *)our_image <= (char *)image.text + image.text_size)
@@ -116,13 +116,39 @@ void NoteApplication :: CheckMime(){
 		entry_ref	ref;
 		
 		size_t		size;
-		const	void		*data = NULL;
-		BBitmap		*aBitmap;
+const	void		*data = NULL;
 		BFile		file;
 		BResources	resource;
 		
-		//	takenotes.SetTo("application/takenotes");
 		
+		//Set the icon for the file labeled as application/takenotes
+		if (our_image(appInfo) != B_OK)
+			printf("errore nell'our_image\n");
+
+		file.SetTo(appInfo.name, B_READ_ONLY);
+		if (resource.SetTo(&file) != B_OK){
+			
+			printf("errore nella resource\n");
+			
+		}
+			
+		data = resource.LoadResource(B_VECTOR_ICON_TYPE,2,&size);
+		if (data != NULL){
+
+				fNoteIcon.icon = realloc(fNoteIcon.icon, size);
+				memcpy(fNoteIcon.icon, data, size);
+						
+				fNoteIcon.size = size;
+						
+			
+		} else {
+			
+			printf("i dati erano vuoti\n");
+			
+		}
+		
+		
+		//Check if the mimetype is installed or not
 		if (takenotes.InitCheck() == B_OK){
 		
 			//Variables
@@ -199,50 +225,6 @@ void NoteApplication :: CheckMime(){
 			if (takenotes.SetShortDescription("TakeNotes") != B_OK)
 					printf("errore nel settare la short description\n");
 				
-			//Set the icon for the file labeled as application/takenotes
-
-			if (our_image(appInfo) != B_OK)
-				printf("errore nell'our_image\n");
-
-			file.SetTo(appInfo.name, B_READ_ONLY);
-			if (resource.SetTo(&file) != B_OK){
-			
-				printf("errore nella resource\n");
-			
-			}
-			
-			data = resource.LoadResource(B_VECTOR_ICON_TYPE,2,&size);
-			if (data != NULL){
-			
-					//Obtain the icon from the blob
-					BBitmap *icon = new BBitmap(BRect(0,0,31,31), B_CMAP8);
-					
-					if (icon->InitCheck() == B_OK && BIconUtils::GetVectorIcon((const uint8 *)data,size,icon) == B_OK){
-					
-						printf("sono riuscito a caricare l'icona!\n");
-						aBitmap = icon;
-						
-						if (takenotes.SetIcon(aBitmap,B_LARGE_ICON) != B_OK){
-						
-								printf("errore nell'installare l'icona\n");
-						}
-					
-					} else {
-					
-						printf("Non sono riuscito a caricare l'icona!\n");
-						delete icon;
-						
-			
-						
-					
-					}
-			
-			} else {
-			
-				printf("i dati erano vuoti\n");
-			
-			}
-
 				
 			//Finally we install the TakeNotes MIME type
 			if (takenotes.Install() != B_OK)
@@ -406,16 +388,4 @@ int main(){
 	myApp.Run();
 	return(0);
 }		
-	//
-//	// Variables
-//	BRect	aRect;
-//	
-//	// Creation of the rectangle that gives dimensions to the window
-//	// x, y, w, h
-//	aRect.Set(30, 30, 300, 300);
-//	fNoteWindow = new NoteWindow(aRect);	
-//	
-//	// Show the window
-//	fNoteWindow->Show();	
-
 

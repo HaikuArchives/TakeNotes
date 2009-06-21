@@ -86,8 +86,8 @@ void NoteApplication :: ReadyToRun(){
 		//Variables
 		BDeskbar	deskbar;
 		
-		//Check if the replicant isn't already installed in the Deskbar
-		if (!deskbar.HasItem(kDeskbarItemName)){
+		//Check if the replicant isn't already installed in the Deskbar, avoid to ask if we already opened a note
+		if (!deskbar.HasItem(kDeskbarItemName) && fWindowCount == 0){
 		
 			BAlert* alert = new BAlert("", "Do you want TakeNotes to live in the Deskbar?", "Don't", "Install", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
@@ -166,6 +166,12 @@ const	void		*data = NULL;
 					return;
 			}	
 			
+			
+			//First of all we install the TakeNotes MIME type
+			if (takenotes.Install() != B_OK)
+					printf("non installato, errore\n");
+			
+			
 			//We define the extensions for the mime type
 			msg->AddString("extensions","tkn");
 			
@@ -224,12 +230,8 @@ const	void		*data = NULL;
 			//Add a short description for the MIME type
 			if (takenotes.SetShortDescription("TakeNotes") != B_OK)
 					printf("errore nel settare la short description\n");
-				
-				
-			//Finally we install the TakeNotes MIME type
-			if (takenotes.Install() != B_OK)
-					printf("non installato, errore\n");
 		
+			//Gargabe collection
 			delete msg;
 			delete attr;
 		

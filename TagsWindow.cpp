@@ -81,9 +81,9 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage)
 		}
 		
 		//Read the old values for this file
-		fFile.ReadAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, &buffer_tag1, 30);
-		fFile.ReadAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, &buffer_tag2, 30);
-		fFile.ReadAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, &buffer_tag3, 30);
+		fFile.ReadAttr("tagone", B_STRING_TYPE, 0, &buffer_tag1, 30);
+		fFile.ReadAttr("tagtwo", B_STRING_TYPE, 0, &buffer_tag2, 30);
+		fFile.ReadAttr("tagthree", B_STRING_TYPE, 0, &buffer_tag3, 30);
 			
 		//Initialize text field to old values
 		fTag1 -> SetText(buffer_tag1);
@@ -105,15 +105,15 @@ void TagsWindow :: MessageReceived(BMessage *message){
 				case BUTTON_OK: {
 																			
 						//Set each attribute to text field's content
-						if(fFile.WriteAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, fTag1 -> Text(), 30) == 0){
+						if(fFile.WriteAttr("tagone", B_STRING_TYPE, 0, fTag1 -> Text(), 30) == 0){
 							printf("no bytes written for tag one\n");
 						}
 								
-						if(fFile.WriteAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, fTag2 -> Text(), 30) == 0){
+						if(fFile.WriteAttr("tagtwo", B_STRING_TYPE, 0, fTag2 -> Text(), 30) == 0){
 							printf("no bytes written for tag two\n");
 						}
 								
-						if(fFile.WriteAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, fTag3 -> Text(), 30) == 0){
+						if(fFile.WriteAttr("tagthree", B_STRING_TYPE, 0, fTag3 -> Text(), 30) == 0){
 							printf("no bytes written for tag three\n");
 						}													
 									

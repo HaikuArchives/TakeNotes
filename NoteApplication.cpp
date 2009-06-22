@@ -153,16 +153,14 @@ const	void		*data = NULL;
 		
 			//Variables
 			BMessage *msg = new BMessage();
-			BMessage *attr = new BMessage();
+		
 		
 			//Check if the mimetype is already installed in the DB
 			if (takenotes.IsInstalled()){
 			
-					printf("già insatllato\n");
+					printf("già installato\n");
 					
 					delete msg;
-					delete attr;
-					
 					return;
 			}	
 			
@@ -199,31 +197,61 @@ const	void		*data = NULL;
 			}
 			
 			//Add some extra attributes in order to manage custom tags
-			attr->AddString("attr:name","TAKENOTES:refapp");
-			attr->AddString("attr:name","TAKENOTES:type");
-			attr->AddString("attr:name","TAKENOTES:tagone");
-			attr->AddString("attr:name","TAKENOTES:tagtwo");
-			attr->AddString("attr:name","TAKENOTES:tagthree");
-			attr->AddString("attr:public_name","refapp");
-			attr->AddString("attr:public_name","type");
-			attr->AddString("attr:public_name","tagone");
-			attr->AddString("attr:public_name","tagtwo");
-			attr->AddString("attr:public_name","tagthree");
-			attr->AddInt32("attr:type",B_STRING_TYPE);
-			attr->AddInt32("attr:type",B_STRING_TYPE);
- 			attr->AddInt32("attr:type",B_STRING_TYPE);
- 			attr->AddInt32("attr:type",B_STRING_TYPE);
-			attr->AddInt32("attr:type",B_STRING_TYPE);
-			attr->AddBool("attr:editable",true);
-			attr->AddBool("attr:editable",true);
-			attr->AddBool("attr:editable",true);
-			attr->AddBool("attr:editable",true);
-			attr->AddBool("attr:editable",true);
-
+			BMessage attr;
+			
+			
+			attr.AddString("attr:name","refapp");
+			attr.AddString("attr:name","type");
+			attr.AddString("attr:name","tagone");
+			attr.AddString("attr:name","tagtwo");
+			attr.AddString("attr:name","tagthree");
+			
+			attr.AddString("attr:public_name","refapp");
+			attr.AddString("attr:public_name","type");
+			attr.AddString("attr:public_name","tagone");
+			attr.AddString("attr:public_name","tagtwo");
+			attr.AddString("attr:public_name","tagthree");
 		
+			attr.AddInt32("attr:type",B_STRING_TYPE);
+			attr.AddInt32("attr:type",B_STRING_TYPE);
+ 			attr.AddInt32("attr:type",B_STRING_TYPE);
+ 			attr.AddInt32("attr:type",B_STRING_TYPE);
+			attr.AddInt32("attr:type",B_STRING_TYPE);
+		
+			attr.AddInt32("attr:width",60);
+			attr.AddInt32("attr:width",60);
+			attr.AddInt32("attr:width",60);
+			attr.AddInt32("attr:width",60);
+			attr.AddInt32("attr:width",60);
+			attr.AddInt32("attr:width",60);
+
+			attr.AddBool("attr:viewable",true);
+			attr.AddBool("attr:viewable",true);
+			attr.AddBool("attr:viewable",true);
+			attr.AddBool("attr:viewable",true);
+			attr.AddBool("attr:viewable",true);
+			
+			attr.AddBool("attr:editable",true);
+			attr.AddBool("attr:editable",true);
+			attr.AddBool("attr:editable",true);
+			attr.AddBool("attr:editable",true);
+			attr.AddBool("attr:editable",true);
+			
+			attr.AddBool("attr:extra",true);
+			attr.AddBool("attr:extra",true);
+			attr.AddBool("attr:extra",true);
+			attr.AddBool("attr:extra",true);
+			attr.AddBool("attr:extra",true);
+			
+			attr.AddInt32("attr:alignment",0);
+			attr.AddInt32("attr:alignment",0);
+			attr.AddInt32("attr:alignment",0);
+			attr.AddInt32("attr:alignment",0);
+			attr.AddInt32("attr:alignment",0);
+					
 			//attr->PrintToStream();
 		
-			if (takenotes.SetAttrInfo(attr) != B_OK){
+			if (takenotes.SetAttrInfo(&attr) != B_OK){
 					printf("errore nel settare i metadata\n");
 			}
 				
@@ -233,8 +261,7 @@ const	void		*data = NULL;
 		
 			//Gargabe collection
 			delete msg;
-			delete attr;
-		
+	
 		} else {
 		
 				printf("errore di init del mimetype");

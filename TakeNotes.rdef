@@ -33,9 +33,10 @@ resource app_version {
 
 resource app_flags B_SINGLE_LAUNCH;
 
+/*
 resource file_types message {
 		"types" = "application/takenotes"
-};
+};*/
 
 resource(1) vector_icon {
 	$"6E636966170500020006023B55F13C5CD2BE755C3D78964A454E48FFCB00D3F5"

@@ -8,16 +8,17 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 18th June 2009
+ * Last revision: Eleonora Ciceri, 23th June 2009
  *
  * Description: TODO
  */
 
-
+// Our Libraries
 #include "NoteApplication.h"
 #include "NoteWindow.h"
 #include "ColorMenuItem.h"
 
+// Other Libraries
 #include <Alert.h>
 #include <Application.h>
 #include <Autolock.h>
@@ -69,13 +70,14 @@ const struct tm gettime() {
 
 // Constructor
 NoteWindow::NoteWindow(int32 id)
-	: BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
+		  : BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
 	
 	//Variables
 	BRect		frameView,
 				frameText;
 	entry_ref	*directory = NULL;
-	BRefFilter	*refFilter = NULL;				
+	BRefFilter	*refFilter = NULL;		
+	BString 	title("Untitled Note ");		
 				
 	// Initialize the messenger: the handler is the window itself
 	fMessenger = BMessenger(this);
@@ -112,7 +114,6 @@ NoteWindow::NoteWindow(int32 id)
 	fScrollView = new BScrollView("scrollview", fNoteText, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
 	
 	//Set the title	
-	BString title("Untitled Note ");
 	title << id;
 	SetTitle(title.String());
 	
@@ -163,7 +164,7 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 			case B_ENTRY_NOT_FOUND:{
 					
 				printf("file not found\n");
-				BAlert *alert = new BAlert("File Not Found","file not found","damn!");
+				BAlert *alert = new BAlert("File Not Found","file not found", "OK");
 				alert->Go();
 			}
 			break;
@@ -1122,40 +1123,32 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		// Check for alarm to show (after the user has set one)
 		case CHECK_ALARM: {
 		
-			// First check if an alarm has been set
-			
+			// First check if an alarm has been set			
 			if(!(alarm_set)) {
 				break;
 			} 
 			
-			// Second check if the runner has been correctly started
-			
+			// Second check if the runner has been correctly started			
 			if(runner -> InitCheck() < B_NO_ERROR) {		
 				break;			
 			}
 			
 		
-			// Check if date/time saved in data struct comes after system time
-			
-			// Declaring two timers: rawtime represents system time, userTime represents user input saved in the struct
-	
+			// Check if date/time saved in data struct comes after system time			
+			// Declaring two timers: rawtime represents system time, userTime represents user input saved in the struct	
 			time_t rawtime;
 			time_t userTime;
 	
-			// Declare a time struct
-	
+			// Declare a time struct	
 			struct tm *timeinfo;
 	
-			// Get the current time (number of seconds from the "epoch"), stores it in the timer
-		
+			// Get the current time (number of seconds from the "epoch"), stores it in the timer		
 			time( &rawtime );
 	
-			// Convert time_t time value to a tm struct
-	
+			// Convert time_t time value to a tm struct	
 			timeinfo = localtime ( &rawtime );
 		
-			// Fill the timeinfo struct with data saved in data struct
-	
+			// Fill the timeinfo struct with data saved in data struct	
 			timeinfo -> tm_year = fDati.Anno - 1900;
 			timeinfo -> tm_mon = fDati.Mese - 1;
 			timeinfo -> tm_mday = fDati.Giorno;
@@ -1163,12 +1156,10 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			timeinfo -> tm_min = fDati.Minuto;
 			timeinfo -> tm_sec = 0;	
 	
-			// Convert from struct tm to data type time_t
-	
+			// Convert from struct tm to data type time_t	
 			userTime = mktime(timeinfo);	
-
-			// Compare user time and system time
-	
+			
+			// Compare user time and system time	
 			if( difftime(userTime, time( &rawtime) ) < 0 ) {
 			
 				BString string;
@@ -1179,8 +1170,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				myAlert = new BAlert("Alarm activated", alertstr, "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 				myAlert -> Go();
 				
-			// WARNING!!!! We have to think about this: when an alarm has been activated, remember to "delete" it otherwise the alarm will appear over and over
-				
+				// PAY ATTENTION!!!! We have to think about this: when an alarm has been activated, remember to "delete" it otherwise the alarm will appear over and over
 				alarm_set = false;
 
 			}				

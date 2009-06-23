@@ -15,19 +15,27 @@
 #include "ColorWindow.h"
 
 #include <Button.h>
+#include <Alert.h>
 
 // Messages
-#define COLOR_CHANGED 'ccrq'
-#define BUTTON_OK 'btok'
+#define COLOR_CHANGED 	'ccrq'
+#define BUTTON_OK 		'btok'
+#define BUTTON_UNDO		'btun'	
 
-// Constructor
-// It is created with the dimensions of BRect
+/*
+* Constructor
+* It is created with the dimensions of BRect
+*/
 ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
 			: BWindow (frame, "Change the background color", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
+	
 	// Variables
-	BPoint 				leftTop(20.0, 50.0);
+	BPoint 				 leftTop(20.0, 50.0);
 	color_control_layout matrix;
-	long cellSide;			
+	long 				 cellSide;		
+	
+	BButton				 *okButton;
+	BButton				 *undoButton;	
 	
 	frame.OffsetTo(B_ORIGIN);
 	fColorView = new ColorView (frame, "ColorView",handler);
@@ -42,8 +50,11 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
 	fColorControl = new BColorControl (leftTop, matrix, cellSide, "ColorControl");
 	fColorView -> AddChild(fColorControl);
 	
-	BButton *okButton = new BButton (BRect(280, 320, 350,350), "ok", "Change", new BMessage(BUTTON_OK));
+	okButton = new BButton (BRect(280, 320, 350, 350), "ok", "Change", new BMessage(BUTTON_OK));
 	fColorView -> AddChild(okButton);
+	
+	undoButton = new BButton (BRect(200, 320, 270, 350), "undo", "Undo", new BMessage(BUTTON_UNDO));
+	fColorView -> AddChild(undoButton);
 	
 	Show();
 }
@@ -64,8 +75,24 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 			msg -> AddInt8 ("blue", (int8)userColorChoice.blue);
 			fMessenger->SendMessage(msg);
 		}
-		break;	
-	}	
+				
+		case BUTTON_UNDO: {
+				
+			BAlert *alert = new BAlert("", "Changes will be discarded", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			alert->SetShortcut(0, B_ESCAPE);
+
+			if (alert->Go() == 0) {
+				// Discard all the changes
+				Quit();
+			}
+		}
+		break;
+	
+
+		default:
+			BWindow::MessageReceived(message);
+			break;	
+		}	
 }
 
 // Function that is activated when I close the window

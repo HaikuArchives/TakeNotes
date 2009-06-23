@@ -22,17 +22,17 @@
 // Messages 
 #define TEXT_CHANGED 'txch'
 
-//Constants
+// Constants
 #define TEXT_INSET 10
 
-//Costructor
+// Costructor
 NoteText :: NoteText(BRect frame, BRect frameText, char *name, BHandler *handler)
 		 : BTextView(frame, name, frameText, B_FOLLOW_ALL, B_FRAME_EVENTS | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE){
 		 
-		 fMessenger = new BMessenger(handler);
-		 fReplicated = false;
+	fMessenger = new BMessenger(handler);
+	fReplicated = false;
 		 
-		 SetViewColor(254, 254, 92, 255);
+	SetViewColor(254, 254, 92, 255);
 		 
 }
 
@@ -40,7 +40,7 @@ NoteText :: NoteText(BRect frame, BRect frameText, char *name, BHandler *handler
 NoteText :: NoteText (BMessage *message)
 		 : BTextView (message){
 		 
-		 fReplicated = true;
+	fReplicated = true;
 	//	 fBitmap = new BBitmap(message);
 		 
 }
@@ -66,7 +66,6 @@ void NoteText :: Draw(BRect updateRect){
 //	}
 //	
 	
-
 }
 
 status_t NoteText :: Archive (BMessage *msg, bool deep) const{
@@ -87,7 +86,7 @@ status_t NoteText :: Archive (BMessage *msg, bool deep) const{
 
 }
 
-BArchivable* NoteText :: Instantiate(BMessage *msg){
+BArchivable *NoteText :: Instantiate(BMessage *msg){
 
 	return new NoteText(msg);
 	
@@ -96,11 +95,10 @@ BArchivable* NoteText :: Instantiate(BMessage *msg){
 void NoteText :: MessageReceived(BMessage *message){
 
 	switch (message->what){
-	
-	//Edit messages
-		case B_CUT:{
-			this -> Cut(be_clipboard);
-		}
+
+		// Edit messages
+		case B_CUT:
+			this -> Cut(be_clipboard);		
 		break;
 		
 		case B_COPY:
@@ -144,29 +142,29 @@ void NoteText :: MessageReceived(BMessage *message){
 }
 	
 
-void NoteText :: KeyDown(const char* bytes, int32 numBytes){
+void NoteText :: KeyDown(const char *bytes, int32 numBytes){
 		
-		BTextView :: KeyDown(bytes, numBytes);
-//		Invalidate();
-//		//Window()->UpdateIfNeeded();
+	BTextView :: KeyDown(bytes, numBytes);
+//	Invalidate();
+//	//Window()->UpdateIfNeeded();
 		
 }	
 	
 void NoteText :: FrameResized (float width, float height){
 			  
-			  BRect frameText;
+	// Variables
+	BRect frameText;
 			  
-			  frameText = Bounds();
-			  frameText.InsetBy(TEXT_INSET,TEXT_INSET);
-			  SetTextRect(frameText);
+	frameText = Bounds();
+	frameText.InsetBy(TEXT_INSET,TEXT_INSET);
+	SetTextRect(frameText);
 			  
-			  BTextView :: FrameResized(width,height);
-			  
-	
-		
+	BTextView :: FrameResized(width,height);
+			  		
 }
 	
-void NoteText :: InsertText(const char* text, int32 length, int32 offset, const text_run_array *runs) {
+void NoteText :: InsertText(const char *text, int32 length, int32 offset, const text_run_array *runs) {
+	
 	// Variables
 	BMessage *message;
 
@@ -180,56 +178,54 @@ void NoteText :: InsertText(const char* text, int32 length, int32 offset, const 
 
 }
 
-
 void NoteText :: MouseDown(BPoint point){
 
-	//Variables
-	uint32 fMouseButtons;
-	BMessage* currentMessage;
+	// Variables
+	uint32 		fMouseButtons;
+	BMessage 	*currentMessage;
 	
-	BPopUpMenu* popupmenu;
+	BPopUpMenu 	*popupmenu;
 	
-	BMenuItem* item1;
-	BMenuItem* item2;
-	BMenuItem* item3;
+	BMenuItem  	*item1;
+	BMenuItem 	*item2;
+	BMenuItem 	*item3;
 	
-	BMenuItem* selected;
+	BMenuItem   *selected;
 	
-	//Obtain the current message from window (B_MOUSE_DOWN)
+	// Obtain the current message from window (B_MOUSE_DOWN)
 	currentMessage = Window()->CurrentMessage();
 	
 	
 	if(currentMessage) {
 	
-		//Extract which mouse button information from current message
+		// Extract which mouse button information from current message
 		currentMessage -> FindInt32("buttons", (int32*)&fMouseButtons);
 		
-		//If mouse button is the secondary one I show the pop up menu
+		// If mouse button is the secondary one I show the pop up menu
 		if(fMouseButtons == B_SECONDARY_MOUSE_BUTTON) {
 			
-			//Instantiate pop up menu
+			// Instantiate pop up menu
 			popupmenu = new BPopUpMenu("popupmenu");
 	
-			//Populate the pop up menu with menu items
+			// Populate the pop up menu with menu items
 			popupmenu -> AddItem(item1 = new BMenuItem("Cut", new BMessage(B_CUT)));
 			item1->SetTarget(this);
 			popupmenu -> AddItem(item2 = new BMenuItem("Copy", new BMessage(B_COPY)));
 			item2->SetTarget(this);
 			popupmenu -> AddItem(item3 = new BMenuItem("Paste", new BMessage(B_PASTE)));
 			item3->SetTarget(this);
-			//Convert mouse position to screen coordinates
+			
+			// Convert mouse position to screen coordinates
 			ConvertToScreen(&point);
 
-			//Show the pop up menu and get the selected item
+			// Show the pop up menu and get the selected item
 			selected = popupmenu -> Go(point, true, true, true);
 			
-		}
-	
+		}	
 	
 	}
 	
-	//Go on with MouseDown
+	// Go on with MouseDown
 	BTextView::MouseDown(point);
-
 
 }

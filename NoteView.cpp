@@ -48,19 +48,17 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 	   	// Variable
 		BDragger *dragger;	
 		
-		//Initilization
+		// Initilization
 		fNoteText = NULL;
 		fBitmap = NULL;
 		
 		if (handler) fMessenger = new BMessenger(handler); 
 		fHash = new AppHashTable();
 		
-		//Graphical Stuff
-		
-		
+		// Graphical Stuff				
 		if (!inDeskbar){
 		
-			//We don't have to add the dragger if the view is in the deskbar
+			// We don't have to add the dragger if the view is in the deskbar
 			SetViewColor(254,254,92,255); 
 			dragger = new BDragger(BRect(0,0,7,7),this,B_FOLLOW_NONE);
 			AddChild(dragger);
@@ -80,14 +78,14 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 NoteView :: NoteView (BMessage *msg, BHandler *handler)
 		   : BView(msg){
 			
-			//Variables
+			// Variables
 			app_info	info;
 			
-			//Initialization
+			// Initialization
 			fReplicated = true;
 			if (handler) fMessenger = new BMessenger(handler);
 			
-			//Check if we are in the deskbar
+			// Check if we are in the deskbar
 			if (be_app->GetAppInfo(&info) == B_OK && !strcasecmp(info.signature, "application/x-vnd.Be-TSKB")){
 				fInDeskbar = true;
 				fReplicated = false;
@@ -106,78 +104,75 @@ NoteView :: ~NoteView(){}
 
 void NoteView :: Draw (BRect update){
 
-		printf("fReplicated: %d\n",fReplicated);	
+	printf("fReplicated: %d\n",fReplicated);	
 
-		if (fReplicated || !fInDeskbar)
-				return;
+	if (fReplicated || !fInDeskbar)
+		return;
 		
-		printf("siamo nella draw\n");
-		SetDrawingMode(B_OP_ALPHA);
-		DrawBitmap(fBitmap);
-		SetDrawingMode(B_OP_COPY);
-
+	printf("siamo nella draw\n");
+	SetDrawingMode(B_OP_ALPHA);
+	DrawBitmap(fBitmap);
+	SetDrawingMode(B_OP_COPY);
 
 }
 
 
 void NoteView :: InitBitmap(){
 
-			printf("ma qui ci entri ?\n");
+	printf("ma qui ci entri ?\n");
 
-			//Variables
-			image_info 	info;
-			BFile		file;
+	// Variables
+	image_info 	info;
+	BFile		file;			
+const void*		data = NULL;
+	size_t		size;
 			
-	const	void*		data = NULL;
-			size_t		size;
+	// Initialization
+	if (fBitmap){
+		delete fBitmap;
+	}
 			
-			//Initialization
-			if (fBitmap){
-				delete fBitmap;
-			}
+	fBitmap = NULL;
 			
-			fBitmap = NULL;
+	// Try to locate ourselves on the FS and open in read only
+	if (our_image(info) != B_OK)
+		printf("errore nell'our_image\n");
 			
-			//Try to locate ourselves on the FS and open in read only
-			if (our_image(info) != B_OK)
-				printf("errore nell'our_image\n");
-			
-			file.SetTo(info.name,B_READ_ONLY);
-			if (file.InitCheck() < B_OK)
-				printf("errore nell'apertura file\n");
+	file.SetTo(info.name,B_READ_ONLY);
+	if (file.InitCheck() < B_OK)
+		printf("errore nell'apertura file\n");
 				
-			//Loading the resourced linked in the binary
-			BResources resources(&file);
-			if (resources.InitCheck() < B_OK)
-				printf("errore nel caricare le risorse\n");
+	// Loading the resourced linked in the binary
+	BResources resources(&file);
+	if (resources.InitCheck() < B_OK)
+		printf("errore nel caricare le risorse\n");
 			
-			//Load the vectorial icon into a void pointer
-			data = resources.LoadResource(B_VECTOR_ICON_TYPE,1,&size);
-			if (data != NULL){
+	// Load the vectorial icon into a void pointer
+	data = resources.LoadResource(B_VECTOR_ICON_TYPE,1,&size);
+	if (data != NULL){
 			
-					//Obtain the icon from the blob
-					BBitmap *icon = new BBitmap(Bounds(), B_RGBA32);
+		//Obtain the icon from the blob
+		BBitmap *icon = new BBitmap(Bounds(), B_RGBA32);
 					
-					if (icon->InitCheck() == B_OK && BIconUtils::GetVectorIcon((const uint8 *)data,size,icon) == B_OK){
+		if (icon->InitCheck() == B_OK && BIconUtils::GetVectorIcon((const uint8 *)data,size,icon) == B_OK){
 					
-						printf("sono riuscito a caricare l'icona!\n");
-						fBitmap = icon;
-						Invalidate();
+			printf("sono riuscito a caricare l'icona!\n");
+			fBitmap = icon;
+			Invalidate();
 						
 					
-					} else {
+		} else {
 					
-						printf("Non sono riuscito a caricare l'icona!\n");
-						delete icon;
+			printf("Non sono riuscito a caricare l'icona!\n");
+			delete icon;
 					
-					}
+		}
 			
-			} else {
+		} else {
 			
-				printf("i dati erano vuoti\n");
+			printf("i dati erano vuoti\n");
 			
-			}
-
+		}
 }
 
 
@@ -185,9 +180,11 @@ void NoteView :: AttachedToWindow(){
 
 		BView :: AttachedToWindow();
 		
-		// if there's a parent it means we're in the deskbar
-		// so we set the background color the same as the deksbar
-		// in order to obtain the alpha trasparency for the icon
+		/*
+		* if there's a parent it means we're in the deskbar
+		* so we set the background color the same as the deksbar
+		* in order to obtain the alpha trasparency for the icon
+		*/
 		if (Parent() && !fReplicated){
 			SetViewColor(Parent()->ViewColor());
 			SetLowColor(ViewColor());
@@ -198,12 +195,23 @@ void NoteView :: AttachedToWindow(){
 
 void NoteView :: MouseDown(BPoint point){
 
+	// Variables
+	BList 		*aList;
+	app_info 	*appInfo;
+    int 		count;
+    entry_ref	ref;
+    BString		name;
+    
+    BPopUpMenu  *menu;
+	
+
 	if (fInDeskbar && !fReplicated) {
+	
 		// Load the database of notes
 		fHash = new AppHashTable();
 		_LoadDB();
 
-		BPopUpMenu* menu = new BPopUpMenu(B_EMPTY_STRING, false, false);
+		menu = new BPopUpMenu(B_EMPTY_STRING, false, false);
 		menu->SetAsyncAutoDestruct(true);
 		menu->SetFont(be_plain_font);
 
@@ -213,11 +221,8 @@ void NoteView :: MouseDown(BPoint point){
 
 				
 		// Initialization
-    	BList *aList = new BList;
-    	app_info *appInfo = new app_info();
-    	int count;
-    	entry_ref	ref;
-    	BString		name;
+    	aList = new BList;
+    	appInfo = new app_info();
 
 	   	// Obtaining the applications that are running
    		be_roster->GetAppList(aList); 
@@ -232,7 +237,7 @@ void NoteView :: MouseDown(BPoint point){
         	ref = appInfo->ref;
    			name.SetTo(ref.name);
    		 	            	
-   			//not show the system process like the *_server program or the Deskbar / Tracker
+   			// Not show the system process like the *_server program or the Deskbar / Tracker
    			if (name.Compare("registrar") != 0 && name.Compare("Tracker") != 0 && name.Compare("Deskbar") != 0 &&
    		 		name.Compare("net_server") != 0 && name.Compare("syslog_daemon") !=0 && name.Compare("input_server") != 0 &&
    		 		name.Compare("midi_server") !=0 && name.Compare("print_server") !=0 && name.Compare("media_server") != 0 &&
@@ -241,7 +246,7 @@ void NoteView :: MouseDown(BPoint point){
    		 		// Obtain the signature number
    				int countSignatures = fHash -> GetNumSignatures();
    			
-   				//For each signature in the list we check if it is the hash table and in case we add it to the menu
+   				// For each signature in the list we check if it is the hash table and in case we add it to the menu
    				for (int i = 0; i < countSignatures; i++) {
    					char *sig = fHash -> GetSignature(i);
    					if (strcmp (appInfo -> signature, sig) == 0) {
@@ -281,48 +286,44 @@ void NoteView :: MouseDown(BPoint point){
 		
 status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 				
-		//Variables
+		// Variables
 		BFile 		file;
 		BNodeInfo 	nodeinfo;
 		BString		string;
 		entry_ref	ref;
 		status_t	err;
-		const char*	name;
+		const char	*name;
 		BDirectory	dir;
 		
 		BView ::Archive(msg,deep);
 		
-		//Add the information needed to restore the view as a replicant
+		// Add the information needed to restore the view as a replicant
 		msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
 		msg->AddString("class","NoteView");
 		
-		//If the function has been called by NoteWindow::Save we should find this information and save 
+		// If the function has been called by NoteWindow::Save we should find this information and save 
 		if (msg->FindRef("directory",&ref) == B_OK && msg -> FindString("name", &name) == B_OK) {
 			
 			dir.SetTo(&ref);
 			if ((err = dir.InitCheck()) != B_OK)
 				return err;
 			
-			//Create the note on the FS
+			// Create the note on the FS
 			file.SetTo(&dir, name, B_READ_WRITE | B_CREATE_FILE);
 		
-			//File the note with the current view
+			// File the note with the current view
 			msg->Flatten(&file);
 			msg->PrintToStream();
 		
-			//Add the MIME type information
+			// Add the MIME type information
 			nodeinfo.SetTo(&file);
-			nodeinfo.SetType("application/takenotes");
-		
+			nodeinfo.SetType("application/takenotes");		
 			
-			file.Unset();
-		
+			file.Unset();		
 			
-		}
+		}	
 		
-		
-		return B_OK;
-		
+		return B_OK;		
 }
 
 BArchivable* NoteView :: Instantiate(BMessage *msg){
@@ -347,52 +348,52 @@ void NoteView :: AboutRequested(){
 
 void NoteView :: MessageReceived(BMessage *message){
 
-		message->PrintToStream();
+	message->PrintToStream();
 
-		switch(message->what){
+	switch(message->what){
 		
-			case B_ABOUT_REQUESTED:
-				AboutRequested();
-			break;
+		case B_ABOUT_REQUESTED:
+			AboutRequested();
+		break;
 				
-			case OPEN_TAKENOTES:
-				_OpenTakeNotes();
-			break;
+		case OPEN_TAKENOTES:
+			_OpenTakeNotes();
+		break;
 				
-			case OPEN_FILE:{
+		case OPEN_FILE:{
 				
-				//Variables
-				char	*argv[1];
-				void	*who;
+			//Variables
+			char	*argv[1];
+			void	*who;
 
-				//Find the note path and the team_id of the releated application	
-				argv[0] = (char*) message -> FindString("Note");
-				message -> FindPointer("team", &who);
+			//Find the note path and the team_id of the releated application	
+			argv[0] = (char*)message -> FindString("Note");
+			message -> FindPointer("team", &who);
 					
-				//Open the note and make focus on the releated application
-				be_roster -> Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
-				be_roster -> ActivateApp(*static_cast<team_id*>(who));
-			
-			}
-			break;
-			
-			case B_QUIT_REQUESTED:
-				_Quit();
-			break;
-			
-				
-			default:
-				BView::MessageReceived(message);
-			break;
+			//Open the note and make focus on the releated application
+			be_roster -> Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
+			be_roster -> ActivateApp(*static_cast<team_id*>(who));
 			
 		}
+		break;
+			
+		case B_QUIT_REQUESTED:
+			_Quit();
+		break;
+					
+		default:
+			BView::MessageReceived(message);
+		break;
+			
+	}
 }
 
 void NoteView :: _LoadDB(){
-	//Variables
+
+	// Variables
 	BFile	config;
 	off_t	length;
-	char*	input;
+	char	*input;
 
 	BString stringa;
 	BString	path;
@@ -404,59 +405,55 @@ void NoteView :: _LoadDB(){
 	int32	firstComma;
 	int32	lastComma;
 			
-		// Check if the file exists and if it is readable
-		if (fDatabase.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_ONLY) != B_OK){
+	// Check if the file exists and if it is readable
+	if (fDatabase.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_ONLY) != B_OK){
 
-		}
+	}
 		
-		//Obtain the length of the file and sufficent memory is allocated for the file's contents
-		fDatabase.GetSize(&length);
-		input = (char *)malloc(length);
+	//Obtain the length of the file and sufficent memory is allocated for the file's contents
+	fDatabase.GetSize(&length);
+	input = (char *)malloc(length);
 	
-		// Actually read the database file
-		if (input && (fDatabase.Read(input, length) >= B_OK)){
+	// Actually read the database file
+	if (input && (fDatabase.Read(input, length) >= B_OK)){
 		
-			stringa.SetTo(input);
-			free(input);
+		stringa.SetTo(input);
+		free(input);	
 		
+	} else {
 		
-		} else {
-		
-			printf("errore di lettura file\n");
-			return;
+		printf("errore di lettura file\n");
+		return;
 			
-		}
+	}
 		
-		//Clean the string from random error
-		printf("prima della pulizia: %s\n\n",stringa.String());
-		stringa.Remove(stringa.FindLast(":")+1,stringa.CountChars());
-		printf("dopo la pulizia: %s\n\n\n",stringa.String());
+	//Clean the string from random error
+	printf("prima della pulizia: %s\n\n",stringa.String());
+	stringa.Remove(stringa.FindLast(":")+1,stringa.CountChars());
+	printf("dopo la pulizia: %s\n\n\n",stringa.String());
+		
+	while (stringa.CountChars() > 0 ){
 	
-	
+		//Trovo i due punti iniziali
+		firstComma = stringa.FindFirst(":")+1;
 		
-		while (stringa.CountChars() > 0 ){
-	
-			//Trovo i due punti iniziali
-			firstComma = stringa.FindFirst(":")+1;
+		// Estrapola il path ed elimina i due punti
+		stringa.MoveInto(path, 0, firstComma);
+		path.RemoveLast(":");
 		
-			// Estrapola il path ed elimina i due punti
-			stringa.MoveInto(path, 0, firstComma);
-			path.RemoveLast(":");
+		//Trova i secondi due punti
+		lastComma = stringa.FindFirst(":")+1;
 		
-			//Trova i secondi due punti
-			lastComma = stringa.FindFirst(":")+1;
+		// Estrapola la signature ed elimina i due punti
+		stringa.MoveInto(signature, 0, lastComma);
+		signature.RemoveLast(":");
 		
-			// Estrapola la signature ed elimina i due punti
-			stringa.MoveInto(signature, 0, lastComma);
-			signature.RemoveLast(":");
+		printf("path: %s\n",path.String());
+		printf("signature: %s\n",signature.String());
+		printf("TODO: %s\n\n",stringa.String());
 		
-			printf("path: %s\n",path.String());
-			printf("signature: %s\n",signature.String());
-			printf("TODO: %s\n\n",stringa.String());
-	
-			
-			fHash->AddNote(signature,path);
-		}
+		fHash->AddNote(signature,path);
+	}
 
 }
 
@@ -493,7 +490,7 @@ void NoteView :: SetReplicated(bool flag){
 bool NoteView :: GetReplicated(){
 
 		return fReplicated;
-
+		
 }
 
 void NoteView :: SetBackgroundColor(rgb_color color){

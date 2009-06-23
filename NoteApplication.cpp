@@ -215,11 +215,11 @@ const	void		*data = NULL;
 			BMessage attr;
 			
 			
-			attr.AddString("attr:name","refapp");
-			attr.AddString("attr:name","type");
-			attr.AddString("attr:name","tagone");
-			attr.AddString("attr:name","tagtwo");
-			attr.AddString("attr:name","tagthree");
+			attr.AddString("attr:name","TAKENOTES:refapp");
+			attr.AddString("attr:name","TAKENOTES:type");
+			attr.AddString("attr:name","TAKENOTES:tagone");
+			attr.AddString("attr:name","TAKENOTES:tagtwo");
+			attr.AddString("attr:name","TAKENOTES:tagthree");
 			
 			attr.AddString("attr:public_name","refapp");
 			attr.AddString("attr:public_name","type");

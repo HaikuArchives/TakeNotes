@@ -60,7 +60,11 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
 }
 
 void ColorWindow :: MessageReceived (BMessage* message) {
+	
+	message->PrintToStream();
+	
 	switch (message -> what) {
+	
 		case BUTTON_OK: {
 			rgb_color userColorChoice;
 			BMessage  *msg;
@@ -75,10 +79,11 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 			msg -> AddInt8 ("blue", (int8)userColorChoice.blue);
 			fMessenger->SendMessage(msg);
 		}
+		break;
 				
 		case BUTTON_UNDO: {
 				
-			BAlert *alert = new BAlert("", "Changes will be discarded", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			BAlert *alert = new BAlert("", "Latest changes will be discarded", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 
 			if (alert->Go() == 0) {
@@ -91,8 +96,8 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 
 		default:
 			BWindow::MessageReceived(message);
-			break;	
-		}	
+		break;	
+	}	
 }
 
 // Function that is activated when I close the window

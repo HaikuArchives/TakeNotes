@@ -37,8 +37,8 @@ void ColorView :: Draw (BRect updateRect) {
 	const char *text = "Close the window to apply the changes";
 
 	instructions = new BStringView (frame, "instructions", text);
-	instructions -> SetFont(be_bold_font);
-	instructions -> SetFontSize(14);
+	instructions->SetFont(be_bold_font);
+	instructions->SetFontSize(14);
 	AddChild(instructions);	
 }
 

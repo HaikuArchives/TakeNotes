@@ -18,35 +18,36 @@
 #include <Message.h>
 #include <stdio.h>
 
+// Messages
 #define RADIO_CHECKED 	'rdck'
 #define BUTTON_OK		'btok'
 #define BUTTON_UNDO		'btun'
 
-// Constructor
-// It is created with the dimensions of BRect
+/*
+* Constructor
+* It is created with the dimensions of BRect
+*/
 ChoiceWindow :: ChoiceWindow (BRect frame, BHandler *handler)
 			: BWindow (frame, "Choose an application", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 	
-	//Inizialization
+	// Inizialization
 	fCurrentCheckedMessage = NULL;
 	
-	//Create a Messenger and set its target as NoteWindow
+	// Create a Messenger and set its target as NoteWindow
 	fMessenger = new BMessenger(handler);
 	
-	//Create the view that shows the list of the current opened applications
-	fChoiceView = new ChoiceView (Bounds(), "ChoiceView",handler); // prima era frame
+	// Create the view that shows the list of the current opened applications
+	fChoiceView = new ChoiceView (Bounds(), "ChoiceView", handler); // prima era frame
 	
-	//Add the view as a child
+	// Add the view as a child
 	AddChild(fChoiceView);	   	   
 	   	   
-	//Show the window
+	// Show the window
 	Show();
 }
 
 ChoiceWindow :: ~ChoiceWindow(){
-
 	delete fCurrentCheckedMessage;
-
 }
 
 // Function that is activated when I close the window
@@ -59,7 +60,6 @@ bool ChoiceWindow :: QuitRequested() {
 void ChoiceWindow :: MessageReceived(BMessage* message) {
 	
 	printf("sono nella window\n");
-
 	
 	switch(message -> what) {
 	
@@ -86,16 +86,17 @@ void ChoiceWindow :: MessageReceived(BMessage* message) {
 		
 		case BUTTON_UNDO:{
 		
-			//Ask before quit
-			BAlert* alert = new BAlert("", "Do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			// Ask before quit
+			BAlert *alert = new BAlert("", "Do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 
 			if (alert->Go() == 0) {
-				//Discard all the changes
+				// Discard all the changes
 				Quit();
 			}
 	
 		}
+		break;
 	
 		default:
 			BWindow::MessageReceived(message);

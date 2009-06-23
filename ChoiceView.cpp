@@ -24,6 +24,7 @@
 #include <Entry.h>
 #include <stdio.h>
 
+// Messages
 #define RADIO_CHECKED 	'rdck'
 #define BUTTON_OK		'btok'
 #define BUTTON_UNDO		'btun'
@@ -63,10 +64,10 @@ void ChoiceView :: Draw (BRect updateRect) {
 	
 	const char *text = "Choose the application that is related to the note:";
 
-	//Show a little instruction about what to do
+	// Show a little instruction about what to do
 	instructions = new BStringView (frame, "instructions", text);
-	instructions -> SetFont(be_bold_font);
-	instructions -> SetFontSize(12);
+	instructions->SetFont(be_bold_font);
+	instructions->SetFontSize(12);
 	AddChild(instructions);	
 					
 	// Initialization
@@ -86,37 +87,32 @@ void ChoiceView :: Draw (BRect updateRect) {
    		ref = appInfo->ref;
    		name.SetTo(ref.name);
    	  	
-   	  	//not show the system process like the *_server programs or the Deskbar / Tracker
+   	  	// Not show the system process like the *_server programs or the Deskbar / Tracker
    		if (name.Compare("registrar") != 0 && name.Compare("Tracker") != 0 && name.Compare("Deskbar") != 0 &&
    			name.Compare("net_server") != 0 && name.Compare("syslog_daemon") !=0 && name.Compare("input_server") != 0 &&
    			name.Compare("midi_server") !=0 && name.Compare("print_server") !=0 && name.Compare("media_server") != 0 &&
    			name.Compare("media_addon_server") != 0 && name.Compare("afp_server") != 0 && name.Compare("debug_server") != 0){
    	  
 
-				//Create the message for the current radio button and fills it with the application signature
+				// Create the message for the current radio button and fills it with the application signature
  	 	 	  	message = new BMessage (RADIO_CHECKED);
-   	  			message -> AddString("signature", appInfo -> signature);
+   	  			message->AddString("signature", appInfo->signature);
    	  	
    	  			// Show a new Radio Button and place it on the view
    	  			frame.Set(x, y, 300, 20);
-   	  			button = new BRadioButton(frame, appInfo -> signature, ref.name, message);
+   	  			button = new BRadioButton(frame, appInfo->signature, ref.name, message);
    	  			AddChild(button);
    	  	
-   	  			y += 20;
-   	  	
-   	  	}
-      	
-      	
+   	  			y += 20;   	  	
+   	  	}      	
     }
     
-    //Add the Ok and the Undo Button
+    // Add the Ok and the Undo Button
     fUndoButton = new BButton(BRect(x,y,x+50,y+10),"undo","Undo",new BMessage(BUTTON_UNDO));
    	fOkayButton = new BButton(BRect(x+70,y,x+120,y+10),"ok","OK",new BMessage(BUTTON_OK));
   
-  	//Make them children
+  	// Make them children
   	AddChild(fUndoButton);
   	AddChild(fOkayButton);
-  
-
 }
 

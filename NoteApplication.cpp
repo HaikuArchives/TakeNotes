@@ -15,6 +15,7 @@
 #include "NoteApplication.h"
 
 #include <Alert.h>
+#include <AppFileInfo.h>
 #include <Autolock.h>
 #include <Bitmap.h>
 #include <Deskbar.h>
@@ -25,6 +26,7 @@
 #include <Node.h>
 #include <Path.h>
 #include <Resources.h>
+#include <Roster.h>
 
 #include <sys/stat.h>
 #include <dirent.h>
@@ -34,7 +36,7 @@
 #define FONT_BOLD 		'fntb'
 
 NoteApplication *note_app;
-NoteIcon		fNoteIcon;
+
 
 //Usuful constants (we don't want to repeat these hard to remember strings everywhere!)
 const char*	kSignature = "application/x-vnd.ccc-TakeNotes";
@@ -115,13 +117,26 @@ void NoteApplication :: CheckMime(){
 		image_info	appInfo;
 		entry_ref	ref;
 		
+
+		//Set the icon for the file labeled as application/takenotes
+		
+		//Variables
 		size_t		size;
 const	void		*data = NULL;
 		BFile		file;
 		BResources	resource;
 		
 		
-		//Set the icon for the file labeled as application/takenotes
+		app_info 		appInfo2;
+		BFile			file2;
+		BAppFileInfo	appFileInfo;
+		
+		//Create a BAppFileInfo object linked to the application itself
+		be_app->GetAppInfo(&appInfo2);
+		file2.SetTo(&appInfo2.ref, B_READ_WRITE);
+		appFileInfo.SetTo(&file2);
+		
+		//Grab the file icon stored in the resources
 		if (our_image(appInfo) != B_OK)
 			printf("errore nell'our_image\n");
 
@@ -132,13 +147,12 @@ const	void		*data = NULL;
 			
 		}
 			
+		//Load the icon as a blob from the resource	
 		data = resource.LoadResource(B_VECTOR_ICON_TYPE,2,&size);
 		if (data != NULL){
-
-				fNoteIcon.icon = realloc(fNoteIcon.icon, size);
-				memcpy(fNoteIcon.icon, data, size);
-						
-				fNoteIcon.size = size;
+			
+				//Set the icon for the mimetype
+				appFileInfo.SetIconForType(takenotes.Type(), (uint8 *)data, size);
 						
 			
 		} else {
@@ -146,6 +160,7 @@ const	void		*data = NULL;
 			printf("i dati erano vuoti\n");
 			
 		}
+		
 		
 		
 		//Check if the mimetype is installed or not

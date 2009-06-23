@@ -306,13 +306,6 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 			//Create the note on the FS
 			file.SetTo(&dir, name, B_READ_WRITE | B_CREATE_FILE);
 		
-			//Set the icon for the note
-			if ( file.WriteAttr("BEOS:ICON",B_VECTOR_ICON_TYPE,0, fNoteIcon.icon, fNoteIcon.size) != fNoteIcon.size){
-						
-								file.RemoveAttr("BEOS:ICON");
-								printf("errore nell'installare l'icona\n");
-			}
-		
 			//File the note with the current view
 			msg->Flatten(&file);
 			msg->PrintToStream();

@@ -525,6 +525,7 @@ status_t NoteWindow :: Save(BMessage *message) {
 		return err;
 	
 	fNoteView -> Archive(message, 1);
+	fNoteView->SetReplicated(false);
 	
 	if (fSaveMessage != message) {
 		delete fSaveMessage;

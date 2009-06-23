@@ -22,13 +22,6 @@
 #include <String.h>
 #include <image.h>
 
-//It will contain the size and the icon itself used for the note
-struct NoteIcon{
-	
-	void		*icon;
-	ssize_t		size;
-
-};
 
 // Definition of the class
 class NoteApplication : public BApplication {
@@ -56,8 +49,6 @@ class NoteApplication : public BApplication {
 }; 
 
 extern NoteApplication *note_app;
-
-extern NoteIcon fNoteIcon;
 
 extern const char 	*kSignature;
 extern const char 	*kDeskbarItemName;

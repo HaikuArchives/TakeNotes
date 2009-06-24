@@ -217,7 +217,7 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 				
 	// Resize the window to fit the real view size
 	viewRect = fNoteView->Bounds();
-	ResizeTo(viewRect.Width(), viewRect.Height());
+	ResizeTo(viewRect.Width(), (viewRect.Height() + B_H_SCROLL_BAR_HEIGHT + 5));
 				
 	// Creating the file panel
 	fSavePanel = new BFilePanel (B_SAVE_PANEL, new BMessenger (this), directory, B_FILE_NODE, false, NULL,

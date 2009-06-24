@@ -9,7 +9,7 @@
  * 
  * Last revision: Ilio Catallo, 21th June 2009
  *
- * Description: TODO
+ * Description: Header related to the application
  */
 
 

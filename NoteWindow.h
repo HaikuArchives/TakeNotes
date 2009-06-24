@@ -9,13 +9,14 @@
  * 
  * Last revision: Ilio Catallo, 10th June 2009
  *
- * Description: TODO
+ * Description: Header of the window.
  */
 
 
 #ifndef NOTE_WINDOW_H
 #define NOTE_WINDOW_H 
 
+// Out libraries
 #include "NoteView.h"
 #include "NoteText.h"
 #include "ColorWindow.h"
@@ -23,6 +24,7 @@
 #include "ChoiceWindow.h"
 #include "TagsWindow.h"
 
+// Other Libraries
 #include <Window.h>
 #include <ScrollView.h>
 #include <Menu.h>
@@ -74,6 +76,7 @@ class NoteWindow : public BWindow {
 					status_t	_SaveDB(const char* signature);
 	
 	private:
+	
 		NoteView 		*fNoteView;
 		NoteText		*fNoteText;
 		ColorWindow 	*fColorWindow;

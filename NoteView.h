@@ -10,7 +10,7 @@
  * 
  * Last revision: Ilio Catallo, 18th June 2009
  *
- * Description: TODO
+ * Description: Header for the view
  */
 
 

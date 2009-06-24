@@ -10,7 +10,7 @@
  * 
  * Last revision: Eleonora Ciceri, 23th June 2009
  *
- * Description: TODO
+ * Description: Main window. In this file all the function of the window are implemented.
  */
 
 // Our Libraries

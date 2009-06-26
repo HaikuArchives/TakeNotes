@@ -80,9 +80,9 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage)
 		}
 		
 		// Read the old values for this file
-		fFile.ReadAttr("tagone", B_STRING_TYPE, 0, &bufferTag1, 30);
-		fFile.ReadAttr("tagtwo", B_STRING_TYPE, 0, &bufferTag2, 30);
-		fFile.ReadAttr("tagthree", B_STRING_TYPE, 0, &bufferTag3, 30);
+		fFile.ReadAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, &bufferTag1, 30);
+		fFile.ReadAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, &bufferTag2, 30);
+		fFile.ReadAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, &bufferTag3, 30);
 			
 		// Initialize text field to old values
 		fTag1->SetText(bufferTag1);

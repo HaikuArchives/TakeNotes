@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio catallo, 21th June 2009
+ * Last revision: Ilio catallo, 26th June 2009
  *
  * Description: This is the application, with all the functions implemented. 
  *				This is the main container of the functions related to an application.
@@ -28,7 +28,10 @@
 #include <Path.h>
 #include <Resources.h>
 #include <Roster.h>
+#include <Volume.h>
+#include <VolumeRoster.h>
 
+#include <kernel/fs_index.h>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <stdlib.h>
@@ -116,17 +119,24 @@ void NoteApplication :: CheckMime(){
 
 	//Variables
 	BMimeType 	takenotes("application/takenotes");
-	image_info 	info;
-	image_info	appInfo;
-	entry_ref	ref;
-	BMessage 	*msg;
-	size_t		size;
-	const		void	*data = NULL;
-	BFile		file;
-	BResources	resource;
+
+	image_info		appInfo;
+	entry_ref		ref;
+	BMessage	 	msg;
+	size_t			size;
+	const void		*data = NULL;
+	BFile			file;
+	BResources		resource;
 	app_info 		appInfo2;
 	BFile			file2;
 	BAppFileInfo	appFileInfo;
+	
+	BVolumeRoster	volumeRoster;
+	BVolume 		rootVolume;
+	
+	//We define the extensions for the mime type
+	
+	msg.AddString("extensions","tkn");
 		
 	//Create a BAppFileInfo object linked to the application itself
 	be_app->GetAppInfo(&appInfo2);
@@ -150,19 +160,19 @@ void NoteApplication :: CheckMime(){
 		appFileInfo.SetIconForType(takenotes.Type(), (uint8 *)data, size);						
 			
 	} else 
-		printf("i dati erano vuoti\n");		
+		printf("i dati erano vuoti\n");	
+		
+	appFileInfo.SetSupportedTypes(&msg);		
 		
 	//Check if the mimetype is installed or not
 	if (takenotes.InitCheck() == B_OK){
 
-		msg = new BMessage();
 				
 		//Check if the mimetype is already installed in the DB
 		if (takenotes.IsInstalled()){
 		
 				printf("già installato\n");
-					
-				delete msg;
+				
 				return;
 		}				
 			
@@ -170,10 +180,8 @@ void NoteApplication :: CheckMime(){
 		if (takenotes.Install() != B_OK)
 				printf("non installato, errore\n");			
 			
-		//We define the extensions for the mime type
-		msg->AddString("extensions","tkn");
 			
-		if (takenotes.SetFileExtensions(msg) != B_OK){
+		if (takenotes.SetFileExtensions(&msg) != B_OK){
 			printf("errore nel settare l'estensione");
 			exit(-1);
 		}
@@ -183,67 +191,54 @@ void NoteApplication :: CheckMime(){
 			printf("errore nel settare l'app preferred\n");
 			exit(-1);
 		}
-			
-		//Set the Hint application, using the our_image function we are able to find
-		//the current path of the application and pass it to the FileType DB
-		if (our_image(info) == B_OK && get_ref_for_path(info.name, &ref) == B_OK){
-			
-			BPath prova(&ref);
-			printf("path %s\n",prova.Path());
-					
-			if (takenotes.SetAppHint(&ref) != B_OK)
-				printf("errore nell'app hint\n");
-			
-		}
+		
+		//Create the index structure for the extra attributes 	
+		volumeRoster.GetBootVolume(&rootVolume);
+		
+		fs_create_index(rootVolume.Device(),"TAKENOTES:tagone",B_STRING_TYPE, 0);
+		fs_create_index(rootVolume.Device(),"TAKENOTES:tagtwo",B_STRING_TYPE, 0);		
+		fs_create_index(rootVolume.Device(),"TAKENOTES:tagthree",B_STRING_TYPE, 0);
+		
 			
 		//Add some extra attributes in order to manage custom tags
 		BMessage attr;			
 			
-		attr.AddString("attr:name","TAKENOTES:refapp");
-		attr.AddString("attr:name","TAKENOTES:type");
+
 		attr.AddString("attr:name","TAKENOTES:tagone");
 		attr.AddString("attr:name","TAKENOTES:tagtwo");
 		attr.AddString("attr:name","TAKENOTES:tagthree");
 			
-		attr.AddString("attr:public_name","refapp");
-		attr.AddString("attr:public_name","type");
+
 		attr.AddString("attr:public_name","tagone");
 		attr.AddString("attr:public_name","tagtwo");
 		attr.AddString("attr:public_name","tagthree");
-		
-		attr.AddInt32("attr:type",B_STRING_TYPE);
-		attr.AddInt32("attr:type",B_STRING_TYPE);
+
 		attr.AddInt32("attr:type",B_STRING_TYPE);
 		attr.AddInt32("attr:type",B_STRING_TYPE);
 		attr.AddInt32("attr:type",B_STRING_TYPE);
 		
-		attr.AddInt32("attr:width",60);
-		attr.AddInt32("attr:width",60);
+
 		attr.AddInt32("attr:width",60);
 		attr.AddInt32("attr:width",60);
 		attr.AddInt32("attr:width",60);
 		attr.AddInt32("attr:width",60);
 
-		attr.AddBool("attr:viewable",true);
-		attr.AddBool("attr:viewable",true);
+
 		attr.AddBool("attr:viewable",true);
 		attr.AddBool("attr:viewable",true);
 		attr.AddBool("attr:viewable",true);
 			
-		attr.AddBool("attr:editable",true);
-		attr.AddBool("attr:editable",true);
+	
 		attr.AddBool("attr:editable",true);
 		attr.AddBool("attr:editable",true);
 		attr.AddBool("attr:editable",true);
 			
-		attr.AddBool("attr:extra",true);
-		attr.AddBool("attr:extra",true);
+
 		attr.AddBool("attr:extra",true);
 		attr.AddBool("attr:extra",true);
 		attr.AddBool("attr:extra",true);
 			
-		attr.AddInt32("attr:alignment",0);
-		attr.AddInt32("attr:alignment",0);
+
 		attr.AddInt32("attr:alignment",0);
 		attr.AddInt32("attr:alignment",0);
 		attr.AddInt32("attr:alignment",0);
@@ -252,12 +247,13 @@ void NoteApplication :: CheckMime(){
 			printf("errore nel settare i metadata\n");
 		}
 				
+				
 		//Add a short description for the MIME type
 		if (takenotes.SetShortDescription("TakeNotes") != B_OK)
 			printf("errore nel settare la short description\n");
-		
-		//Gargabe collection
-		delete msg;
+			
+		if (takenotes.SetLongDescription("TakeNotes post-it application") != B_OK)
+			printf("errore nella long desc\n"); 
 	
 	} 
 	else

@@ -39,6 +39,9 @@ ChoiceWindow :: ChoiceWindow (BRect frame, BHandler *handler)
 	// Create the view that shows the list of the current opened applications
 	fChoiceView = new ChoiceView (Bounds(), "ChoiceView", handler); // prima era frame
 	
+	// Set the background color	
+	fChoiceView->SetViewColor(216, 216, 216, 0);
+	
 	// Add the view as a child
 	AddChild(fChoiceView);	   	   
 	   	   

@@ -55,7 +55,11 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage)
 		fDoneButton = new BButton(BRect(340,200,390,210), "ok", "OK", new BMessage(BUTTON_OK));
 		fUndoButton = new BButton(BRect(270,200,320,210), "undo", "Undo", new BMessage(BUTTON_UNDO));
 		
-		// Add the tag TextControl as children
+		/*
+		* Add the view as window's child, set back ground color, 
+		* then add the tag TextControl as children
+		*/
+		fTagsView->SetViewColor(216, 216, 216, 0);
 		AddChild(fTagsView);
 		fTagsView->AddChild(fTag1);
 		fTagsView->AddChild(fTag2);

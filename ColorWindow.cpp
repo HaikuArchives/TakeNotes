@@ -37,8 +37,10 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
 	BButton				 *okButton;
 	BButton				 *undoButton;	
 	
+	// Create the  view and set the background color, then add child to window
 	frame.OffsetTo(B_ORIGIN);
 	fColorView = new ColorView (frame, "ColorView",handler);
+	fColorView->SetViewColor(216, 216, 216, 0);
 	AddChild(fColorView);
 		   	   
 	   	   

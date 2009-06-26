@@ -42,7 +42,7 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	// We allocate the view AlarmView and associate it to the AlarmWindow	
 	frame.OffsetTo(B_ORIGIN);
 	fAlarmView = new AlarmView(frame,"AlarmView");
-	fAlarmView->SetViewColor(216, 216, 216);
+	fAlarmView->SetViewColor(216, 216, 216, 0);
 	AddChild(fAlarmView);
 
 	// Text fields for the data

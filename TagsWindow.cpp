@@ -7,7 +7,7 @@
  *			Ilio Catallo, 
  *			Stefano Celentano
  * 
- * Last revision: Stefano Celentano, 7th June 2009
+ * Last revision: Ilio Catallo, 26th June 2009
  *
  * Description: TODO
  */
@@ -59,7 +59,8 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage)
 		* Add the view as window's child, set back ground color, 
 		* then add the tag TextControl as children
 		*/
-		fTagsView->SetViewColor(216, 216, 216, 0);
+		fTagsView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		
 		AddChild(fTagsView);
 		fTagsView->AddChild(fTag1);
 		fTagsView->AddChild(fTag2);

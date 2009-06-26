@@ -10,9 +10,10 @@
  * 
  * Last revision: Eleonora Ciceri, 26th June 2009
  *
- * Description: View of the note. It can be implemented in two instances:
+ * Description: View of the note. It can be implemented in three instances:
  *				- the view in the deskbar is the controller of the application
  *				- the view in the window, that is the container of the NoteText
+ *				- the view as a replicant placed on a shelf (eg: the desktop)
  */
 
 // Our libraries
@@ -387,13 +388,13 @@ status_t NoteView :: _SaveDB(){
 		printf("\n");
 	}
 	
-	if (remove ("/boot/home/config/settings/TakeNotes/config") != 0) {
-		return err;
-	}
+//	if (remove ("/boot/home/config/settings/TakeNotes/config") != 0) {
+//		return err;
+//	}
 	
 	// NON CANCELLA IL FILE!!!!!!!!!!!!!!!!
 	
-	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_CREATE_FILE | B_READ_WRITE)) != B_OK){
+	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE |  B_CREATE_FILE | B_ERASE_FILE)) != B_OK){
 		return err;
 	}
 	
@@ -467,26 +468,13 @@ void NoteView :: MessageReceived(BMessage *message){
 		
 		// Remove the association between a note and an application
 		case REMOVE_ASSOCIATION: {
-			signature = (char*)message -> FindString("Signature");
-			note = (char*)message -> FindString ("Note");
-			
+
 			// Removing from the data structure
-			BString n(note);
-			BString s(signature);
+			BString n(message->FindString("Note"));
+			BString s(message->FindString("Signature"));
 			
-			/*int cs = fHash -> GetNumSignatures();
-			for (int i = 0; i < cs; i++) {
-				char* sig = fHash -> GetSignature(i);
-				printf("Signature: %s\n", sig);
-				int cn = fHash -> GetNumNotes(sig);
-				
-				for (int j = 0; j < cn; j++) {
-					char* note = fHash -> GetNote(sig, j);
-					printf(" - %s\n", note);
-				}
-				printf("\n");
-			}*/
-			
+			printf("PRIMA DELLA PARTENZA: %s\n",n.String());
+		
 			fHash -> DeleteNote (s, n);
 			
 			// Rewriting the file

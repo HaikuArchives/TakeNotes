@@ -40,7 +40,7 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
 	// Create the  view and set the background color, then add child to window
 	frame.OffsetTo(B_ORIGIN);
 	fColorView = new ColorView (frame, "ColorView",handler);
-	fColorView->SetViewColor(216, 216, 216, 0);
+	fColorView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	AddChild(fColorView);
 		   	   
 	   	   

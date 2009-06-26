@@ -49,6 +49,7 @@ class NoteView : public BView {
 			void 			SetBackgroundColor(rgb_color color);
 			
 			void			_LoadDB();
+			status_t		_SaveDB();
 			void			_OpenTakeNotes();
 			void			_Quit();
 			

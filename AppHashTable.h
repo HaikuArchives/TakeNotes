@@ -32,6 +32,7 @@ class AppHashTable {
 						AppHashTable(Hash*);
 				
 				void 	AddNote(BString, BString);
+				void	DeleteNote (BString, BString);
 				
 				char* 	GetNote(BString, int); 
 				char*	GetSignature (int);

@@ -57,7 +57,7 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 		}
 		
 		// We insert the element
-		// Signature not found§: we insert in the tail
+		// Signature not found: we insert in the tail
 		if (found == 0){
 			Hash *newElement = new Hash();
 			newElement -> signature = mySignature;
@@ -74,6 +74,50 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 			temp -> notes[position] = myPath;
 			temp -> numNotes ++;
 		}
+	}
+}
+
+// Remove a note from the structure
+void AppHashTable :: DeleteNote (BString signature, BString note) {
+	int found = 0;
+	Hash *temp = new Hash();
+	
+	printf("Mi è arrivata signature '%s' e nota '%s'\n", signature.String(), note.String());
+	
+	if (head == NULL)
+		printf("Guarda che la testa è nulla...\n");
+	
+	for (temp = head; temp != NULL; temp = temp -> nextHash) {
+		printf("Sto analizzando %s\n", (temp -> signature).String());
+		if ( (temp -> signature).Compare(signature) == 0)
+			break;
+	}
+	
+	int nNotes = temp -> numNotes;
+	printf(" - Numero note: %d\n", nNotes);
+	
+	if ((temp -> notes[nNotes - 1]).Compare(note) == 0) {
+		temp -> notes[nNotes - 1] = "";
+		temp -> numNotes --;
+	}
+	else {
+	
+		for (int i = nNotes - 1; found != 1; i--) {
+			printf("Sto analizzando la nota: %s\n", (temp -> notes[i]).String());
+			if ((temp -> notes[i - 1]).Compare(note) == 0)
+				found = 1;
+			printf("Sovrappongo la nota %s con la nota %s\n", (temp -> notes[i - 1]).String(), (temp -> notes[i]).String());
+			temp -> notes[i - 1] = temp -> notes[i];
+		}
+		temp -> notes [nNotes - 1] = "";
+		temp -> numNotes --;
+	}
+	// Non ci sono note rimaste
+	if (temp -> numNotes == 0) {
+		// Ricerco la signature da cancellare
+		for (temp = head; (temp -> nextHash -> signature).Compare(signature) != 0; temp = temp -> nextHash) {
+		}
+		temp -> nextHash = temp -> nextHash -> nextHash;
 	}
 }
 

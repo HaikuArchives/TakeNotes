@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 21th June 2009
+ * Last revision: Eleonora Ciceri, 26th June 2009
  *
  * Description: View of the note. It can be implemented in two instances:
  *				- the view in the deskbar is the controller of the application
@@ -39,10 +39,11 @@
 #include <stdlib.h>
 
 // Messages
-#define FONT_BOLD 		'fntb'
-#define CHOOSE_APPL		'cspp'
-#define	OPEN_TAKENOTES	'onwp'
-#define	OPEN_FILE		'onfl'
+#define FONT_BOLD 			'fntb'
+#define CHOOSE_APPL			'cspp'
+#define	OPEN_TAKENOTES		'onwp'
+#define	OPEN_FILE			'onfl'
+#define REMOVE_ASSOCIATION	'rmsc'
 
 // Constructor
 NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *handler)
@@ -202,8 +203,10 @@ void NoteView :: MouseDown(BPoint point){
     int 		countSignatures;
     char 		*sig,
     			*note;
-    BMenu 		*subMenu;
-    BMessage 	*mess;
+    BMenu 		*subMenu,
+    			*noteMenu;
+    BMessage 	*mess,
+    			*messRemove;
 	
 
 	if (fInDeskbar && !fReplicated) {
@@ -257,10 +260,20 @@ void NoteView :: MouseDown(BPoint point){
    						int countNotes = fHash -> GetNumNotes(sig);
    						for (int j = 0; j < countNotes; j++) {
    							note = fHash -> GetNote(sig, j);
+   							
    							mess = new BMessage(OPEN_FILE);
    							mess -> AddString("Note", note);
    							mess -> AddPointer("team",(void *)&who); // We pass also the team_id in order to focus the application
-   							subMenu -> AddItem (new BMenuItem(note, mess));
+   							
+   							messRemove = new BMessage (REMOVE_ASSOCIATION);
+   							messRemove -> AddString ("Note", note);
+   							messRemove -> AddString ("Signature", sig);
+   							
+   							noteMenu = new BMenu (note);
+   							noteMenu -> AddItem (new BMenuItem ("Open", mess));
+   							noteMenu -> AddItem (new BMenuItem ("Remove the association", messRemove));
+   							noteMenu -> SetTargetForItems(this);
+   							subMenu -> AddItem (noteMenu);
    						}
    					
    						subMenu -> SetTargetForItems(this);
@@ -345,11 +358,86 @@ void NoteView :: AboutRequested(){
 
 }
 
-// FUnction that analyzes the messages received
+// Functions that associates a note to an application
+status_t NoteView :: _SaveDB(){
+		
+	// Variable
+	BFile		config;
+	BEntry		entry;
+	BPath		path;
+	status_t	err;
+	entry_ref	ref;
+	const char*	name;
+	off_t		length;
+	BString		toWrite;
+	int			countSignatures,
+				countNotes,
+				found = 0;	
+			
+	int cs = fHash -> GetNumSignatures();
+	for (int i = 0; i < cs; i++) {
+		char* sig = fHash -> GetSignature(i);
+		printf("Signature: %s\n", sig);
+		int cn = fHash -> GetNumNotes(sig);
+				
+		for (int j = 0; j < cn; j++) {
+			char* note = fHash -> GetNote(sig, j);
+			printf(" - %s\n", note);
+		}
+		printf("\n");
+	}
+	
+	if (remove ("/boot/home/config/settings/TakeNotes/config") != 0) {
+		return err;
+	}
+	
+	// NON CANCELLA IL FILE!!!!!!!!!!!!!!!!
+	
+	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_CREATE_FILE | B_READ_WRITE)) != B_OK){
+		return err;
+	}
+	
+	// Writing the structure
+	countSignatures = fHash -> GetNumSignatures();
+	for (int i = 0; i < countSignatures; i++) {
+		
+		// Prepare the string 
+		char* signature = fHash -> GetSignature(i);
+		countNotes = fHash -> GetNumNotes(signature);
+		
+		for (int j = 0; j < countNotes; j++) {
+			char* note = fHash -> GetNote (signature, j);
+			toWrite.Append(note);
+			toWrite.Append(":");
+			toWrite.Append(signature);
+			toWrite.Append(":");
+				
+			//Obtain the length of the file
+			config.GetSize(&length);
+				
+			if (length == 0)
+				config.Write (toWrite.String(), toWrite.Length());	
+			else				
+				//Write the new value
+				config.WriteAt(length, toWrite.String(), toWrite.Length());
+		
+		}
+		
+	}
+	
+	//Unload the file and return
+	config.Unset();
+	return B_OK;
+
+}
+
+// Function that analyzes the messages received
 void NoteView :: MessageReceived(BMessage *message){
 				
 	//Variables
-	char	*argv[1];
+	char	*argv[1],
+			*signature,
+			*note;
 	void	*who;
 
 	message->PrintToStream();
@@ -375,6 +463,35 @@ void NoteView :: MessageReceived(BMessage *message){
 			be_roster -> ActivateApp(*static_cast<team_id*>(who));
 			
 		}
+		break;
+		
+		// Remove the association between a note and an application
+		case REMOVE_ASSOCIATION: {
+			signature = (char*)message -> FindString("Signature");
+			note = (char*)message -> FindString ("Note");
+			
+			// Removing from the data structure
+			BString n(note);
+			BString s(signature);
+			
+			/*int cs = fHash -> GetNumSignatures();
+			for (int i = 0; i < cs; i++) {
+				char* sig = fHash -> GetSignature(i);
+				printf("Signature: %s\n", sig);
+				int cn = fHash -> GetNumNotes(sig);
+				
+				for (int j = 0; j < cn; j++) {
+					char* note = fHash -> GetNote(sig, j);
+					printf(" - %s\n", note);
+				}
+				printf("\n");
+			}*/
+			
+			fHash -> DeleteNote (s, n);
+			
+			// Rewriting the file
+			_SaveDB();
+		};
 		break;
 			
 		case B_QUIT_REQUESTED:

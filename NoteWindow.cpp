@@ -602,7 +602,6 @@ void NoteWindow :: _LoadDB(){
 // Functions that associates a note to an application
 status_t NoteWindow :: _SaveDB(const char* signature){
 
-	// It works only if the ~/config/settings/TakeNotes directory already exists! WE NEED TO FIX IT!
 	if (signature){
 		
 		// Variable

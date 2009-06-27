@@ -222,7 +222,7 @@ void NoteView :: MouseDown(BPoint point){
 
 		menu->AddItem(new BMenuItem("Open TakeNotes" B_UTF8_ELLIPSIS,new BMessage(OPEN_TAKENOTES)));
 		menu->AddItem(new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED)));
-		menu->AddSeparatorItem();
+		if (fHash->HasElement()) menu->AddSeparatorItem();
 
 				
 		// Initialization
@@ -276,6 +276,7 @@ void NoteView :: MouseDown(BPoint point){
    							noteMenu -> SetTargetForItems(this);
    							subMenu -> AddItem (noteMenu);
    						}
+   					
    					
    						subMenu -> SetTargetForItems(this);
    						menu -> AddItem (subMenu);

@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 8th June 2009
+ * Last revision: Ilio Catallo, 27th June 2009
  *
  * Description: TODO
  */
@@ -41,6 +41,9 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 		// Initializing head and tail
 		head = newElement;
 		tail = newElement;	// It points to the last element
+	
+		printf("(APPHASHTABLE) ho inserito %s in %d\n",head->notes[0].String(),head->numNotes);
+	
 	}
 	// It is a generic element in the list
 	else {
@@ -71,8 +74,13 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 		// Signature found: we add there
 		else {
 			int position = temp -> numNotes;
+			
+			printf("(APPHASHTABLE) ho inserito %s in %d\n",myPath.String(),position);
+			
 			temp -> notes[position] = myPath;
 			temp -> numNotes ++;
+			
+		
 		}
 	}
 }
@@ -95,28 +103,45 @@ void AppHashTable :: DeleteNote (BString signature, BString note) {
 	
 	int nNotes = temp -> numNotes;
 	printf(" - Numero note: %d\n", nNotes);
+
+	if (nNotes == 1){
 	
-	if ((temp -> notes[nNotes - 1]).Compare(note) == 0) {
-		temp -> notes[nNotes - 1] = "";
-		temp -> numNotes --;
-	}
-	else {
-	
-		for (int i = nNotes - 1; found != 1; i--) {
-			printf("Sto analizzando la nota: %s\n", (temp -> notes[i]).String());
-			if ((temp -> notes[i - 1]).Compare(note) == 0)
-				found = 1;
-			printf("Sovrappongo la nota %s con la nota %s\n", (temp -> notes[i - 1]).String(), (temp -> notes[i]).String());
-			temp -> notes[i - 1] = temp -> notes[i];
+		printf("(APPHASHTABLE) unica nota: %s\n",temp->notes[nNotes-1].String());
+		if (temp->notes[nNotes-1].Compare(note.String()) == 0){
+				printf(">>(APPHASHTABLE) compare corretto\n");
+				temp->numNotes = 0;
+				
 		}
-		temp -> notes [nNotes - 1] = "";
-		temp -> numNotes --;
-	}
+		
+	} else {
+	
+		printf(">>(APPHASHTABLE) compare scorretto\n");
+
+	
+			for (int i = nNotes - 1; nNotes != 1 && found != 1; i--) {
+				printf("Sto analizzando la nota: %s\n", (temp -> notes[i]).String());
+				if ((temp -> notes[i - 1]).Compare(note) == 0)
+					found = 1;
+				printf("Sovrappongo la nota %s con la nota %s\n", (temp -> notes[i - 1]).String(), (temp -> notes[i]).String());
+				temp -> notes[i - 1] = temp -> notes[i];
+			}
+			temp -> notes [nNotes - 1] = "";
+			temp -> numNotes --;
+		
+	
+	} //nNotes == 1
+	
 	// Non ci sono note rimaste
 	if (temp -> numNotes == 0) {
 		// Ricerco la signature da cancellare
-		for (temp = head; (temp -> nextHash -> signature).Compare(signature) != 0; temp = temp -> nextHash) {
+		
+		if (!head->nextHash){
+		
+			 head = NULL;
+			 return;
 		}
+		
+		for (temp = head; temp->nextHash && (temp -> nextHash -> signature).Compare(signature) != 0; temp = temp -> nextHash) {}
 		temp -> nextHash = temp -> nextHash -> nextHash;
 	}
 }
@@ -169,4 +194,10 @@ char* AppHashTable :: GetSignature (int position) {
 		temp = temp -> nextHash;
 		
 	return (char *)(temp -> signature).String();
+}
+
+bool AppHashTable :: HasElement(){
+
+		if (head) return 1;
+		return 0;
 }

@@ -38,6 +38,7 @@ class AppHashTable {
 				char*	GetSignature (int);
 				int		GetNumNotes(BString); 
 				int		GetNumSignatures();
+				bool	HasElement();
 				
 	private:
 		Hash*	head;

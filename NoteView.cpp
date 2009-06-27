@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Eleonora Ciceri, 26th June 2009
+ * Last revision: Eleonora Ciceri, 27th June 2009
  *
  * Description: View of the note. It can be implemented in three instances:
  *				- the view in the deskbar is the controller of the application
@@ -394,9 +394,11 @@ status_t NoteView :: _SaveDB(){
 	
 	// NON CANCELLA IL FILE!!!!!!!!!!!!!!!!
 	
-	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE |  B_CREATE_FILE | B_ERASE_FILE)) != B_OK){
+	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_WRITE_ONLY |  B_CREATE_FILE | B_ERASE_FILE)) != B_OK){
 		return err;
 	}
+	
+	printf ("Sto per scrivere il file!\n\n");
 	
 	// Writing the structure
 	countSignatures = fHash -> GetNumSignatures();
@@ -408,21 +410,21 @@ status_t NoteView :: _SaveDB(){
 		
 		for (int j = 0; j < countNotes; j++) {
 			char* note = fHash -> GetNote (signature, j);
+			printf("(FILE) Sto scrivendo %s - %s\n", signature, note);
 			toWrite.Append(note);
 			toWrite.Append(":");
 			toWrite.Append(signature);
-			toWrite.Append(":");
-				
-			//Obtain the length of the file
-			config.GetSize(&length);
-				
-			if (length == 0)
-				config.Write (toWrite.String(), toWrite.Length());	
-			else				
-				//Write the new value
-				config.WriteAt(length, toWrite.String(), toWrite.Length());
-		
+			toWrite.Append(":");		
 		}
+						
+		//Obtain the length of the file
+		config.GetSize(&length);
+				
+		if (length == 0)
+			config.Write (toWrite.String(), toWrite.Length());	
+		else				
+			//Write the new value
+			config.WriteAt(length, toWrite.String(), toWrite.Length());
 		
 	}
 	

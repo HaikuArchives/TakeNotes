@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 27th June 2009
+ * Last revision: Eleonora Ciceri, 27th June 2009
  *
  * Description: TODO
  */
@@ -87,7 +87,8 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 
 // Remove a note from the structure
 void AppHashTable :: DeleteNote (BString signature, BString note) {
-	int found = 0;
+	int found = 0,
+		i = 0;
 	Hash *temp = new Hash();
 	
 	printf("Mi è arrivata signature '%s' e nota '%s'\n", signature.String(), note.String());
@@ -114,16 +115,20 @@ void AppHashTable :: DeleteNote (BString signature, BString note) {
 		}
 		
 	} else {
-	
-		printf(">>(APPHASHTABLE) compare scorretto\n");
-
-	
-			for (int i = nNotes - 1; nNotes != 1 && found != 1; i--) {
-				printf("Sto analizzando la nota: %s\n", (temp -> notes[i]).String());
-				if ((temp -> notes[i - 1]).Compare(note) == 0)
-					found = 1;
-				printf("Sovrappongo la nota %s con la nota %s\n", (temp -> notes[i - 1]).String(), (temp -> notes[i]).String());
-				temp -> notes[i - 1] = temp -> notes[i];
+			// E' la prima nota
+			if ((temp -> notes[0]).Compare(note) != 0)
+				// Ricerco il nodo da cancellare
+				for (i = 1; i < nNotes && found != 1; i++)
+					if ((temp -> notes[i]).Compare(note) == 0) {
+						printf ("TROVATA! i = %d\n", i);
+						found = i;
+						break;
+					}
+			// Nodo trovato: lo cancello
+			for (int j = found; j < nNotes; j++) {
+				printf("CANCELLO: %s[j = %d] si sovrappone a %s[j = %d]\n", temp -> notes[j + 1].String(), 
+							(j + 1), temp -> notes[j].String(), j);
+				temp -> notes[j] = temp -> notes[j + 1];
 			}
 			temp -> notes [nNotes - 1] = "";
 			temp -> numNotes --;
@@ -134,6 +139,7 @@ void AppHashTable :: DeleteNote (BString signature, BString note) {
 	// Non ci sono note rimaste
 	if (temp -> numNotes == 0) {
 		// Ricerco la signature da cancellare
+		printf ("Devo cancellare il nodo\n");
 		
 		if (!head->nextHash){
 		

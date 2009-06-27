@@ -42,7 +42,7 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 		head = newElement;
 		tail = newElement;	// It points to the last element
 	
-		printf("(APPHASHTABLE) ho inserito %s in %d\n",head->notes[0].String(),head->numNotes);
+		//printf("(APPHASHTABLE) ho inserito %s in %d\n",head->notes[0].String(),head->numNotes);
 	
 	}
 	// It is a generic element in the list
@@ -75,7 +75,7 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 		else {
 			int position = temp -> numNotes;
 			
-			printf("(APPHASHTABLE) ho inserito %s in %d\n",myPath.String(),position);
+			//printf("(APPHASHTABLE) ho inserito %s in %d\n",myPath.String(),position);
 			
 			temp -> notes[position] = myPath;
 			temp -> numNotes ++;
@@ -146,9 +146,19 @@ void AppHashTable :: DeleteNote (BString signature, BString note) {
 			 head = NULL;
 			 return;
 		}
+		else
+			if ((head -> signature).Compare(signature) == 0) {
+				// Cancello dalla testa
+				head = head -> nextHash;
+			}
+			else {
 		
-		for (temp = head; temp->nextHash && (temp -> nextHash -> signature).Compare(signature) != 0; temp = temp -> nextHash) {}
-		temp -> nextHash = temp -> nextHash -> nextHash;
+				for (temp = head; temp->nextHash; temp = temp -> nextHash){
+					if ((temp -> nextHash -> signature).Compare(signature) != 0)
+						break;
+				}
+				temp -> nextHash = temp -> nextHash -> nextHash;
+			}
 	}
 }
 

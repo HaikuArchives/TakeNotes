@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Eleonora Ciceri, 23th June 2009
+ * Last revision: Ilio Catallo, 27th June 2009
  *
  * Description: Main window. In this file all the function of the window are implemented.
  */
@@ -512,6 +512,8 @@ status_t NoteWindow :: Save(BMessage *message) {
 	const char 	*name;
 	status_t 	err;
 	
+	message->PrintToStream();
+	
 	if (!message){
 		message = fSaveMessage;
 	}
@@ -524,10 +526,14 @@ status_t NoteWindow :: Save(BMessage *message) {
 	fNoteView -> Archive(message, 1);
 	fNoteView->SetReplicated(false);
 	
+	SetTitle(name);
+	
 	if (fSaveMessage != message) {
 		delete fSaveMessage;
 		fSaveMessage = new BMessage(*message);
 	}
+	
+	
 	
 	return err;
 }

@@ -325,7 +325,6 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		
 		// File the note with the current view
 		msg->Flatten(&file);
-		msg->PrintToStream();
 		
 		// Add the MIME type information
 		nodeinfo.SetTo(&file);

@@ -153,10 +153,26 @@ void AppHashTable :: DeleteNote (BString signature, BString note) {
 			}
 			else {
 		
-				for (temp = head; temp->nextHash; temp = temp -> nextHash){
-					if ((temp -> nextHash -> signature).Compare(signature) != 0)
+				for (temp = head; temp->nextHash; temp = temp -> nextHash){	
+					printf("(APPHASHTABLE) navigo il nodo: %s\n",temp->signature.String());
+					if ((temp -> nextHash -> signature).Compare(signature) == 0)
 						break;
 				}
+	
+				//Verifico che non siamo arrivati alla coda
+				if (temp->nextHash->signature.Compare(tail->signature) == 0){
+				
+					printf(">>(APPHASHTABLE) siamo nell'ultimo nodo e lo vogliamo cancellare\n");
+				
+					delete temp->nextHash;
+					temp->nextHash = NULL;
+					
+					tail = temp;
+					
+					return;
+				
+				}
+				
 				temp -> nextHash = temp -> nextHash -> nextHash;
 			}
 	}

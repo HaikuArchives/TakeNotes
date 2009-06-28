@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Eleonora Ciceri, 27th June 2009
+ * Last revision: Ilio Catallo, 28th June 2009
  *
  * Description: TODO
  */
@@ -232,4 +232,26 @@ bool AppHashTable :: HasElement(){
 
 		if (head) return 1;
 		return 0;
+}
+
+void AppHashTable :: PrintToStream(){
+
+		printf("(APPHASHTABLE) PrintToStream\n");
+
+		Hash *temp = new Hash();
+		temp = head;
+		
+		for (temp = head;temp != NULL; temp = temp-> nextHash){
+		
+			printf("(APPHASHTABLE) Nodo: %s\n",temp->signature.String());
+			
+			for (int i=0;i<temp->numNotes;i++){
+			
+				printf(">>(APPHASHTABLE) Nota: %s\n",temp->notes[i].String());
+			
+			}
+		
+		}
+		
+
 }

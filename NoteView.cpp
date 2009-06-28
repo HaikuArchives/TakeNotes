@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Eleonora Ciceri, 27th June 2009
+ * Last revision: Ilio Catallo, 28th June 2009
  *
  * Description: View of the note. It can be implemented in three instances:
  *				- the view in the deskbar is the controller of the application
@@ -375,6 +375,10 @@ status_t NoteView :: _SaveDB(){
 				countNotes,
 				found = 0;	
 			
+	printf("-----------------------------\n");
+	fHash->PrintToStream();
+	printf("-----------------------------\n");		
+			
 	int cs = fHash -> GetNumSignatures();
 	for (int i = 0; i < cs; i++) {
 		char* sig = fHash -> GetSignature(i);
@@ -388,17 +392,12 @@ status_t NoteView :: _SaveDB(){
 		printf("\n");
 	}
 	
-//	if (remove ("/boot/home/config/settings/TakeNotes/config") != 0) {
-//		return err;
-//	}
 	
-	// NON CANCELLA IL FILE!!!!!!!!!!!!!!!!
-	
-	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_WRITE_ONLY |  B_CREATE_FILE | B_ERASE_FILE)) != B_OK){
+	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE |  B_CREATE_FILE | B_ERASE_FILE)) != B_OK){
 		return err;
 	}
 	
-	printf ("Sto per scrivere il file!\n\n");
+
 	
 	// Writing the structure
 	countSignatures = fHash -> GetNumSignatures();
@@ -408,16 +407,23 @@ status_t NoteView :: _SaveDB(){
 		char* signature = fHash -> GetSignature(i);
 		countNotes = fHash -> GetNumNotes(signature);
 		
+		printf("(FILE) nodo: %d, signature: %s\n",i,signature);
+		
 		for (int j = 0; j < countNotes; j++) {
 			char* note = fHash -> GetNote (signature, j);
-			printf("(FILE) Sto scrivendo %s - %s\n", signature, note);
+			printf(">>(FILE) nota: %d, path: %s\n", j, note);
 			toWrite.Append(note);
 			toWrite.Append(":");
 			toWrite.Append(signature);
 			toWrite.Append(":");		
 		}
+		
+		printf("\n(SAVE_DB) %s\n",toWrite.String());
+		
+		//Write the new value
+		config.WriteAt(0,toWrite.String(), toWrite.Length());
 						
-		//Obtain the length of the file
+		/*//Obtain the length of the file
 		config.GetSize(&length);
 				
 		if (length == 0)
@@ -426,6 +432,7 @@ status_t NoteView :: _SaveDB(){
 			//Write the new value
 			config.WriteAt(length, toWrite.String(), toWrite.Length());
 		
+		*/
 	}
 	
 	//Unload the file and return
@@ -533,9 +540,9 @@ void NoteView :: _LoadDB(){
 	}
 		
 	// Clean the string from random error
-	printf("prima della pulizia: %s\n\n",stringa.String());
+	//printf("(LOAD_DB) %s\n",stringa.String());
 	stringa.Remove(stringa.FindLast(":")+1,stringa.CountChars());
-	printf("dopo la pulizia: %s\n\n\n",stringa.String());
+	//printf(">>(LOAD_DB) %s\n\n",stringa.String());
 		
 	while (stringa.CountChars() > 0 ){
 	
@@ -553,9 +560,9 @@ void NoteView :: _LoadDB(){
 		stringa.MoveInto(signature, 0, lastComma);
 		signature.RemoveLast(":");
 		
-		printf("path: %s\n",path.String());
-		printf("signature: %s\n",signature.String());
-		printf("TODO: %s\n\n",stringa.String());
+		printf(">>(LOAD_DB)path: %s\n",path.String());
+		printf(">>(LOAD_DB)signature: %s\n",signature.String());
+		//printf(">>(LOAD_DB)todo: %s\n\n",stringa.String());
 		
 		fHash->AddNote(signature,path);
 	}

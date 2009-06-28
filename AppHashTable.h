@@ -39,6 +39,7 @@ class AppHashTable {
 				int		GetNumNotes(BString); 
 				int		GetNumSignatures();
 				bool	HasElement();
+				void	PrintToStream();
 				
 	private:
 		Hash*	head;

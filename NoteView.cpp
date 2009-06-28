@@ -422,9 +422,9 @@ status_t NoteView :: _SaveDB(){
 		printf("\n(SAVE_DB) %s\n",toWrite.String());
 		
 		//Write the new value
-		config.WriteAt(0,toWrite.String(), toWrite.Length());
+		//config.WriteAt(0,toWrite.String(), toWrite.Length());
 						
-		/*//Obtain the length of the file
+		//Obtain the length of the file
 		config.GetSize(&length);
 				
 		if (length == 0)
@@ -433,7 +433,7 @@ status_t NoteView :: _SaveDB(){
 			//Write the new value
 			config.WriteAt(length, toWrite.String(), toWrite.Length());
 		
-		*/
+		
 	}
 	
 	//Unload the file and return

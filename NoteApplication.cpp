@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio catallo, 26th June 2009
+ * Last revision: Ilio Catallo, 26th June 2009
  *
  * Description: This is the application, with all the functions implemented. 
  *				This is the main container of the functions related to an application.
@@ -260,7 +260,7 @@ void NoteApplication :: CheckMime(){
 		printf("errore di init del mimetype");
 }
 
-// Function used to opan a note, counting how many notes are opened
+// Function used to open a note, counting how many notes are opened
 void NoteApplication :: OpenNote(){
 		
 	new NoteWindow(fWindowCountUntitled++);

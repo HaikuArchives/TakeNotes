@@ -7,9 +7,9 @@
  *			Ilio Catallo, 
  *			Stefano Celentano
  * 
- * Last revision: Ilio Catallo, 26th June 2009
+ * Last revision: Ilio Catallo, 28th June 2009
  *
- * Description: TODO
+ * Description: Tags window, it allows the user to set three customs tags (extra attributes)
  */
  
 
@@ -109,18 +109,10 @@ void TagsWindow :: MessageReceived(BMessage *message){
 		case BUTTON_OK: {
 																			
 			// Set each attribute to text field's content
-			if(fFile.WriteAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, fTag1->Text(), 30) == 0){
-				printf("no bytes written for tag one\n");
-			}
-								
-			if(fFile.WriteAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, fTag2->Text(), 30) == 0){
-				printf("no bytes written for tag two\n");
-			}
-								
-			if(fFile.WriteAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, fTag3->Text(), 30) == 0){
-				printf("no bytes written for tag three\n");
-			}													
-									
+			fFile.WriteAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, fTag1->Text(), 30); 					
+			fFile.WriteAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, fTag2->Text(), 30); 
+			fFile.WriteAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, fTag3->Text(), 30);
+			 
 			// Closing window
 			Quit();		
 																											

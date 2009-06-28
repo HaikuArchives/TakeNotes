@@ -7,9 +7,9 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 9th June 2009
+ * Last revision: Ilio Catallo, 28th June 2009
  *
- * Description: TODO
+ * Description: ChoiceView allows the user to change the background color of the note
  */
 
 #include "ChoiceView.h"
@@ -31,7 +31,7 @@
 
 // Constructor
 ChoiceView :: ChoiceView(BRect rect, char *name,BHandler *handler)
-	   	  : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS){
+	   	  : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS | B_FULL_UPDATE_ON_RESIZE){
 	 
 	 	  //Create a Messenger and set its target as NoteWindow
 	 	  fMessenger = new BMessenger(handler);

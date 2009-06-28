@@ -398,7 +398,7 @@ status_t NoteView :: _SaveDB(){
 	}
 	
 
-	
+	toWrite.SetTo("");
 	// Writing the structure
 	countSignatures = fHash -> GetNumSignatures();
 	for (int i = 0; i < countSignatures; i++) {
@@ -406,7 +406,7 @@ status_t NoteView :: _SaveDB(){
 		// Prepare the string 
 		char* signature = fHash -> GetSignature(i);
 		countNotes = fHash -> GetNumNotes(signature);
-		toWrite.SetTo("");
+		
 		
 		printf("(FILE) nodo: %d, signature: %s\n",i,signature);
 		
@@ -419,9 +419,9 @@ status_t NoteView :: _SaveDB(){
 			toWrite.Append(":");		
 		}
 		
-		printf("\n(SAVE_DB) %s\n",toWrite.String());
 		
-		//Write the new value
+		
+		/*//Write the new value
 		//config.WriteAt(0,toWrite.String(), toWrite.Length());
 						
 		//Obtain the length of the file
@@ -432,10 +432,11 @@ status_t NoteView :: _SaveDB(){
 		else				
 			//Write the new value
 			config.WriteAt(length, toWrite.String(), toWrite.Length());
-		
+		*/
 		
 	}
-	
+	printf("\n(SAVE_DB) %s\n",toWrite.String());
+	config.Write (toWrite.String(), toWrite.Length());	
 	//Unload the file and return
 	config.Unset();
 	return B_OK;

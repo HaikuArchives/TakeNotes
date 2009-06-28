@@ -406,6 +406,7 @@ status_t NoteView :: _SaveDB(){
 		// Prepare the string 
 		char* signature = fHash -> GetSignature(i);
 		countNotes = fHash -> GetNumNotes(signature);
+		toWrite.SetTo("");
 		
 		printf("(FILE) nodo: %d, signature: %s\n",i,signature);
 		
@@ -539,6 +540,7 @@ void NoteView :: _LoadDB(){
 			
 	}
 		
+	fDatabase.Unset();
 	// Clean the string from random error
 	//printf("(LOAD_DB) %s\n",stringa.String());
 	stringa.Remove(stringa.FindLast(":")+1,stringa.CountChars());
@@ -566,6 +568,10 @@ void NoteView :: _LoadDB(){
 		
 		fHash->AddNote(signature,path);
 	}
+
+	printf("(LOADDB)------------------------\n");
+	fHash->PrintToStream();
+	printf("(LOADDB)-------------------------\n");
 
 }
 

@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 28th June 2009
+ * Last revision: Ilio Catallo, 29th June 2009
  *
  * Description: View of the note. It can be implemented in three instances:
  *				- the view in the deskbar is the controller of the application
@@ -55,7 +55,6 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 	BDragger *dragger;	
 		
 	// Initilization
-	fNoteText = NULL;
 	fBitmap = NULL;
 		
 	if (handler) 
@@ -614,16 +613,21 @@ bool NoteView :: GetReplicated(){
 
 // Set the background color of the view
 void NoteView :: SetBackgroundColor(rgb_color color){
-
-	if (fNoteText == NULL)
-		fNoteText = (NoteText *)FindView("NoteText");
-
+	
 	SetViewColor(color);
-	fNoteText -> SetViewColor(color);
+	
+	//Find the text view and change the color
+	if (FindView("NoteText") != NULL){
+	
+		FindView("NoteText")->SetViewColor(color);
 		
-	// Tell the view to refresh itself
-	Invalidate();
-	fNoteText -> Invalidate();	
+		// Tell the view to refresh itself
+		FindView("NoteText")->Invalidate();
+		Invalidate();
+	}
+	
+	
+
 }
 
 extern "C" _EXPORT BView *instantiate_deskbar_item(void){

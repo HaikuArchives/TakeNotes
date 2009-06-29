@@ -207,6 +207,7 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 	// Fetch the view from the file 
 	msg->Unflatten(&f);
 				
+	msg->PrintToStream();
 	// Restore all the references for the NoteView's children
 	fNoteView = new NoteView(msg);
 	fScrollView = (BScrollView *)fNoteView->ChildAt(1);

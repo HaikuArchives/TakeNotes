@@ -135,7 +135,7 @@ class NoteWindow : public BWindow {
 		BFilePanel	*fSavePanel;
 		
 		// Hash table
-		BFile		fDatabase;
+		BFile			fDatabase;
 		AppHashTable	*fHash;
 
 };

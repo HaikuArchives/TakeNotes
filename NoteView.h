@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 18th June 2009
+ * Last revision: Ilio Catallo, 29th June 2009
  *
  * Description: Header for the view
  */
@@ -71,9 +71,6 @@ class NoteView : public BView {
 		BString 		*message;
 		BBitmap			*fBitmap;
 		
-		NoteText		*fNoteText;
-
-	
 
 };
 

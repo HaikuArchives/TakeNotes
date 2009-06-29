@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// Messages
 #define BUTTON_ALARM_OK 'alok'
 #define SET_ALARM 		'salr'
 #define ALARM_MSG 		'alrm'
@@ -25,6 +26,7 @@
 AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler) 
 			: BWindow (frame, "Set alarm for this note", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 	
+	// Variables	
     fMessenger = new BMessenger(handler);
     
     char	dayDefaultField[3];
@@ -33,6 +35,7 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
     char 	minuteDefaultField[3];
     char 	hourDefaultField[3];
 
+	// Initialize text fields with current system time values
 	sprintf(minuteDefaultField, "%d", GetTime(0));
 	sprintf(hourDefaultField, "%d", GetTime(1));
 	sprintf(dayDefaultField, "%d", GetTime(2));
@@ -74,7 +77,7 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	Show();
 }
 
-// Receiving the messages...
+// Receiving the messages
 void AlarmWindow :: MessageReceived(BMessage* message) {
 	// Variables
 	BMessage 	*msg;
@@ -111,14 +114,15 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			monthN = atoi(monthTextField);
 			yearN = atoi(yearTextField);
 
-			// Starting controls for time and date
-			// Notice: I won't send ALARM_MSG if one of these checks is missed
+			/*
+			* Starting controls for time and date
+			* Notice: I won't send ALARM_MSG if one of these checks is missed
+			*/
 			
 			// First check if there are any values (in a correct range)
 			if( (hourN > 0 && hourN < 24)  && (minuteN > 0 && minuteN < 60) && (dayN > 0) && (monthN > 0  && monthN <= 12) && (yearN >= 1970 && yearN <= 2150) ) {			
 				
-				// Second check if day is correct in its month
-				
+				// Second check if day is correct in its month			
 				daysInMonth = GetDaysInMonth(monthN,yearN);
 				
 				if(dayN > daysInMonth) {
@@ -128,8 +132,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 					break;
 				}
 				
-				// Third check if input user date/time comes after system time
-				
+				// Third check if input user date/time comes after system time				
 				if ( !(IsAfter(minuteN,hourN,dayN,monthN,yearN)) ) {
 					
 					BAlert *myAlert = new BAlert("Previous date-time", "Date-time should come after system time", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
@@ -176,6 +179,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 	}
 }
 
+// Returns days in month
 int32 AlarmWindow :: GetDaysInMonth(int month, int year) {
 
 	switch(month) {
@@ -216,27 +220,19 @@ int32 AlarmWindow :: GetDaysInMonth(int month, int year) {
 
 bool AlarmWindow :: IsAfter(int min, int h, int d, int mon, int y) {
 
-
-	// Declare two timers
-	
+	//Variables
 	time_t rawtime;
 	time_t userTime;
-	
-	// Declare a time struct
-	
 	struct tm *timeinfo;
 	
-	// Get the current time (number of seconds from the "epoch"), stores it in the timer
-	
+	// Get the current time (number of seconds from the "epoch"), stores it in the timer	
 	time( &rawtime );
 	
-	// Convert time_t time value to a tm struct
-	
+	// Convert time_t time value to a tm struct	
 	timeinfo = localtime ( &rawtime );
 
 		
 	// Fill the struct with user input
-	
 	timeinfo -> tm_year = y - 1900;
 	timeinfo -> tm_mon = mon - 1;
 	timeinfo -> tm_mday = d;
@@ -246,11 +242,9 @@ bool AlarmWindow :: IsAfter(int min, int h, int d, int mon, int y) {
 	
 	
 	// Convert from struct tm to data type time_t
-	
 	userTime = mktime(timeinfo);	
 
 	// Compare user time and system time
-	
 	if( difftime(userTime, time( &rawtime) ) > 0 ) {
 		return true;
 	}
@@ -261,9 +255,13 @@ bool AlarmWindow :: IsAfter(int min, int h, int d, int mon, int y) {
 
 int AlarmWindow :: GetTime(int element) {
 
-
-	struct tm *now = NULL;
-	time_t time_value = 0;
+	// Variables
+	struct tm *now;
+	time_t time_value;
+	
+	//Initialize tm struct and time_t value
+	now = NULL;
+	time_value = 0;
 	
 	// Get time value
 	time_value = time(NULL);

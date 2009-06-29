@@ -524,16 +524,16 @@ status_t NoteWindow :: Save(BMessage *message) {
 	if ((err = message -> FindString("name", &name)) != B_OK)
 		return err;
 	
-	fNoteView -> Archive(message, 1);
-	fNoteView->SetReplicated(false);
 	
 	SetTitle(name);
+	
+	fNoteView -> Archive(message, 1);
+	fNoteView->SetReplicated(false);	
 	
 	if (fSaveMessage != message) {
 		delete fSaveMessage;
 		fSaveMessage = new BMessage(*message);
 	}
-	
 	
 	
 	return err;

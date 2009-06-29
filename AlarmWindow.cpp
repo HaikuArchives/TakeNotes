@@ -8,7 +8,7 @@
  * 
  * Last revision: Stefano Celentano, 15th May 2009
  *
- * Description: TODO
+ * Description: Alarm Window allows the user to create an alarm for the note
  */
 
 

@@ -1170,7 +1170,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			
 				BString string;
 				string.SetTo("Alarm activated for note: ");
-				string.Append(fDati.Titolo);
+				string.Append(Title());
 				string.Append("\0",1);
 				char *alertstr = (char*) string.String();
 				myAlert = new BAlert("Alarm activated", alertstr, "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);

@@ -28,7 +28,7 @@
 * It is created with the dimensions of BRect
 */
 ChoiceWindow :: ChoiceWindow (BRect frame, BHandler *handler)
-			: BWindow (frame, "Choose an application", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
+			: BWindow (frame, "Choose an application", B_TITLED_WINDOW,B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS) {
 	
 	// Inizialization
 	fCurrentCheckedMessage = NULL;

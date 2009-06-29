@@ -1089,9 +1089,17 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			
 			} else {
 	
+				if(fTagsWindow) {
+					
+					fTagsWindow->Activate(true);
+				}
 				
-				fTagsWindow = new TagsWindow(fSaveMessage);
-				fTagsWindow -> Show();  
+				else {
+				
+					fTagsWindow = new TagsWindow(fSaveMessage);
+					fTagsWindow -> Show();  
+				
+				}
 			
 			}
 			
@@ -1102,9 +1110,19 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		// Setting the alarm with the window opened
 		case SET_ALARM: {
+		
+			/* If AlarmWindow is already 
+			* open activate it, otherwise create a new one
+			*/
+			if(fAlarmWindow) {
 			
-			aRect.Set(300,300,800,600);
-			fAlarmWindow = new AlarmWindow(aRect,this);
+				fAlarmWindow->Activate(true);
+				
+			} else {
+			
+				aRect.Set(300,300,800,600);
+				fAlarmWindow = new AlarmWindow(aRect,this);
+			}
 		}		
 		break;
 		

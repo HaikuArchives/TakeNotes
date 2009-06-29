@@ -84,6 +84,8 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage)
 			fFile.SetTo(&dir, name, B_READ_WRITE);
 		}
 		
+		printf("$$$$TAGONE$$$$: %s\n", bufferTag1);
+		
 		// Read the old values for this file
 		fFile.ReadAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, &bufferTag1, 30);
 		fFile.ReadAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, &bufferTag2, 30);

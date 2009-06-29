@@ -25,7 +25,6 @@ class ChoiceView : public BView {
 	
 					 ChoiceView (BRect frame, char *name, BHandler *handler);
 		virtual void AttachedToWindow ();
-		virtual void Draw(BRect updateRect);
 
 		
 	private:

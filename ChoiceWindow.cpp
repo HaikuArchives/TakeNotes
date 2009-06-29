@@ -43,7 +43,7 @@ ChoiceWindow :: ChoiceWindow (BRect frame, BHandler *handler)
 	fChoiceView->SetViewColor(216, 216, 216, 0);
 	
 	// Add the view as a child
-	AddChild(fChoiceView);	   	   
+	AddChild(fChoiceView);	  	   
 	   	   
 	// Show the window
 	Show();

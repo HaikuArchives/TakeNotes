@@ -367,12 +367,9 @@ status_t NoteView :: _SaveDB(){
 	BPath		path;
 	status_t	err;
 	entry_ref	ref;
-	const char*	name;
-	off_t		length;
 	BString		toWrite;
 	int			countSignatures,
-				countNotes,
-				found = 0;	
+				countNotes;
 			
 	printf("-----------------------------\n");
 	fHash->PrintToStream();
@@ -446,9 +443,7 @@ status_t NoteView :: _SaveDB(){
 void NoteView :: MessageReceived(BMessage *message){
 				
 	//Variables
-	char	*argv[1],
-			*signature,
-			*note;
+	char	*argv[1];
 	void	*who;
 
 	message->PrintToStream();

@@ -791,12 +791,21 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}
 		break;
 		
-		case MENU_CHANGE_COLOR:{	
+		case MENU_CHANGE_COLOR:{
+				
+			if(fColorWindow) {
+			
+				fColorWindow -> Activate(true);
+			
+			} else {
 				
 				fColorWindow = new ColorWindow(BRect(300,300,700,680),this);
 				fColorWindow -> Show();
+				
 			}
-			break;
+			
+		}
+		break;
 				
 		// Background color
 		case COLOR_CHANGED: {
@@ -1059,18 +1068,26 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				alert->Go();
 			
 			} else {
+			
+				if(fChoiceWindow) {
+					
+						fChoiceWindow -> Activate(true);
+					
+				} else {
 	
-        		aList = new BList;
+	        		aList = new BList;
 
-		        // Obtaining the applications that are running
-		        be_roster->GetAppList(aList); 
-		        int countApps = aList -> CountItems();
+			        // Obtaining the applications that are running
+			        be_roster->GetAppList(aList); 
+			        int countApps = aList -> CountItems();
 		        
-		        int h = countApps * 17 + 300;
-		        printf("Altezza: %d\n", h);
-				
-				fChoiceWindow = new ChoiceWindow(BRect(300,300,800,h), this);
-				fChoiceWindow -> Show();  
+		    	    int h = countApps * 17 + 300;
+		        	printf("Altezza: %d\n", h);
+					
+					fChoiceWindow = new ChoiceWindow(BRect(300,300,800,h), this);
+					fChoiceWindow -> Show();
+					 
+				} 
 			
 			}
 			

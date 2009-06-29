@@ -42,8 +42,6 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 		head = newElement;
 		tail = newElement;	// It points to the last element
 	
-		//printf("(APPHASHTABLE) ho inserito %s in %d\n",head->notes[0].String(),head->numNotes);
-	
 	}
 	// It is a generic element in the list
 	else {
@@ -75,8 +73,6 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 		else {
 			int position = temp -> numNotes;
 			
-			//printf("(APPHASHTABLE) ho inserito %s in %d\n",myPath.String(),position);
-			
 			temp -> notes[position] = myPath;
 			temp -> numNotes ++;
 			
@@ -87,82 +83,66 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 
 // Remove a note from the structure
 void AppHashTable :: DeleteNote (BString signature, BString note) {
+	// Variables
 	int found = 0,
-		i = 0;
+		i = 0,
+		nNotes;
 	Hash *temp = new Hash();
 	
-	printf("Mi è arrivata signature '%s' e nota '%s'\n", signature.String(), note.String());
-	
-	if (head == NULL)
-		printf("Guarda che la testa è nulla...\n");
-	
 	for (temp = head; temp != NULL; temp = temp -> nextHash) {
-		printf("Sto analizzando %s\n", (temp -> signature).String());
 		if ( (temp -> signature).Compare(signature) == 0)
 			break;
 	}
 	
-	int nNotes = temp -> numNotes;
-	printf(" - Numero note: %d\n", nNotes);
+	nNotes = temp -> numNotes;
 
-	if (nNotes == 1){
-	
-		printf("(APPHASHTABLE) unica nota: %s\n",temp->notes[nNotes-1].String());
+	// There's only a note
+	if (nNotes == 1){	
 		if (temp->notes[nNotes-1].Compare(note.String()) == 0){
-				printf(">>(APPHASHTABLE) compare corretto\n");
-				temp->numNotes = 0;
-				
+				temp->numNotes = 0;		
 		}
 		
-	} else {
-			// E' la prima nota
+	} 
+	else {
+			// It is the first note
 			if ((temp -> notes[0]).Compare(note) != 0)
-				// Ricerco il nodo da cancellare
+				// Looking for the node that has to be erased
 				for (i = 1; i < nNotes && found != 1; i++)
 					if ((temp -> notes[i]).Compare(note) == 0) {
-						printf ("TROVATA! i = %d\n", i);
 						found = i;
 						break;
 					}
-			// Nodo trovato: lo cancello
+			// Note found: I can erase it
 			for (int j = found; j < nNotes; j++) {
-				printf("CANCELLO: %s[j = %d] si sovrappone a %s[j = %d]\n", temp -> notes[j + 1].String(), 
-							(j + 1), temp -> notes[j].String(), j);
 				temp -> notes[j] = temp -> notes[j + 1];
 			}
 			temp -> notes [nNotes - 1] = "";
-			temp -> numNotes --;
-		
+			temp -> numNotes --;	
+	}
 	
-	} //nNotes == 1
-	
-	// Non ci sono note rimaste
+	// There aren't any other notes in this signature
 	if (temp -> numNotes == 0) {
-		// Ricerco la signature da cancellare
-		printf ("Devo cancellare il nodo\n");
-		
+		// I look for the signature that I have to erase		
 		if (!head->nextHash){
 		
 			 head = NULL;
 			 return;
+			 
 		}
 		else
 			if ((head -> signature).Compare(signature) == 0) {
-				// Cancello dalla testa
+				// Erase from the head
 				head = head -> nextHash;
 			}
 			else {
-		
+				
 				for (temp = head; temp->nextHash; temp = temp -> nextHash){	
-					printf("(APPHASHTABLE) navigo il nodo: %s\n",temp->signature.String());
 					if ((temp -> nextHash -> signature).Compare(signature) == 0)
 						break;
 				}
 	
-				//Verifico che non siamo arrivati alla coda
+				// We are at the tail?
 				if (temp->nextHash->signature.Compare(tail->signature) == 0){
-				
-					printf(">>(APPHASHTABLE) siamo nell'ultimo nodo e lo vogliamo cancellare\n");
 				
 					delete temp->nextHash;
 					temp->nextHash = NULL;

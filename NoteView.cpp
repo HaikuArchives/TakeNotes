@@ -68,6 +68,7 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 		SetViewColor(254,254,92,255); 
 		dragger = new BDragger(BRect(0,0,7,7),this,B_FOLLOW_NONE);
 		AddChild(dragger);
+		dragger->SetViewColor(ViewColor());
 		
 	} 
 	else {

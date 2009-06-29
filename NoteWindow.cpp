@@ -215,6 +215,9 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 				
 	// We use NoteView::Archive both for replicant,deskbar and save/load so we neeed to say clearly these sort of things :D
 	fNoteView->SetReplicated(false);
+	fNoteText->SetReplicated(false);
+	
+	fNoteText->SetHandler(this);
 				
 	// Resize the window to fit the real view size
 	viewRect = fNoteView->Bounds();

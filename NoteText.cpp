@@ -40,33 +40,17 @@ NoteText :: NoteText(BRect frame, BRect frameText, char *name, BHandler *handler
 NoteText :: NoteText (BMessage *message)
 		 : BTextView (message){
 		 
+	fMessenger = NULL;
 	fReplicated = true;
-	//	 fBitmap = new BBitmap(message);
 		 
 }
 
 NoteText :: ~NoteText(){
 
-	//delete fBitmap;
 
 }
 
 
-void NoteText :: Draw(BRect updateRect){
-	
-	BTextView :: Draw(updateRect);
-	
-	//if (fBitmap){
-//			
-//		 BPoint coordinates(PointAt(TextLength()));	
-//		 coordinates.x = 0;
-//		 coordinates.y += LineHeight();
-//		 DrawBitmap(fBitmap,coordinates);
-//	
-//	}
-//	
-	
-}
 
 status_t NoteText :: Archive (BMessage *msg, bool deep) const{
 
@@ -75,13 +59,7 @@ status_t NoteText :: Archive (BMessage *msg, bool deep) const{
 	msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
 	msg->AddString("class","NoteText");
 	
-//	if (fBitmap){
-//	
-//		fBitmap->Lock();
-//		fBitmap->Archive(msg);
-//		fBitmap->Unlock();
-//	}
-//	
+
 	return B_OK;
 
 }
@@ -108,32 +86,6 @@ void NoteText :: MessageReceived(BMessage *message){
 		case B_PASTE:
 			this -> Paste(be_clipboard);
 		break;
-	
-//		case B_SIMPLE_DATA:{
-//		
-//			//Variables
-//			entry_ref	ref;
-//				
-//			message->FindRef("refs",&ref);
-//			BEntry entry(&ref);
-//			BPath path(&entry);
-//			
-//			delete fBitmap;
-//			fBitmap = BTranslationUtils::GetBitmap(path.Path());
-//			
-//			if (fBitmap != NULL){
-//			
-//				BRect rect = fBitmap->Bounds();
-//				if (!fReplicated)
-//					Window()->ResizeTo(rect.right,rect.bottom);
-//				
-//				ResizeTo(rect.right, rect.bottom);
-//				Invalidate();
-//				//MakeEditable(false);
-//				
-//			}
-//		}
-//		break;
 		
 		default:
 			BTextView :: MessageReceived(message);
@@ -142,13 +94,6 @@ void NoteText :: MessageReceived(BMessage *message){
 }
 	
 
-void NoteText :: KeyDown(const char *bytes, int32 numBytes){
-		
-	BTextView :: KeyDown(bytes, numBytes);
-//	Invalidate();
-//	//Window()->UpdateIfNeeded();
-		
-}	
 	
 void NoteText :: FrameResized (float width, float height){
 			  
@@ -227,5 +172,27 @@ void NoteText :: MouseDown(BPoint point){
 	
 	// Go on with MouseDown
 	BTextView::MouseDown(point);
+
+}
+
+void NoteText :: SetReplicated(bool flag){
+
+		printf("(NOTE_TEXT) Replicato falso\n");
+		fReplicated = flag;
+}
+
+bool NoteText :: GetReplicated(){
+	
+		return fReplicated;
+
+}
+
+void NoteText :: SetHandler(BHandler *handler){
+
+		if (fMessenger)
+			delete fMessenger;
+		
+		fMessenger = new BMessenger(handler);
+		
 
 }

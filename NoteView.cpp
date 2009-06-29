@@ -261,10 +261,13 @@ void NoteView :: MouseDown(BPoint point){
    						for (int j = 0; j < countNotes; j++) {
    							note = fHash -> GetNote(sig, j);
    							
+   							//Messing with pointers
+   							team_id *ptrWho = &who;
+   							
    							mess = new BMessage(OPEN_FILE);
    							mess -> AddString("Note", note);
-   							mess -> AddPointer("team",(void *)&who); // We pass also the team_id in order to focus the application
-   							
+   							mess -> AddPointer("team",(void *)ptrWho); // We pass also the team_id in order to focus the application
+   						
    							messRemove = new BMessage (REMOVE_ASSOCIATION);
    							messRemove -> AddString ("Note", note);
    							messRemove -> AddString ("Signature", sig);
@@ -444,7 +447,10 @@ void NoteView :: MessageReceived(BMessage *message){
 				
 	//Variables
 	char	*argv[1];
-	void	*who;
+
+	void **c;
+	void *b;
+	team_id	*a;	
 
 	message->PrintToStream();
 
@@ -462,11 +468,14 @@ void NoteView :: MessageReceived(BMessage *message){
 
 			//Find the note path and the team_id of the releated application	
 			argv[0] = (char*)message -> FindString("Note");
-			message -> FindPointer("team", &who);
+			message -> FindPointer("team", c);
+			
+			b = &c;
+			a = (team_id *)b;
 					
 			//Open the note and make focus on the releated application
 			be_roster -> Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
-			be_roster -> ActivateApp(*static_cast<team_id*>(who));
+			be_roster -> ActivateApp(*a);
 			
 		}
 		break;

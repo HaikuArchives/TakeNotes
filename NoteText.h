@@ -6,7 +6,7 @@
  *
  *			Ilio Catallo
  * 
- * Last revision: Ilio Catallo, 14th May 2009
+ * Last revision: Ilio Catallo, 29th June 2009
  *
  * Description: TODO
  */
@@ -34,15 +34,16 @@ class NoteText : public BTextView {
  							 	~NoteText();
  		static	BArchivable*	Instantiate(BMessage *msg);
  		virtual void			InsertText(const char *text, int32 length, int32 offset, const text_run_array *runs=NULL);
- 		virtual	void			Draw(BRect updateRect);
+
  		virtual	void			MessageReceived(BMessage *message);
- 		virtual	void			KeyDown(const char* bytes, int32 numBytes);		
+
  		virtual void			FrameResized(float width, float height);		
  		virtual void			MouseDown(BPoint point); 				
  				status_t		Archive(BMessage *msg, bool deep=true) const;
  				
  				void		SetReplicated(bool flag);
  				bool		GetReplicated();
+ 				void		SetHandler(BHandler *handler);
  			
  		
  	private:
@@ -50,7 +51,7 @@ class NoteText : public BTextView {
  		bool		fReplicated;
  		BHandler	*handler;
  		BMessenger	*fMessenger;
- 		//BBitmap		*fBitmap;
+
 };
  
  

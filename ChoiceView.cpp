@@ -104,8 +104,8 @@ ChoiceView :: ChoiceView(BRect rect, char *name,BHandler *handler)
   	AddChild(fUndoButton);
   	AddChild(fOkayButton);
 	 
-	 	  //Create a Messenger and set its target as NoteWindow
-	 	  fMessenger = new BMessenger(handler);
+	//Create a Messenger and set its target as NoteWindow
+	fMessenger = new BMessenger(handler);
 }
 
 // Font

@@ -59,10 +59,8 @@ bool ChoiceWindow :: QuitRequested() {
 	return (true);
 }
 
-
+// Manages the message received
 void ChoiceWindow :: MessageReceived(BMessage* message) {
-	
-	printf("sono nella window\n");
 	
 	switch(message -> what) {
 	

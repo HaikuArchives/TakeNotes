@@ -620,6 +620,7 @@ bool NoteView :: GetReplicated(){
 void NoteView :: SetBackgroundColor(rgb_color color){
 	
 	SetViewColor(color);
+	ChildAt(0)->SetViewColor(ViewColor());
 	
 	//Find the text view and change the color
 	if (FindView("NoteText") != NULL){
@@ -628,6 +629,7 @@ void NoteView :: SetBackgroundColor(rgb_color color){
 		
 		// Tell the view to refresh itself
 		FindView("NoteText")->Invalidate();
+		ChildAt(0)->Invalidate();
 		Invalidate();
 	}
 	

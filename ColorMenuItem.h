@@ -8,7 +8,7 @@
  * 
  * Last revision: Eleonora Ciceri, 16th May 2009
  *
- * Description: TODO
+ * Description: Header of ColorMenuItem
  */
  
 #ifndef COLOR_ITEM_H
@@ -18,6 +18,7 @@
 
 class BMessage;
 
+// Definition of the class
 class ColorMenuItem : public BMenuItem {
 
 	public:

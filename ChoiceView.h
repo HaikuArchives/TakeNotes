@@ -17,8 +17,8 @@
 
 // Libraries
 #include <Button.h>
-#include <View.h>
 #include <Messenger.h>
+#include <View.h>
 
 // Definition of the class
 class ChoiceView : public BView {

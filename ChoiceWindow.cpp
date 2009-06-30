@@ -70,6 +70,8 @@ bool ChoiceWindow :: QuitRequested() {
 
 // Manages the message received
 void ChoiceWindow :: MessageReceived(BMessage* message) {
+	// Variables
+	BAlert *alert;
 	
 	switch(message -> what) {
 	
@@ -98,7 +100,7 @@ void ChoiceWindow :: MessageReceived(BMessage* message) {
 		case BUTTON_UNDO:{
 		
 			// Ask before quit
-			BAlert *alert = new BAlert("", "Do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			alert = new BAlert("", "Do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 
 			if (alert->Go() == 0) {

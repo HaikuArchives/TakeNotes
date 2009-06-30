@@ -65,6 +65,10 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
 
 // Messages received by the ColorWindow
 void ColorWindow :: MessageReceived (BMessage* message) {
+	// Variables
+	rgb_color 	userColorChoice;
+	BMessage  	*msg;
+	BAlert 		*alert;
 	
 	message->PrintToStream();
 	
@@ -72,8 +76,6 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 	
 		// It answer to an OK request
 		case BUTTON_OK: {
-			rgb_color userColorChoice;
-			BMessage  *msg;
 	
 			// I catch the color that was chosen by the user
 			userColorChoice = fColorControl -> ValueAsColor();
@@ -90,7 +92,7 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 		// It answer to an UNDO request	
 		case BUTTON_UNDO: {
 				
-			BAlert *alert = new BAlert("", "Latest changes will be discarded", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			alert = new BAlert("", "Latest changes will be discarded", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 
 			if (alert->Go() == 0) {

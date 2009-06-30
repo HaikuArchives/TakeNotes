@@ -8,9 +8,10 @@
  * 
  * Last revision: Eleonora Ciceri, 16h May 2009
  *
- * Description: TODO
+ * Description: Coloured item of the menu "Font -> Color"
  */
  
+// Libraries
 #include "ColorMenuItem.h"
 #include <Message.h>
 
@@ -19,11 +20,14 @@ ColorMenuItem :: ColorMenuItem(const char* label, rgb_color color, BMessage *mes
 			  
 }
 
+// Drawing the content of the Color menu in the NoteWindow
 void ColorMenuItem :: DrawContent() {
-	BMenu *menu = Menu();
+	// Variables
+	BMenu 		*menu = Menu();
+	rgb_color 	menuC;
 	
 	if (menu) {
-		rgb_color menuC = menu -> HighColor();
+		menuC = menu -> HighColor();
 		menu -> SetHighColor (fColor);
 		BMenuItem :: DrawContent();
 		menu -> SetHighColor (menuC);

@@ -97,15 +97,15 @@ ChoiceView :: ChoiceView(BRect rect, char *name,BHandler *handler)
     
     // Add the Ok and the Undo Button
     frame = Bounds();
-    frame.left += 370;
-    frame.top = frame.bottom - 30;
-    frame.right-= 70;
+    frame.left += 350;
+    frame.top = frame.bottom - 40;
+    frame.right-= 90;
     frame.bottom -= 10;
     fUndoButton = new BButton(frame,"undo","Undo",new BMessage(BUTTON_UNDO));
    	
    	frame = Bounds();
     frame.left += 430;
-    frame.top = frame.bottom - 30;
+    frame.top = frame.bottom - 40;
     frame.right-= 10;
     frame.bottom -= 10;
    	fOkayButton = new BButton(frame,"ok","OK",new BMessage(BUTTON_OK));

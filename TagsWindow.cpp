@@ -33,82 +33,84 @@
 TagsWindow :: TagsWindow(BMessage *fSaveMessage)
 		   : BWindow (BRect(300,300,700,550),"Set Tags for this note",B_TITLED_WINDOW, B_NOT_RESIZABLE){
 		   
-		//Variables
-		BDirectory		dir;
-		entry_ref		ref;
-		status_t		err;
-		const char		*name;
+	//Variables
+	BDirectory		dir;
+	entry_ref		ref;
+	status_t		err;
+	const char		*name;
 		
-		BView			*fTagsView;
-		char			bufferTag1[30];
-		char			bufferTag2[30];
-		char			bufferTag3[30];
+	BView			*fTagsView;
+	char			bufferTag1[30];
+	char			bufferTag2[30];
+	char			bufferTag3[30];
 									
-		// Create the main view	
-		fTagsView = new BView(Bounds(), "TagsView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
+	// Create the main view	
+	fTagsView = new BView(Bounds(), "TagsView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 		 		
-		// Create the Text Field 
-		fTag1 = new BTextControl(BRect(20,40,200,55), "tag1", "First Tag: ", NULL, NULL);
-		fTag2 = new BTextControl(BRect(20,70,200,85), "tag2", "Second Tag: ", NULL, NULL);
-		fTag3 = new BTextControl(BRect(20,100,200,135), "tag3", "Third Tag: ", NULL, NULL);
+	// Create the Text Field 
+	fTag1 = new BTextControl(BRect(20,40,200,55), "tag1", "First Tag: ", NULL, NULL);
+	fTag2 = new BTextControl(BRect(20,70,200,85), "tag2", "Second Tag: ", NULL, NULL);
+	fTag3 = new BTextControl(BRect(20,100,200,135), "tag3", "Third Tag: ", NULL, NULL);
 
-		//Create the OK and UNDO button	
-		fDoneButton = new BButton(BRect(340,200,390,210), "ok", "OK", new BMessage(BUTTON_OK));
-		fUndoButton = new BButton(BRect(270,200,320,210), "undo", "Undo", new BMessage(BUTTON_UNDO));
+	//Create the OK and UNDO button	
+	fDoneButton = new BButton(BRect(340,200,390,210), "ok", "OK", new BMessage(BUTTON_OK));
+	fUndoButton = new BButton(BRect(270,200,320,210), "undo", "Undo", new BMessage(BUTTON_UNDO));
 		
-		/*
-		* Add the view as window's child, set back ground color, 
-		* then add the tag TextControl as children
-		*/
-		fTagsView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	/*
+	* Add the view as window's child, set back ground color, 
+	* then add the tag TextControl as children
+	*/
+	fTagsView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 		
-		AddChild(fTagsView);
-		fTagsView->AddChild(fTag1);
-		fTagsView->AddChild(fTag2);
-		fTagsView->AddChild(fTag3);
-		
-		// Add OK and UNDO button as children
-		fTagsView->AddChild(fDoneButton);
-		fTagsView->AddChild(fUndoButton);
-		
+	AddChild(fTagsView);
+	fTagsView->AddChild(fTag1);
+	fTagsView->AddChild(fTag2);
+	fTagsView->AddChild(fTag3);
 	
-		// Open the file from FS starting from the fSaveMessage message
-		if (fSaveMessage->FindRef("directory",&ref) == B_OK && fSaveMessage->FindString("name", &name) == B_OK){
+	// Add OK and UNDO button as children
+	fTagsView->AddChild(fDoneButton);
+	fTagsView->AddChild(fUndoButton);
 			
-			dir.SetTo(&ref);
-			if ((err = dir.InitCheck()) != B_OK){
-			 BAlert *myalert = new BAlert("ERR","errore di inizializzazione del file","OK");
-			 myalert->Go();
-			 exit(-1);	
+	// Open the file from FS starting from the fSaveMessage message
+	if (fSaveMessage->FindRef("directory",&ref) == B_OK && fSaveMessage->FindString("name", &name) == B_OK){
 			
-			}
-			fFile.SetTo(&dir, name, B_READ_WRITE);
+		dir.SetTo(&ref);
+		if ((err = dir.InitCheck()) != B_OK){
+			BAlert *myalert = new BAlert("ERR","errore di inizializzazione del file","OK");
+			myalert->Go();
+			exit(-1);	
+			
 		}
+		fFile.SetTo(&dir, name, B_READ_WRITE);
+	}
 		
-		printf("$$$$TAGONE$$$$: %s\n", bufferTag1);
+	printf("$$$$TAGONE$$$$: %s\n", bufferTag1);
 		
-		// Read the old values for this file
-		fFile.ReadAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, &bufferTag1, 30);
-		fFile.ReadAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, &bufferTag2, 30);
-		fFile.ReadAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, &bufferTag3, 30);
+	// Read the old values for this file
+	fFile.ReadAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, &bufferTag1, 30);
+	fFile.ReadAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, &bufferTag2, 30);
+	fFile.ReadAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, &bufferTag3, 30);
 			
-		// Initialize text field to old values
-		fTag1->SetText(bufferTag1);
-		fTag2->SetText(bufferTag2);
-		fTag3->SetText(bufferTag3);		
+	// Initialize text field to old values
+	fTag1->SetText(bufferTag1);
+	fTag2->SetText(bufferTag2);
+	fTag3->SetText(bufferTag3);		
 
 }
 
+// Destructor
 TagsWindow :: ~TagsWindow(){
 
-	 if (fFile.InitCheck() == B_OK)
-			fFile.Unset();
+	if (fFile.InitCheck() == B_OK)
+		fFile.Unset();
 		
 }
 
+// FUnction that received all the messages
 void TagsWindow :: MessageReceived(BMessage *message){
 
 	switch(message->what){
+		// Message that answer to an OK request
 		case BUTTON_OK: {
 																			
 			// Set each attribute to text field's content
@@ -121,7 +123,8 @@ void TagsWindow :: MessageReceived(BMessage *message){
 																											
 		}
 		break;
-				
+		
+		// Message that answer to an UNDO request		
 		case BUTTON_UNDO: {
 				
 			BAlert *alert = new BAlert("", "The tags haven't been saved yet, do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
@@ -136,14 +139,16 @@ void TagsWindow :: MessageReceived(BMessage *message){
 			
 		default:
 			BWindow::MessageReceived(message);
-			break;					
+		break;					
 	}
 
 }
 
+// FUnction that answer to a QUIT requested
 bool TagsWindow :: QuitRequested() {
 	BMessage *message;
 	
+	// Message that tells that the window is closing
 	message = new BMessage (TAGS_CLOSE);
 	fMessenger->SendMessage(message);
 	

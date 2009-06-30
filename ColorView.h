@@ -9,16 +9,17 @@
  * 
  * Last revision: Eleonora Ciceri, 23th June 2009
  *
- * Description: TODO
+ * Description: Header of the ColorView
  */
 
 #ifndef COLOR_VIEW_H
 #define COLOR_VIEW_H
 
-#include <View.h>
 #include <ColorControl.h>
 #include <Messenger.h>
+#include <View.h>
 
+// Definition of the class
 class ColorView : public BView {
 	
 	public:

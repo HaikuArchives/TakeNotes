@@ -9,9 +9,10 @@
  * 
  * Last revision: Eleonora Ciceri, 23th June 2009
  *
- * Description: TODO
+ * Description: View that allows you to change the background color
  */
 
+// Libraries
 #include "ColorView.h"
 #include "StringView.h"
 

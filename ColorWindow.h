@@ -9,7 +9,7 @@
  * 
  * Last revision: Eleonora Ciceri, 23th June 2009
  *
- * Description: TODO
+ * Description: Header of the ColorWindow
  */
 
 

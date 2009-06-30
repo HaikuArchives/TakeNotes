@@ -9,13 +9,14 @@
  * 
  * Last revision: Eleonora Ciceri, 23th June 2009
  *
- * Description: TODO
+ * Description: Window that is opened to change the background color
  */
 
 #include "ColorWindow.h"
 
-#include <Button.h>
+// Libraries
 #include <Alert.h>
+#include <Button.h>
 
 // Messages
 #define COLOR_CHANGED 	'ccrq'
@@ -42,9 +43,9 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
 	frame.OffsetTo(B_ORIGIN);
 	fColorView = new ColorView (frame, "ColorView",handler);
 	fColorView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	AddChild(fColorView);
-		   	   
-	   	   
+	AddChild(fColorView);		   	   
+	   
+	// Drawing...	   
 	fMessenger = new BMessenger(handler);
 	   
 	matrix = B_CELLS_16x16;
@@ -62,12 +63,14 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
 	Show();
 }
 
+// Messages received by the ColorWindow
 void ColorWindow :: MessageReceived (BMessage* message) {
 	
 	message->PrintToStream();
 	
 	switch (message -> what) {
 	
+		// It answer to an OK request
 		case BUTTON_OK: {
 			rgb_color userColorChoice;
 			BMessage  *msg;
@@ -83,7 +86,8 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 			fMessenger->SendMessage(msg);
 		}
 		break;
-				
+			
+		// It answer to an UNDO request	
 		case BUTTON_UNDO: {
 				
 			BAlert *alert = new BAlert("", "Latest changes will be discarded", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
@@ -95,7 +99,6 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 			}
 		}
 		break;
-	
 
 		default:
 			BWindow::MessageReceived(message);
@@ -107,12 +110,11 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 bool ColorWindow :: QuitRequested() {
 	BMessage *message;
 	
+	// It tells that the window is going to quit
 	message = new BMessage (COLOR_CLOSE);
 	fMessenger->SendMessage(message);
 	
 	Quit();
-		
-
 	
 	return (true);
 }

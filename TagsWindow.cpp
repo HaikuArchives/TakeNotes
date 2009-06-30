@@ -30,10 +30,12 @@
 #define TAGS_CLOSE		'_tgc'
 
 
-TagsWindow :: TagsWindow(BMessage *fSaveMessage)
+TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
 		   : BWindow (BRect(300,300,700,550),"Set Tags for this note",B_TITLED_WINDOW, B_NOT_RESIZABLE){
 		   
 	//Variables
+	fMessenger = new BMessenger(handler);
+	
 	BDirectory		dir;
 	entry_ref		ref;
 	status_t		err;

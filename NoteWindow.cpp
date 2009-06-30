@@ -1119,7 +1119,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 				if (fTagsWindow == NULL){
 
-					fTagsWindow = new TagsWindow(fSaveMessage);
+					fTagsWindow = new TagsWindow(fSaveMessage, this);
 					fTagsWindow -> Show();  
 			
 				} else {

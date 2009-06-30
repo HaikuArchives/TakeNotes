@@ -25,7 +25,7 @@ class TagsWindow : public BWindow{
  
 	public:
  	
- 						TagsWindow(BMessage *fSaveMessage);
+ 						TagsWindow(BMessage *fSaveMessage, BHandler *handler);
  						~TagsWindow();
  		virtual void	MessageReceived(BMessage *message);	
  		virtual bool	QuitRequested();

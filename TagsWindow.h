@@ -14,15 +14,16 @@
  #ifndef TAG_WINDOW_H
  #define TAG_WINDOW_H
  
+ // Libraries
  #include <Button.h>
  #include <Window.h>
  #include <File.h>
  #include <TextControl.h>
  
+// Window that allows you to add tags
+class TagsWindow : public BWindow{
  
- class TagsWindow : public BWindow{
- 
- 	public:
+	public:
  	
  						TagsWindow(BMessage *fSaveMessage);
  						~TagsWindow();
@@ -40,8 +41,6 @@
 		BFile			fFile;
 		
 		BMessenger		*fMessenger;	
+};
  
- };
- 
- 
- #endif
+#endif

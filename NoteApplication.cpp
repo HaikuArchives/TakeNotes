@@ -15,6 +15,7 @@
  
 #include "NoteApplication.h"
 
+// Libraries
 #include <Alert.h>
 #include <AppFileInfo.h>
 #include <Autolock.h>
@@ -37,20 +38,22 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// Constants
 #define COLOR_CHANGED 	'ccrq'
 #define FONT_BOLD 		'fntb'
 
 // Global variables
 NoteApplication *note_app;
 
-//Usuful variables (we don't want to repeat these hard to remember strings everywhere!)
+//Useful variables (we don't want to repeat these hard to remember strings everywhere!)
 const char*	kSignature = "application/x-vnd.ccc-TakeNotes";
 const char*	kDeskbarSignature = "application/x-vnd.Be-TSKB";
 const char*	kDeskbarItemName = "TakeNotes";
 
-
-// This function fills the image_info image struct with the app image of itself
-// and eventually return B_OK
+/*
+* This function fills the image_info image struct with the app image of itself
+* and eventually return B_OK
+*/
 status_t our_image(image_info& image){
 
 	// Variables
@@ -70,17 +73,19 @@ status_t our_image(image_info& image){
 NoteApplication :: NoteApplication()
 			    : BApplication("application/x-vnd.ccc-TakeNotes"){	
 	
-	//Check (and install) the MIME type
+	// Check (and install) the MIME type
 	CheckMime();
-		
-	// Creation of the directory with the association between notes
-	// and applications
+	
+	/*	
+	* Creation of the directory with the association between notes
+	* and applications
+	*/
 	DIR *dir;
 	dir = opendir("/boot/home/config/settings/TakeNotes");
 	if (dir == NULL)
 		mkdir ("/boot/home/config/settings/TakeNotes", O_CREAT);
 	
-	//private data members initialization
+	// Private data members initialization
 	fWindowCount = 0;
 	fWindowCountUntitled = 0;
 	note_app = this;
@@ -90,7 +95,7 @@ NoteApplication :: NoteApplication()
 // Function ReadyToRun
 void NoteApplication :: ReadyToRun(){
 
-	//Variables
+	// Variables
 	BDeskbar	deskbar;
 	BAlert 		*alert;
 		
@@ -118,7 +123,7 @@ void NoteApplication :: ReadyToRun(){
 // Function CheckMime
 void NoteApplication :: CheckMime(){
 
-	//Variables
+	// Variables
 	BMimeType 	takenotes("application/takenotes");
 
 	image_info		appInfo;
@@ -135,16 +140,15 @@ void NoteApplication :: CheckMime(){
 	BVolumeRoster	volumeRoster;
 	BVolume 		rootVolume;
 	
-	//We define the extensions for the mime type
-	
+	// We define the extensions for the mime type	
 	msg.AddString("extensions","tkn");
 		
-	//Create a BAppFileInfo object linked to the application itself
+	// Create a BAppFileInfo object linked to the application itself
 	be_app->GetAppInfo(&appInfo2);
 	file2.SetTo(&appInfo2.ref, B_READ_WRITE);
 	appFileInfo.SetTo(&file2);
 	
-	//Grab the file icon stored in the resources
+	// Grab the file icon stored in the resources
 	if (our_image(appInfo) != B_OK)
 		printf("errore nell'our_image\n");
 
@@ -153,11 +157,11 @@ void NoteApplication :: CheckMime(){
 	if (resource.SetTo(&file) != B_OK)			
 		printf("errore nella resource\n");
 			
-	//Load the icon as a blob from the resource	
+	// Load the icon as a blob from the resource	
 	data = resource.LoadResource(B_VECTOR_ICON_TYPE,2,&size);
 	
 	if (data != NULL){			
-		//Set the icon for the mimetype
+		// Set the icon for the mimetype
 		appFileInfo.SetIconForType(takenotes.Type(), (uint8 *)data, size);						
 			
 	} else 
@@ -165,16 +169,14 @@ void NoteApplication :: CheckMime(){
 		
 	appFileInfo.SetSupportedTypes(&msg);		
 		
-	//Check if the mimetype is installed or not
+	// Check if the mimetype is installed or not
 	if (takenotes.InitCheck() == B_OK){
 
 				
-		//Check if the mimetype is already installed in the DB
+		// Check if the mimetype is already installed in the DB
 		if (takenotes.IsInstalled()){
-		
-				printf("già installato\n");
 				
-				return;
+			return;
 		}				
 			
 		//First of all we install the TakeNotes MIME type
@@ -249,7 +251,7 @@ void NoteApplication :: CheckMime(){
 		}
 				
 				
-		//Add a short description for the MIME type
+		// Add a short description for the MIME type
 		if (takenotes.SetShortDescription("TakeNotes") != B_OK)
 			printf("errore nel settare la short description\n");
 			
@@ -292,23 +294,25 @@ void NoteApplication :: CloseNote(){
 // Function that is activated when we receive some arguments
 void NoteApplication :: ArgvReceived(int32 argc, char** argv){
 
-	//Variables
-	const 		char* 		cwd = "";
+	// Variables
+	const 		char 		*cwd = "";
 	BMessage 	*message = CurrentMessage();
 			
-	//Extract the cwd (current working directory)
+	// Extract the cwd (current working directory)
 	if (message != NULL){
 		
 		if (message->FindString("cwd",&cwd) != B_OK)
 			cwd = "";
 	}
-		
-	//Check if it is an absolute or relative path
-	//If the path is a relative one we make it absolute
-	//Eventually we open the note(s)
+	
+	/*	
+	* Check if it is an absolute or relative path
+	* If the path is a relative one we make it absolute
+	* Eventually we open the note(s)
+	*/
 	for (int i=1; i < argc; i++){
 		
-		//Variables
+		// Variables
 		BPath path;
 		entry_ref ref;
 			
@@ -332,7 +336,7 @@ void NoteApplication :: ArgvReceived(int32 argc, char** argv){
 // Function RefsReceived
 void NoteApplication :: RefsReceived(BMessage *message){
 
-	//Variables
+	// Variables
 	int32 index = 0;
 	entry_ref ref;
 		
@@ -351,37 +355,37 @@ void NoteApplication :: MessageReceived(BMessage *message){
 		
 		case B_SILENT_RELAUNCH:
 			OpenNote();
-			break;
+		break;
 			
 		default:
 			BApplication::MessageReceived(message);
-			break;
+		break;
 		
 	}
 
 }
 
-// Function used to install the replicant in the deskbar
-// The replicant will act as the controller of the application
+/*
+* Function used to install the replicant in the deskbar
+* The replicant will act as the controller of the application
+*/
 void NoteApplication :: _InstallReplicantInDeskbar(){
 
-	//Variables
-	image_info info;
+	// Variables
+	image_info  info;
 	entry_ref	ref;
 		
-	//If it succeded in finding itself
+	// If it succeded in finding itself
 	if (our_image(info) == B_OK && get_ref_for_path(info.name, &ref) == B_OK){
-		
-		printf("tento di installare\n");
-		
-		//Find itself in the file system
+				
+		// Find itself in the file system
 		BPath path(&ref);
 		printf("path %s\n",path.Path());
 		
-		//Initialize the deskbar object
+		// Initialize the deskbar object
 		BDeskbar deskbar;
 			
-		//If the deskbar is running we finally install 
+		// If the deskbar is running we finally install 
 		if (!deskbar.IsRunning())
 			printf("la deskbar NON sta andando\n");
 			
@@ -390,9 +394,11 @@ void NoteApplication :: _InstallReplicantInDeskbar(){
 		
 	} else 
 		printf("errore\n");
-		
-	//Quit the application, an indipendent instance of TakeNotes is now running
-	//as a replicant in the Deskbar
+	
+	/*	
+	* Quit the application, an indipendent instance of TakeNotes is now running
+	* as a replicant in the Deskbar
+	*/
 	Quit();
 }
 

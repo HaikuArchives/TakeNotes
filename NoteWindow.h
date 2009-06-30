@@ -35,26 +35,18 @@
 /* == DATA STRUCTURE ==
  * Structure containing all the informations about the current post-it
  * Information that it contains:
- * - ID - Now we're using it statically; =DEFINE HOW TO CHANGE IT=
- * - Title - Now we're using it statically =INSERT IT WHEN THE POST-IT IS DETACHED=
  * - Content
  * - Application associated
- * - Current background color
  * - Alarm date (day - month - year)
  * - Alarm hour (hour - minute)
  * - = TODO: TAGS! =
  */
-struct DatiPostIt {
-	int Id;					// Post-it id
-	char* Titolo;			// Post-it title
-	char* Contenuto;		// Post-it content
-	rgb_color ColoreBack;	// Background color
-	int Giorno;				// Alarm - Day
-	int Mese;				// Alarm - Month
-	int Anno;				// Alarm - Year
-	int Ora;				// Alarm - Hour
-	int Minuto;				// Alarm - Minute
-	char* Application;
+struct AlarmData {
+	int Day;				// Alarm - Day
+	int Month;				// Alarm - Month
+	int Year;				// Alarm - Year
+	int Hour;				// Alarm - Hour
+	int Minute;				// Alarm - Minute
 };
 
 // Constructor
@@ -121,7 +113,7 @@ class NoteWindow : public BWindow {
 		bool 		fRedoFlag;
 		
 		// Data structure
-		DatiPostIt 	fDati;
+		AlarmData 	fData;
 		
 		//Messaging
 		BMessage		*fSaveMessage;

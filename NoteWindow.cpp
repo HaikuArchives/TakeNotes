@@ -273,10 +273,6 @@ void NoteWindow :: InitWindow(){
 	
 	//Initialize the fSaveMessage
 	fSaveMessage = NULL;
-		
-	// Data of the data structure
-	fDati.Id = 1;
-	fDati.Titolo = "Titolo";
 	
 	// Create an empty message
 	check_alarm_msg = new BMessage(CHECK_ALARM);
@@ -839,9 +835,6 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				fRedoFlag = false;
 			
 		    }
-		    // Modifying the data structure
-		    fDati.Contenuto = (char*)fNoteText -> Text();
-		    
 		}
 		break;
 		
@@ -1059,9 +1052,6 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			colore.blue = (uint8)c;
 			fNoteView -> SetBackgroundColor(colore);
 			
-			// DATA STRUCTURE
-			fDati.ColoreBack = colore;
-			
 		}
 		break;	
 		
@@ -1157,15 +1147,15 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			alarm_set = true;
 				
 			message -> FindInt16("year", &i);
-			fDati.Anno = i;
+			fData.Year = i;
 			message -> FindInt16("month", &i);
-			fDati.Mese = i;
+			fData.Month = i;
 			message -> FindInt16("day", &i);
-			fDati.Giorno = i;
+			fData.Day = i;
 			message -> FindInt16("hour", &i);
-			fDati.Ora = i;
+			fData.Hour = i;
 			message -> FindInt16("minute", &i);
-			fDati.Minuto = i;
+			fData.Minute = i;
 			
 		}
 		break;
@@ -1194,11 +1184,11 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			timeinfo = localtime ( &rawtime );
 		
 			// Fill the timeinfo struct with data saved in data struct	
-			timeinfo -> tm_year = fDati.Anno - 1900;
-			timeinfo -> tm_mon = fDati.Mese - 1;
-			timeinfo -> tm_mday = fDati.Giorno;
-			timeinfo -> tm_hour = fDati.Ora;
-			timeinfo -> tm_min = fDati.Minuto;
+			timeinfo -> tm_year = fData.Year - 1900;
+			timeinfo -> tm_mon = fData.Month - 1;
+			timeinfo -> tm_mday = fData.Day;
+			timeinfo -> tm_hour = fData.Hour;
+			timeinfo -> tm_min = fData.Minute;
 			timeinfo -> tm_sec = 0;	
 	
 			// Convert from struct tm to data type time_t	

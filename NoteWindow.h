@@ -140,7 +140,6 @@ class NoteWindow : public BWindow {
 
 };
 
-extern entry_ref ref_tags;
 
 #endif
 

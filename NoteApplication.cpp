@@ -13,6 +13,7 @@
  *				This is the main container of the functions related to an application.
  */
  
+// Our Libraries
 #include "NoteApplication.h"
 
 // Libraries
@@ -112,7 +113,7 @@ void NoteApplication :: ReadyToRun(){
 		
 	}
 
-	// If there's some window opened -> return
+	// If there's some window opened return
 	if (fWindowCount > 0)
 		return;
 	// If there aren't windows opened, we open a note
@@ -121,7 +122,7 @@ void NoteApplication :: ReadyToRun(){
 }
 
 // Function CheckMime
-void NoteApplication :: CheckMime(){
+status_t NoteApplication :: CheckMime(){
 
 	// Variables
 	BMimeType 	takenotes("application/takenotes");
@@ -150,12 +151,12 @@ void NoteApplication :: CheckMime(){
 	
 	// Grab the file icon stored in the resources
 	if (our_image(appInfo) != B_OK)
-		printf("errore nell'our_image\n");
+		return B_ERROR;
 
 	file.SetTo(appInfo.name, B_READ_ONLY);
 		
 	if (resource.SetTo(&file) != B_OK)			
-		printf("errore nella resource\n");
+		return B_ERROR;
 			
 	// Load the icon as a blob from the resource	
 	data = resource.LoadResource(B_VECTOR_ICON_TYPE,2,&size);
@@ -165,7 +166,7 @@ void NoteApplication :: CheckMime(){
 		appFileInfo.SetIconForType(takenotes.Type(), (uint8 *)data, size);						
 			
 	} else 
-		printf("i dati erano vuoti\n");	
+		return B_ERROR;	
 		
 	appFileInfo.SetSupportedTypes(&msg);		
 		
@@ -176,23 +177,22 @@ void NoteApplication :: CheckMime(){
 		// Check if the mimetype is already installed in the DB
 		if (takenotes.IsInstalled()){
 				
-			return;
+			return B_OK;
 		}				
 			
 		//First of all we install the TakeNotes MIME type
 		if (takenotes.Install() != B_OK)
-				printf("non installato, errore\n");			
+				return B_ERROR;		
 			
 			
 		if (takenotes.SetFileExtensions(&msg) != B_OK){
-			printf("errore nel settare l'estensione");
-			exit(-1);
+				return B_ERROR;
+			
 		}
 			
 		//Set the preferred application	
 		if (takenotes.SetPreferredApp("application/x-vnd.ccc-TakeNotes") != B_OK){
-			printf("errore nel settare l'app preferred\n");
-			exit(-1);
+				return B_ERROR;
 		}
 		
 		//Create the index structure for the extra attributes 	
@@ -247,20 +247,22 @@ void NoteApplication :: CheckMime(){
 		attr.AddInt32("attr:alignment",0);
 		
 		if (takenotes.SetAttrInfo(&attr) != B_OK){
-			printf("errore nel settare i metadata\n");
+			return B_ERROR;
 		}
 				
 				
 		// Add a short description for the MIME type
 		if (takenotes.SetShortDescription("TakeNotes") != B_OK)
-			printf("errore nel settare la short description\n");
+			return B_ERROR;
 			
 		if (takenotes.SetLongDescription("TakeNotes post-it application") != B_OK)
-			printf("errore nella long desc\n"); 
+			return B_ERROR;
 	
+		// If we arrived here, it should be all okay!
+		return B_OK;
 	} 
 	else
-		printf("errore di init del mimetype");
+		return B_ERROR;
 }
 
 // Function used to open a note, counting how many notes are opened
@@ -380,20 +382,20 @@ void NoteApplication :: _InstallReplicantInDeskbar(){
 				
 		// Find itself in the file system
 		BPath path(&ref);
-		printf("path %s\n",path.Path());
+	
 		
 		// Initialize the deskbar object
 		BDeskbar deskbar;
 			
 		// If the deskbar is running we finally install 
 		if (!deskbar.IsRunning())
-			printf("la deskbar NON sta andando\n");
+			return;
 			
 		if (deskbar.AddItem(&ref) != B_OK)
-			printf("errore nell'additem\n");
+			return;
 		
 	} else 
-		printf("errore\n");
+		return;
 	
 	/*	
 	* Quit the application, an indipendent instance of TakeNotes is now running

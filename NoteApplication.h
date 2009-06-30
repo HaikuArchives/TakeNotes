@@ -28,18 +28,18 @@ class NoteApplication : public BApplication {
 
 	public:
 	
-						NoteApplication();
-		virtual void	ArgvReceived(int32 argc, char** argv);
-		virtual void	RefsReceived(BMessage *message);
-		virtual void	MessageReceived(BMessage *message);
-		virtual void	ReadyToRun();
+							NoteApplication();
+		virtual void		ArgvReceived(int32 argc, char** argv);
+		virtual void		RefsReceived(BMessage *message);
+		virtual void		MessageReceived(BMessage *message);
+		virtual void		ReadyToRun();
 		
-				void	_InstallReplicantInDeskbar();
+				void		_InstallReplicantInDeskbar();
 		
-				void 	OpenNote();
-				void	OpenNote(entry_ref *ref);
-				void	CloseNote();
-				void	CheckMime();
+				void 		OpenNote();
+				void		OpenNote(entry_ref *ref);
+				void		CloseNote();
+				status_t	CheckMime();
 	
 	private:
 	
@@ -52,7 +52,6 @@ extern NoteApplication *note_app;
 
 extern const char 	*kSignature;
 extern const char 	*kDeskbarItemName;
-
 
 status_t our_image(image_info &image);
 

@@ -27,6 +27,7 @@
 //Constants
 #define BUTTON_OK 		'btok'
 #define BUTTON_UNDO 	'btun'
+#define TAGS_CLOSE		'_tgc'
 
 
 TagsWindow :: TagsWindow(BMessage *fSaveMessage)
@@ -138,4 +139,15 @@ void TagsWindow :: MessageReceived(BMessage *message){
 			break;					
 	}
 
+}
+
+bool TagsWindow :: QuitRequested() {
+	BMessage *message;
+	
+	message = new BMessage (TAGS_CLOSE);
+	fMessenger->SendMessage(message);
+	
+	Quit();
+	
+	return true;
 }

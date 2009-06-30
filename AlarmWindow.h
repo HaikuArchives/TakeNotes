@@ -31,6 +31,7 @@ class AlarmWindow : public BWindow {
 			
 					 AlarmWindow(BRect frame, BHandler *handler);
 		virtual void MessageReceived(BMessage* message);
+		virtual bool QuitRequested();
 	
 	private:
 		

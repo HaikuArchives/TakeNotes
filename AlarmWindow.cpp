@@ -21,6 +21,7 @@
 #define BUTTON_ALARM_OK 'alok'
 #define SET_ALARM 		'salr'
 #define ALARM_MSG 		'alrm'
+#define ALARM_CLOSE		'_alc'
 
 
 AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler) 
@@ -284,4 +285,14 @@ int AlarmWindow :: GetTime(int element) {
 			return 0;
 			
 	}	
+}
+
+bool AlarmWindow :: QuitRequested () {
+	BMessage *message;
+	
+	message = new BMessage (ALARM_CLOSE);
+	fMessenger->SendMessage(message);
+	Quit();
+	
+	return true;
 }

@@ -27,6 +27,7 @@
  						TagsWindow(BMessage *fSaveMessage);
  						~TagsWindow();
  		virtual void	MessageReceived(BMessage *message);	
+ 		virtual bool	QuitRequested();
  
  	private:
  	
@@ -37,7 +38,8 @@
 		BTextControl    *fTag3;
 		
 		BFile			fFile;
- 	
+		
+		BMessenger		*fMessenger;	
  
  };
  

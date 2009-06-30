@@ -22,6 +22,7 @@
 #define RADIO_CHECKED 	'rdck'
 #define BUTTON_OK		'btok'
 #define BUTTON_UNDO		'btun'
+#define CHOICE_CLOSE	'_chc'
 
 /*
 * Constructor
@@ -55,6 +56,11 @@ ChoiceWindow :: ~ChoiceWindow(){
 
 // Function that is activated when I close the window
 bool ChoiceWindow :: QuitRequested() {
+	BMessage *message;
+	
+	message = new BMessage (CHOICE_CLOSE);
+	fMessenger->SendMessage(message);
+	
 	Quit();	
 	return (true);
 }

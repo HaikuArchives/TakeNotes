@@ -11,6 +11,7 @@
  * Description: NoteText is the view that accept text from the user
  */
  
+//Our Libraries
 #include "NoteText.h"
 
 // Libraries
@@ -58,11 +59,13 @@ NoteText :: ~NoteText(){}
 // Function that is called when the NoteText is archived as a part of a BMessage
 status_t NoteText :: Archive (BMessage *msg, bool deep) const{
 
+	// Actually execute the real code
 	BTextView :: Archive(msg,deep);
 	
 	/*
 	* Flags the message with the information regarding the application and the class name
-	* This information are required when create a replicant
+	* This informations are required and they will be used by the costructor by message 
+	* to rehydrate the replicant
 	*/
 	msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
 	msg->AddString("class","NoteText");
@@ -73,8 +76,9 @@ status_t NoteText :: Archive (BMessage *msg, bool deep) const{
 
 /* 
 * This function is called when we restore the note from a BMessage
-* so it's called twice: 	- when we rehydrated a replicant
+* so it's called 3 times: 	- when we rehydrated a replicant
 *							- when we restore a saved note
+*							- when we install the application in the Deskbar
 */
 BArchivable *NoteText :: Instantiate(BMessage *msg){
 
@@ -208,7 +212,7 @@ void NoteText :: MouseDown(BPoint point){
 }
 
 /*
-* Setter function, NoteText::Archive is called several time in several different situation
+* Setter function, NoteText::Archive is called several times in several different situations
 * (replicant creation, note loading, note saving). The default behaviour is to set
 * fReplicated = true everytime Archive is called, and then use this function to 
 * change the value

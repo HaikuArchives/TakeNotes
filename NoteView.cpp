@@ -56,10 +56,10 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 		
 	// Initilization
 	fBitmap = NULL;
-		
+	fHash = new AppHashTable();	
+	
 	if (handler) 
 		fMessenger = new BMessenger(handler); 
-	fHash = new AppHashTable();
 		
 	// Graphical Stuff				
 	if (!inDeskbar){
@@ -70,8 +70,7 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 		AddChild(dragger);
 		dragger->SetViewColor(ViewColor());
 		
-	} 
-	else {
+	} else {
 			
 		fReplicated = false;
 		printf("sono nella deskbar\n");
@@ -80,7 +79,10 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 	}		   
 }
 
-// Constructor
+/*
+* Costructor by message
+* We can restore a NoteText starting from a BMessage that contains its structure
+*/ 
 NoteView :: NoteView (BMessage *msg, BHandler *handler)
 		   : BView(msg){
 			
@@ -102,7 +104,7 @@ NoteView :: NoteView (BMessage *msg, BHandler *handler)
 		printf("%s\n",info.signature);		
 }
 
-// Destructor
+// Destructor (actually empty, no dynamic object to destory here)
 NoteView :: ~NoteView(){}
 		
 // Function used to draw in the view
@@ -113,6 +115,11 @@ void NoteView :: Draw (BRect update){
 	if (fReplicated || !fInDeskbar)
 		return;
 		
+	/*
+	* We have to write the TakeNotes icon in the deskbar so we
+	* set the drawing mode to B_OP_ALPHA to obtain the icon background
+	* alpha blended
+	*/
 	SetDrawingMode(B_OP_ALPHA);
 	DrawBitmap(fBitmap);
 	SetDrawingMode(B_OP_COPY);
@@ -138,45 +145,52 @@ void NoteView :: InitBitmap(){
 			
 	// Try to locate ourselves on the FS and open in read only
 	if (our_image(info) != B_OK)
-		printf("errore nell'our_image\n");
+		return;
 			
 	file.SetTo(info.name,B_READ_ONLY);
 	if (file.InitCheck() < B_OK)
-		printf("errore nell'apertura file\n");
+		return;
 				
 	// Loading the resourced linked in the binary
 	BResources resources(&file);
 	if (resources.InitCheck() < B_OK)
-		printf("errore nel caricare le risorse\n");
+		return;
 			
 	// Load the vectorial icon into a void pointer
 	data = resources.LoadResource(B_VECTOR_ICON_TYPE,1,&size);
 	if (data != NULL){
 			
-		//Obtain the icon from the blob
+		//O btain the icon from the blob
 		icon = new BBitmap(Bounds(), B_RGBA32);
 					
 		if (icon->InitCheck() == B_OK && BIconUtils::GetVectorIcon((const uint8 *)data,size,icon) == B_OK){
-					
-			printf("sono riuscito a caricare l'icona!\n");
+			
+			// We succed in creating the icon so we can associate it to fBitmap and invalidate the view		
 			fBitmap = icon;
 			Invalidate();						
 					
-		} 
-		else {
+		} else {
 					
-			printf("Non sono riuscito a caricare l'icona!\n");
+			// Some errors occured so we delete the icon
 			delete icon;
 								
 		}
 			
-		} 
-		else
-			printf("i dati erano vuoti\n");
+	} else {
+		
+		// No B_VECTOR_ICON_TYPE data in the application resource
+		return;
+	}
+			
 }
 
+/*
+* Hook function-override, when the view is attached to a parent window we 
+* find if this parent is the deskbar or the NoteWindow
+*/
 void NoteView :: AttachedToWindow(){
 
+	// Actually execute the real code
 	BView :: AttachedToWindow();
 		
 	/*
@@ -191,7 +205,14 @@ void NoteView :: AttachedToWindow(){
 	}
 }
 
-// Function that reacts when someone clicks on the view
+/*
+* Hook function-override, it reacts when the user clicks on the view
+* First it tries to find the role of the view (if it is in a replicant,
+* in a NoteWindow, in the Deskbar).
+* If it is in the deskbar, it will show the contextual menu with the
+* note/application associations.
+*
+*/
 void NoteView :: MouseDown(BPoint point){
 
 	// Variables
@@ -210,16 +231,19 @@ void NoteView :: MouseDown(BPoint point){
     			*messRemove;
 	
 
+	// If we're in Deskbar and we aren't a replicated note
 	if (fInDeskbar && !fReplicated) {
 	
 		// Load the database of notes
 		fHash = new AppHashTable();
 		_LoadDB();
 
+		// Create the menu
 		menu = new BPopUpMenu(B_EMPTY_STRING, false, false);
 		menu->SetAsyncAutoDestruct(true);
 		menu->SetFont(be_plain_font);
 
+		// Fill the menu
 		menu->AddItem(new BMenuItem("Open TakeNotes" B_UTF8_ELLIPSIS,new BMessage(OPEN_TAKENOTES)));
 		menu->AddItem(new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED)));
 		if (fHash->HasElement()) menu->AddSeparatorItem();
@@ -260,19 +284,19 @@ void NoteView :: MouseDown(BPoint point){
    						// Make the list of the notes releated to that application
    						int countNotes = fHash -> GetNumNotes(sig);
    						for (int j = 0; j < countNotes; j++) {
+   							
+   							// Obtain the current note path
    							note = fHash -> GetNote(sig, j);
-   							
-   							//Messing with pointers
-   							team_id *ptrWho = &who;
-   							
+   								
+   							// Create the list of notes for a given application
    							mess = new BMessage(OPEN_FILE);
    							mess -> AddString("Note", note);
-   							mess -> AddPointer("team",(void *)ptrWho); // We pass also the team_id in order to focus the application
-   						
+   							
    							messRemove = new BMessage (REMOVE_ASSOCIATION);
    							messRemove -> AddString ("Note", note);
    							messRemove -> AddString ("Signature", sig);
    							
+   							// Sub-menu useful to open or remove a note
    							noteMenu = new BMenu (note);
    							noteMenu -> AddItem (new BMenuItem ("Open", mess));
    							noteMenu -> AddItem (new BMenuItem ("Remove the association", messRemove));
@@ -299,7 +323,13 @@ void NoteView :: MouseDown(BPoint point){
 
 }
 		
-// Function Archive		
+/*
+* Function that is called when the NoteView is archived as a part of a BMessage
+* this situation can happen 3 times: 	- the note is dehydrated (replicant on the desktop)
+*										- the note is saved
+*										- the application lives in the deskbar
+*/
+										
 status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 				
 	// Variables
@@ -313,11 +343,15 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		
 	BView ::Archive(msg,deep);
 		
-	// Add the information needed to restore the view as a replicant
+	/*
+	* Flags the message with the information regarding the application and the class name
+	* This informations are required and they will be used by the costructor by message 
+	* to rehydrate the replicant
+	*/
 	msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
 	msg->AddString("class","NoteView");
 		
-	// If the function has been called by NoteWindow::Save we should find this information and save 
+	// If the function has been called by NoteWindow::Save we should find this information and use them to save 
 	if (msg->FindRef("directory",&ref) == B_OK && msg -> FindString("name", &name) == B_OK) {
 			
 		dir.SetTo(&ref);
@@ -334,6 +368,7 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 		nodeinfo.SetTo(&file);
 		nodeinfo.SetType("application/takenotes");		
 		
+		//Deallocate the BFile object
 		file.Unset();		
 			
 	}	
@@ -341,14 +376,19 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 	return B_OK;		
 }
 
-// It istantiate a new view
+/* 
+* This function is called when we restore the note from a BMessage
+* so it's called 3 times: 	- when we rehydrated a replicant
+*							- when we restore a saved note
+*							- when we install the application in the Deskbar
+*/
 BArchivable* NoteView :: Instantiate(BMessage *msg){
 
 		return new NoteView(msg);
 		
 }
 
-// Menu aboutrequested. it contains some information about us and our work.
+// Hook function-override,that shows some information about us and our work
 void NoteView :: AboutRequested(){
 
 	// Variable
@@ -362,7 +402,16 @@ void NoteView :: AboutRequested(){
 
 }
 
-// Functions that associates a note to an application
+/* 
+* Functions that save to FS the associations between applications and notes
+* It saves the whole Hash table structure to FS with the syntax:
+*
+* 		NotePath:ApplicationSignature
+*
+* This function is called when the user decides to remove an association so we need
+* to update the informations stored in the config file.
+*/
+
 status_t NoteView :: _SaveDB(){
 		
 	// Variable
@@ -375,31 +424,16 @@ status_t NoteView :: _SaveDB(){
 	int			countSignatures,
 				countNotes;
 			
-	printf("-----------------------------\n");
-	fHash->PrintToStream();
-	printf("-----------------------------\n");		
-			
-	int cs = fHash -> GetNumSignatures();
-	for (int i = 0; i < cs; i++) {
-		char* sig = fHash -> GetSignature(i);
-		printf("Signature: %s\n", sig);
-		int cn = fHash -> GetNumNotes(sig);
-				
-		for (int j = 0; j < cn; j++) {
-			char* note = fHash -> GetNote(sig, j);
-			printf(" - %s\n", note);
-		}
-		printf("\n");
-	}
-	
-	
+
+	// Open the config file in RW, if the file exits it will be replaced
 	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE |  B_CREATE_FILE | B_ERASE_FILE)) != B_OK){
 		return err;
 	}
 	
-
+	// Initialiaztion
 	toWrite.SetTo("");
-	// Writing the structure
+	
+	// Writing the structure, for each signature...
 	countSignatures = fHash -> GetNumSignatures();
 	for (int i = 0; i < countSignatures; i++) {
 		
@@ -407,9 +441,7 @@ status_t NoteView :: _SaveDB(){
 		char* signature = fHash -> GetSignature(i);
 		countNotes = fHash -> GetNumNotes(signature);
 		
-		
-		printf("(FILE) nodo: %d, signature: %s\n",i,signature);
-		
+		//...we parse the string...		
 		for (int j = 0; j < countNotes; j++) {
 			char* note = fHash -> GetNote (signature, j);
 			printf(">>(FILE) nota: %d, path: %s\n", j, note);
@@ -418,65 +450,44 @@ status_t NoteView :: _SaveDB(){
 			toWrite.Append(signature);
 			toWrite.Append(":");		
 		}
-		
-		
-		
-		/*//Write the new value
-		//config.WriteAt(0,toWrite.String(), toWrite.Length());
-						
-		//Obtain the length of the file
-		config.GetSize(&length);
-				
-		if (length == 0)
-			config.Write (toWrite.String(), toWrite.Length());	
-		else				
-			//Write the new value
-			config.WriteAt(length, toWrite.String(), toWrite.Length());
-		*/
-		
+	
 	}
-	printf("\n(SAVE_DB) %s\n",toWrite.String());
+
+	//...and finally write all
 	config.Write (toWrite.String(), toWrite.Length());	
+	
 	//Unload the file and return
 	config.Unset();
 	return B_OK;
 
 }
 
-// Function that analyzes the messages received
+// Function that handles all the messages that arrives to the view
 void NoteView :: MessageReceived(BMessage *message){
 				
 	//Variables
 	char	*argv[1];
 
-	void **c;
-	void *b;
-	team_id	*a;	
-
-	message->PrintToStream();
-
 	switch(message->what){
 		
+		// The user wants more information about us
 		case B_ABOUT_REQUESTED:
 			AboutRequested();
 		break;
-				
+		
+		// The user wants to open takenotes and write a new note	
 		case OPEN_TAKENOTES:
 			_OpenTakeNotes();
 		break;
 				
+		// The user wants to open a note releated to an application that is currently running
 		case OPEN_FILE:{
 
-			//Find the note path and the team_id of the releated application	
+			//Find the note path of the releated application	
 			argv[0] = (char*)message -> FindString("Note");
-			message -> FindPointer("team", c);
 			
-			b = &c;
-			a = (team_id *)b;
-					
-			//Open the note and make focus on the releated application
+			//Open the note 
 			be_roster -> Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
-			be_roster -> ActivateApp(*a);
 			
 		}
 		break;
@@ -484,12 +495,11 @@ void NoteView :: MessageReceived(BMessage *message){
 		// Remove the association between a note and an application
 		case REMOVE_ASSOCIATION: {
 
-			// Removing from the data structure
+			// Find what has to be removed
 			BString n(message->FindString("Note"));
 			BString s(message->FindString("Signature"));
 			
-			printf("PRIMA DELLA PARTENZA: %s\n",n.String());
-		
+			// Removing from the data structure
 			fHash -> DeleteNote (s, n);
 			
 			// Rewriting the file
@@ -497,10 +507,16 @@ void NoteView :: MessageReceived(BMessage *message){
 		};
 		break;
 			
+		/* 
+		* The user wants to close the view, the view receives this
+		* message only when installed in the Deskbar 
+		*/
+ 
 		case B_QUIT_REQUESTED:
 			_Quit();
 		break;
-					
+		
+		// All the other messages are forwarded to the superclass method			
 		default:
 			BView::MessageReceived(message);
 		break;
@@ -540,17 +556,17 @@ void NoteView :: _LoadDB(){
 		
 	} else {
 		
-		printf("errore di lettura file\n");
 		return;
 			
 	}
 		
+	//Deallocate the BFile object
 	fDatabase.Unset();
+	
 	// Clean the string from random error
-	//printf("(LOAD_DB) %s\n",stringa.String());
 	stringa.Remove(stringa.FindLast(":")+1,stringa.CountChars());
-	//printf(">>(LOAD_DB) %s\n\n",stringa.String());
-		
+
+	// Parser loop
 	while (stringa.CountChars() > 0 ){
 	
 		// We look for the initial point
@@ -566,17 +582,11 @@ void NoteView :: _LoadDB(){
 		// Catch the signature and remove the :
 		stringa.MoveInto(signature, 0, lastComma);
 		signature.RemoveLast(":");
-		
-		printf(">>(LOAD_DB)path: %s\n",path.String());
-		printf(">>(LOAD_DB)signature: %s\n",signature.String());
-		//printf(">>(LOAD_DB)todo: %s\n\n",stringa.String());
-		
+	
+		// Add the signature and the note to the Hash Table
 		fHash->AddNote(signature,path);
 	}
 
-	printf("(LOADDB)------------------------\n");
-	fHash->PrintToStream();
-	printf("(LOADDB)-------------------------\n");
 
 }
 
@@ -602,14 +612,19 @@ void NoteView :: _Quit(){
 
 }
 
-// Set the flag fReplicated
+/*
+* Setter function, NoteView::Archive is called several times in several different situations
+* (replicant creation, note loading, note saving). The default behaviour is to set
+* fReplicated = true everytime Archive is called, and then use this function to 
+* change the value
+*/
 void NoteView :: SetReplicated(bool flag){
 
 	fReplicated = flag;
 
 }
 
-// Get the flag fRelpicated
+// Getter function (see the NoteView::SetReplicated explanation)
 bool NoteView :: GetReplicated(){
 
 	return fReplicated;
@@ -619,6 +634,7 @@ bool NoteView :: GetReplicated(){
 // Set the background color of the view
 void NoteView :: SetBackgroundColor(rgb_color color){
 	
+	// Change NoteView and NoteView's dragger color
 	SetViewColor(color);
 	ChildAt(0)->SetViewColor(ViewColor());
 	

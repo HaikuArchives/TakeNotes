@@ -1080,19 +1080,29 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			
 			} else {
 			
+			
+				if (fChoiceWindow == NULL){
 	
-	        	aList = new BList;
+	        		aList = new BList;
 
-			    // Obtaining the applications that are running
-		        be_roster->GetAppList(aList); 
-			    int countApps = aList -> CountItems();
+				    // Obtaining the applications that are running
+		    	    be_roster->GetAppList(aList); 
+			    	int countApps = aList -> CountItems();
 		        
-		        int h = countApps * 17 + 300;
-		        printf("Altezza: %d\n", h);
+		       		 int h = countApps * 17 + 300;
+		       		 printf("Altezza: %d\n", h);
 					
-				fChoiceWindow = new ChoiceWindow(BRect(300,300,800,h), this);
-				fChoiceWindow -> Show();
-					 
+					fChoiceWindow = new ChoiceWindow(BRect(300,300,800,h), this);
+					fChoiceWindow -> Show();
+				
+					delete aList;
+					aList = NULL;
+				
+				} else {
+				
+					fChoiceWindow->Activate();
+				
+				}	 
 			} 
 		
 		}
@@ -1107,8 +1117,15 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			
 			} else {
 
-				fTagsWindow = new TagsWindow(fSaveMessage);
-				fTagsWindow -> Show();  
+				if (fTagsWindow == NULL){
+
+					fTagsWindow = new TagsWindow(fSaveMessage);
+					fTagsWindow -> Show();  
+			
+				} else {
+				
+					fTagsWindow->Activate();
+				}
 		
 			}
 			

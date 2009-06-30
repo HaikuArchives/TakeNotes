@@ -12,18 +12,21 @@
  * Description: Alarm Window allows the user to create an alarm for the note
  */
 
-
+// Our Libraries
 #include "AlarmWindow.h"
 
 // Libraries
+#include <Alert.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 
 // Messages
-#define BUTTON_ALARM_OK 'alok'
-#define SET_ALARM 		'salr'
-#define ALARM_MSG 		'alrm'
-#define ALARM_CLOSE		'_alc'
+#define BUTTON_ALARM_OK 	'alok'
+#define BUTTON_ALARM_UNDO 	'alun'
+#define SET_ALARM 			'salr'
+#define ALARM_MSG 			'alrm'
+#define ALARM_CLOSE			'_alc'
 
 /*
 * Constructor
@@ -69,7 +72,8 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	year -> SetDivider(year->StringWidth("year:") + 5);
 
 	// Allocate the OK button
-	fButtonOk = new BButton (BRect(400,230,450,240),"ok", "OK", new BMessage(BUTTON_ALARM_OK));
+	fButtonOk = new BButton (BRect(400,230,450,240),"ok", "Done", new BMessage(BUTTON_ALARM_OK));
+	fButtonUndo = new BButton (BRect(340,230,390,240),"undo","Undo",new BMessage(BUTTON_ALARM_UNDO));
 
 	// Making all the objects part of the view	
 	fAlarmView->AddChild(hour);
@@ -79,6 +83,7 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	fAlarmView->AddChild(year);
 
 	fAlarmView->AddChild(fButtonOk);
+	fAlarmView->AddChild(fButtonUndo);
 		
 	Show();
 	
@@ -183,6 +188,21 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			}	
 		
 		}
+		break;
+		
+		case BUTTON_ALARM_UNDO:{
+			
+			BAlert *alert = new BAlert("", "The alarm hasn't been saved yet, do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			alert->SetShortcut(0, B_ESCAPE);
+
+			if (alert->Go() == 0) {
+				// Discard all the changes
+				Quit();
+			}
+			
+			
+		}
+		break;
 			
 		default:			
 			BWindow::MessageReceived(message);

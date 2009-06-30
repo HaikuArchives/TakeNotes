@@ -44,6 +44,8 @@ class AlarmWindow : public BWindow {
 						*year;
 		
 		BButton			*fButtonOk;
+		BButton			*fButtonUndo;
+		
 		BMessenger		*fMessenger;
 		
 		int32			GetDaysInMonth(int month, int year);

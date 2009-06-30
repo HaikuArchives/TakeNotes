@@ -164,11 +164,7 @@ void TagsWindow :: Quit(){
 // Function that answer to a QUIT requested
 bool TagsWindow :: QuitRequested() {
 
-	
-	
-
-	
 	Quit();
-	
 	return true;
+
 }

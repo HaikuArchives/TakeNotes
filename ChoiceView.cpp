@@ -16,13 +16,13 @@
 #include "ChoiceView.h"
 
 #include <Alert.h>
-#include <StringView.h>
-#include <Roster.h>
-#include <RadioButton.h>
-#include <Message.h>
-#include <String.h>
-#include <Window.h>
 #include <Entry.h>
+#include <Message.h>
+#include <RadioButton.h>
+#include <Roster.h>
+#include <String.h>
+#include <StringView.h>
+#include <Window.h>
 #include <stdio.h>
 
 // Messages

@@ -16,8 +16,8 @@
 #define CHOICE_VIEW_H
 
 // Libraries
-#include <View.h>
 #include <Button.h>
+#include <View.h>
 #include <Messenger.h>
 
 // Definition of the class

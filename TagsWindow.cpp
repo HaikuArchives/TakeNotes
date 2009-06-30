@@ -15,11 +15,11 @@
 
 #include "TagsWindow.h"
 
-#include <View.h>
-#include <Entry.h>
-#include <Directory.h>
 #include <Alert.h>
+#include <Directory.h>
+#include <Entry.h>
 #include <Message.h>
+#include <View.h>
 
 #include <stdio.h>
 #include <stdlib.h>

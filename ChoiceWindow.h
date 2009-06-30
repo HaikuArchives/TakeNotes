@@ -18,9 +18,9 @@
 // Libraries
 #include "ChoiceView.h"
 
-#include <Window.h>
 #include <Messenger.h>
 #include <Message.h>
+#include <Window.h>
 
 // Declaration of the class
 class ChoiceWindow : public BWindow {

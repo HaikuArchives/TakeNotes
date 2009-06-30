@@ -8,23 +8,22 @@
  * 
  * Last revision: Ilio Catallo, 29th June 2009
  *
- * Description: TODO
+ * Description: Header of the NoteText
  */
  
  
 #ifndef NOTE_TEXT_H
 #define NOTE_TEXT_H
- 
-#include <TextView.h>
-#include <Messenger.h>
+
+// Libraries
 #include <Bitmap.h>
-#include <TranslationUtils.h>
-#include <Path.h>
 #include <Entry.h>
-#include <Window.h> 
-#include <stdio.h>
- 
- 
+#include <Messenger.h>
+#include <Path.h>
+#include <TextView.h>
+
+
+// Definition of the class
 class NoteText : public BTextView {
  
  	public:
@@ -41,9 +40,9 @@ class NoteText : public BTextView {
  		virtual void			MouseDown(BPoint point); 				
  				status_t		Archive(BMessage *msg, bool deep=true) const;
  				
- 				void		SetReplicated(bool flag);
- 				bool		GetReplicated();
- 				void		SetHandler(BHandler *handler);
+ 				void			SetReplicated(bool flag);
+ 				bool			GetReplicated();
+ 				void			SetHandler(BHandler *handler);
  			
  		
  	private:

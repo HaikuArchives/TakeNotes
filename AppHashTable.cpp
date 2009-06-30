@@ -31,9 +31,14 @@ AppHashTable :: AppHashTable (Hash* myHead) {
 
 // Setter
 void AppHashTable :: AddNote (BString mySignature, BString myPath) {
+	// Variables
+	Hash 	*newElement;
+	Hash 	*temp;
+	int 	found;
+	
 	// This is the first node we will insert
 	if (head == NULL)  {
-		Hash *newElement = new Hash();
+		newElement = new Hash();
 		newElement -> signature = mySignature;
 		newElement -> notes[0] = myPath;
 		newElement -> numNotes = 1;
@@ -46,8 +51,8 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 	// It is a generic element in the list
 	else {
 		// See if this signature is now in the list
-		Hash *temp = new Hash();
-		int found = 0;
+		temp = new Hash();
+		found = 0;
 		
 		for (temp = head; temp != NULL; temp = temp -> nextHash) {
 			if ( (temp->signature).Compare(mySignature) == 0){//if (strcmp(temp -> signature, mySignature) == 0) {
@@ -60,7 +65,7 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 		// We insert the element
 		// Signature not found: we insert in the tail
 		if (found == 0){
-			Hash *newElement = new Hash();
+			newElement = new Hash();
 			newElement -> signature = mySignature;
 			newElement -> notes[0] = myPath;
 			newElement -> numNotes = 1;
@@ -160,6 +165,7 @@ void AppHashTable :: DeleteNote (BString signature, BString note) {
 
 // Getter
 int AppHashTable :: GetNumSignatures() {
+	// Variables
 	Hash *temp = new Hash();
 	int count = 0;
 	
@@ -171,6 +177,7 @@ int AppHashTable :: GetNumSignatures() {
 
 // Number of notes in that signature
 int AppHashTable :: GetNumNotes(BString mySignature) {
+	// Variables
 	Hash *temp = new Hash();
 	int count = 0;
 	
@@ -185,6 +192,7 @@ int AppHashTable :: GetNumNotes(BString mySignature) {
 
 // Path of the note selected
 char* AppHashTable ::GetNote (BString mySignature, int position) {
+	// Variables
 	Hash *temp = new Hash();
 	BString note = NULL;
 	
@@ -199,6 +207,7 @@ char* AppHashTable ::GetNote (BString mySignature, int position) {
 
 // A single signature, selected from the list
 char* AppHashTable :: GetSignature (int position) {
+	// Variables
 	Hash *temp = new Hash();
 	
 	temp = head;
@@ -210,28 +219,26 @@ char* AppHashTable :: GetSignature (int position) {
 
 bool AppHashTable :: HasElement(){
 
-		if (head) return 1;
-		return 0;
+	if (head) 
+		return 1;
+	return 0;
 }
 
 void AppHashTable :: PrintToStream(){
+	// Variables
+	Hash *temp = new Hash();
 
-		printf("(APPHASHTABLE) PrintToStream\n");
+	printf("(APPHASHTABLE) PrintToStream\n");
 
-		Hash *temp = new Hash();
-		temp = head;
+	temp = head;
 		
-		for (temp = head;temp != NULL; temp = temp-> nextHash){
+	for (temp = head;temp != NULL; temp = temp-> nextHash){
 		
-			printf("(APPHASHTABLE) Nodo: %s\n",temp->signature.String());
+		printf("(APPHASHTABLE) Nodo: %s\n",temp->signature.String());
 			
-			for (int i=0;i<temp->numNotes;i++){
-			
-				printf(">>(APPHASHTABLE) Nota: %s\n",temp->notes[i].String());
-			
-			}
+		for (int i=0;i<temp->numNotes;i++)
+			printf(">>(APPHASHTABLE) Nota: %s\n",temp->notes[i].String());
 		
-		}
-		
+	}	
 
 }

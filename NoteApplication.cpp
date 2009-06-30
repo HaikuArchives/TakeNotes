@@ -35,6 +35,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #define COLOR_CHANGED 	'ccrq'
 #define FONT_BOLD 		'fntb'

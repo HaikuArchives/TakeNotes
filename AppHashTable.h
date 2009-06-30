@@ -9,12 +9,13 @@
  * 
  * Last revision: Eleonora Ciceri, 8th June 2009
  *
- * Description: TODO
+ * Description: Header of the structure
  */
 
 #ifndef APP_HASH_TABLE_H
 #define APP_HASH_TABLE_H
 
+// Libraries
 #include <String.h>
 
 // Structure of a node

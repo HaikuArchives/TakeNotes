@@ -14,6 +14,7 @@
 
 #include "AlarmWindow.h"
 
+// Libraries
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -23,7 +24,10 @@
 #define ALARM_MSG 		'alrm'
 #define ALARM_CLOSE		'_alc'
 
-
+/*
+* Constructor
+* It is created with the dimensions of BRect
+*/
 AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler) 
 			: BWindow (frame, "Set alarm for this note", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 	
@@ -76,6 +80,7 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	fAlarmView->AddChild(fButtonOk);
 		
 	Show();
+	
 }
 
 // Receiving the messages
@@ -100,7 +105,8 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			const char *yearTextField;
 
 			/*
-			* Get text fields context by calling Text() (returns null if empty) and convert to int
+			* Get text fields context by calling Text() 
+			* (returns null if empty) and convert to int
 			*/
 
 			hourTextField = hour -> Text();
@@ -142,6 +148,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 				
 				}
 				
+				// Instantiate a new message and fill it with time values
 				msg = new BMessage (ALARM_MSG);
 		
 				i = atoi (hourTextField);
@@ -168,6 +175,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			
 			} else {
 			
+				// If some values are missing show an alert
 				BAlert *myAlert = new BAlert("Missing values", "Fill all the fields with correct values", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 				myAlert -> Go();
 			
@@ -221,7 +229,7 @@ int32 AlarmWindow :: GetDaysInMonth(int month, int year) {
 
 bool AlarmWindow :: IsAfter(int min, int h, int d, int mon, int y) {
 
-	//Variables
+	// Variables
 	time_t rawtime;
 	time_t userTime;
 	struct tm *timeinfo;
@@ -247,9 +255,12 @@ bool AlarmWindow :: IsAfter(int min, int h, int d, int mon, int y) {
 
 	// Compare user time and system time
 	if( difftime(userTime, time( &rawtime) ) > 0 ) {
+	
 		return true;
 	}
+	
 	else {
+		
 		return false;
 	}	
 }
@@ -287,6 +298,7 @@ int AlarmWindow :: GetTime(int element) {
 	}	
 }
 
+// If quit is requested send an ALARM_CLOSE message
 bool AlarmWindow :: QuitRequested () {
 	BMessage *message;
 	

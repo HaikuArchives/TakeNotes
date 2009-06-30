@@ -57,8 +57,13 @@
 #define QUIT_APPL 			'qtpp'
 #define CHOOSE_APPL 		'cspp'
 #define RADIO_CHECKED 		'rdck'
+#define COLOR_CLOSE			'_clc'
+#define	TAGS_CLOSE			'_tgc'
+#define	ALARM_CLOSE			'_alc'
+#define	CHOICE_CLOSE		'_chc'
 
-#define MENU_BAR_HEIGHT 18;
+
+#define MENU_BAR_HEIGHT 18
 #define TEXT_INSET 10
 
 // Structures
@@ -465,8 +470,13 @@ void NoteWindow :: InitWindow(){
 // We are trying to avoid that two instances of the same window are opened together
 void NoteWindow :: CreateOtherWindows(){
 	
+			//Initialization of the other window to NULL
 			fTagsWindow = NULL;
-			// TODO			
+			fColorWindow = NULL;
+			fAlarmWindow = NULL;
+			fChoiceWindow = NULL;
+			
+						
 
 }
 	
@@ -709,7 +719,7 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 void NoteWindow :: MessageReceived(BMessage* message) {
 	//	Variables
 		BFont	  font;
-		BRect	  aRect;	
+
 	
   const char 	  *fontFamily,
   				  *fontStyle,
@@ -796,10 +806,15 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		case MENU_CHANGE_COLOR:{
 				
-				
-			fColorWindow = new ColorWindow(BRect(300,300,700,680),this);
-			fColorWindow -> Show();
+			if (fColorWindow == NULL){	
 			
+				fColorWindow = new ColorWindow(BRect(300,300,700,680),this);
+				fColorWindow -> Show();
+			
+			} else {
+			
+				fColorWindow->Activate();
+			}
 		}
 		break;
 				
@@ -1105,8 +1120,17 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		// Setting the alarm with the window opened
 		case SET_ALARM: {
 			
-			aRect.Set(300,300,800,600);
-			fAlarmWindow = new AlarmWindow(aRect,this);
+			
+			if (fAlarmWindow == NULL){
+			
+				fAlarmWindow = new AlarmWindow(BRect(300,300,800,600),this);
+				fAlarmWindow->Show();
+			
+			} else {
+			
+				fAlarmWindow->Activate();
+			}
+		
 		}		
 		break;
 		
@@ -1184,6 +1208,33 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			}				
 		}
 		break;
+			
+	
+		case COLOR_CLOSE: {
+		
+			fColorWindow = NULL;
+		
+		}
+		break;	
+		
+		case ALARM_CLOSE: {
+		
+			fAlarmWindow = NULL;
+			
+		}
+		break;
+		
+		case TAGS_CLOSE: {
+		
+			fTagsWindow = NULL;
+		
+		}
+		
+		case CHOICE_CLOSE: {
+		
+			fChoiceWindow = NULL;
+			
+		} 	
 			
 		default:
 			BWindow::MessageReceived(message);

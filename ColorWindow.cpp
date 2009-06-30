@@ -109,6 +109,10 @@ bool ColorWindow :: QuitRequested() {
 	
 	message = new BMessage (COLOR_CLOSE);
 	fMessenger->SendMessage(message);
+	
+	Quit();
 		
+
+	
 	return (true);
 }

@@ -319,9 +319,9 @@ void NoteWindow :: InitWindow(){
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem 	= new BMenuItem ("Change background color",		new BMessage (SET_COLOR)));
 	fSettingsMenu -> AddItem (fAddDateAndTimeItem 			= new BMenuItem ("Add date and time",			new BMessage (ADD_DATA)));
 	fSettingsMenu -> AddItem (fSetAlarmItem 				= new BMenuItem ("Set alarm", 					new BMessage (SET_ALARM)));
-	fSettingsMenu -> AddItem (fSetTagsItem 					= new BMenuItem("Set Tags",						new BMessage (SET_TAGS)));
-	fSettingsMenu -> AddItem (fSetAppItem 					= new BMenuItem("Set Preferred Application",	new BMessage (SET_APP)));
-	fSettingsMenu -> AddItem (fLink 						= new BMenuItem ("Go to the selected link...", 	new BMessage (GO_TO_LINK)));					
+	fSettingsMenu -> AddItem (fSetTagsItem 					= new BMenuItem ("Set tags",					new BMessage (SET_TAGS)));
+	fSettingsMenu -> AddItem (fSetAppItem 					= new BMenuItem ("Set preferred application",	new BMessage (SET_APP)));
+	fSettingsMenu -> AddItem (fLink 						= new BMenuItem ("Go to the selected link", 	new BMessage (GO_TO_LINK)));					
 	
 	// Edit menu
 	fEditMenu 		-> AddItem (fUndoItem 		= new BMenuItem("Can't Undo", 	new BMessage(B_UNDO), 		'Z'));
@@ -333,7 +333,7 @@ void NoteWindow :: InitWindow(){
 	fCopyItem 		-> SetTarget(this);	
 	fEditMenu 		-> AddItem (fPasteItem 		= new BMenuItem("Paste", 		new BMessage(B_PASTE), 		'V'));
 	fPasteItem 		-> SetTarget(this);	
-	fEditMenu 		-> AddItem (fSelectAllItem 	= new BMenuItem("Select All", 	new BMessage(B_SELECT_ALL), 'A'));
+	fEditMenu 		-> AddItem (fSelectAllItem 	= new BMenuItem("Select all", 	new BMessage(B_SELECT_ALL), 'A'));
 	fSelectAllItem 	-> SetTarget(this);
 	
 	// Font menu

@@ -9,16 +9,18 @@
  * 
  * Last revision: Ilio Catallo, 9th June 2009
  *
- * Description: TODO
+ * Description: Header of the ChoiceView
  */
 
 #ifndef CHOICE_VIEW_H
 #define CHOICE_VIEW_H
 
+// Libraries
 #include <View.h>
 #include <Button.h>
 #include <Messenger.h>
 
+// Definition of the class
 class ChoiceView : public BView {
 	
 	public:

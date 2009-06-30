@@ -9,9 +9,10 @@
  * 
  * Last revision: Ilio Catallo, 28th June 2009
  *
- * Description: ChoiceView allows the user to change the background color of the note
+ * Description: ChoiceView is the view of the ChoiceWindow. It allows you to see the list of applications.
  */
 
+// Libraries
 #include "ChoiceView.h"
 
 #include <Alert.h>
@@ -33,7 +34,7 @@
 ChoiceView :: ChoiceView(BRect rect, char *name,BHandler *handler)
 	   	  : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS | B_FULL_UPDATE_ON_RESIZE){
 	   	  
-	   	  // Variables
+	// Variables
 	BStringView 	*instructions;
 	BRect 			frame(10,20,600,35);
 	BString			name;
@@ -48,8 +49,6 @@ ChoiceView :: ChoiceView(BRect rect, char *name,BHandler *handler)
 	int 			count,
 					x = 30,
 					y = 40;
-	
-	
 	
 	const char *text = "Choose the application that is related to the note:";
 

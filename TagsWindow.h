@@ -8,7 +8,7 @@
  * 
  * Last revision: Ilio Catallo, 3rd June 2009
  *
- * Description: TODO
+ * Description: Header of the tags window
  */
  
  #ifndef TAG_WINDOW_H

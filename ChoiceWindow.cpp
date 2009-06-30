@@ -7,13 +7,14 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  * 
- * Last revision: Ilio Catallo, 9th June 2009
+ * Last revision: Eleonora Ciceri, 30th June 2009
  *
- * Description: TODO
+ * Description: ChoiceWindow; it allow you to select one application and associate it to a saved note
  */
 
 #include "ChoiceWindow.h"
 
+// Libraries
 #include <Alert.h>
 #include <Message.h>
 #include <stdio.h>
@@ -50,6 +51,7 @@ ChoiceWindow :: ChoiceWindow (BRect frame, BHandler *handler)
 	Show();
 }
 
+// Destructor
 ChoiceWindow :: ~ChoiceWindow(){
 	delete fCurrentCheckedMessage;
 }
@@ -58,6 +60,7 @@ ChoiceWindow :: ~ChoiceWindow(){
 bool ChoiceWindow :: QuitRequested() {
 	BMessage *message;
 	
+	// Message that tells that the window is going to close
 	message = new BMessage (CHOICE_CLOSE);
 	fMessenger->SendMessage(message);
 	
@@ -70,9 +73,9 @@ void ChoiceWindow :: MessageReceived(BMessage* message) {
 	
 	switch(message -> what) {
 	
+		// If a new Radio Button is checked we change the message which stores the current selection
 		case RADIO_CHECKED:{
 			
-			// If a new Radio Button is checked we change the message which stores the current selection
 			if (fCurrentCheckedMessage != message){
 			
 				delete fCurrentCheckedMessage;
@@ -82,15 +85,16 @@ void ChoiceWindow :: MessageReceived(BMessage* message) {
 		}
 		break;
 		
+		// Send the user choice to NoteWindow and quit
 		case BUTTON_OK:{
 			
-			// Send the user choice to NoteWindow and quit
 			fMessenger->SendMessage(fCurrentCheckedMessage);
 			Quit();
 		
 		}
 		break;
 		
+		// It capture the UNDO request
 		case BUTTON_UNDO:{
 		
 			// Ask before quit
@@ -104,7 +108,7 @@ void ChoiceWindow :: MessageReceived(BMessage* message) {
 	
 		}
 		break;
-	
+
 		default:
 			BWindow::MessageReceived(message);
 			break;

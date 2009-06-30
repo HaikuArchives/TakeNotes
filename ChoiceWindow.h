@@ -8,13 +8,14 @@
  * 
  * Last revision: Eleonora Ciceri, 30th May 2009
  *
- * Description: TODO
+ * Description: Header of the choice window
  */
 
 
 #ifndef CHOICE_WINDOW_H
 #define CHOICE_WINDOW_H
 
+// Libraries
 #include "ChoiceView.h"
 
 #include <Window.h>

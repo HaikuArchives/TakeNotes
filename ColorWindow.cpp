@@ -21,6 +21,7 @@
 #define COLOR_CHANGED 	'ccrq'
 #define BUTTON_OK 		'btok'
 #define BUTTON_UNDO		'btun'	
+#define COLOR_CLOSE		'_clc'
 
 /*
 * Constructor
@@ -104,5 +105,8 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 
 // Function that is activated when I close the window
 bool ColorWindow :: QuitRequested() {
+	message = new BMessage (COLOR_CLOSE);
+	fMessenger->SendMessage(message);
+		
 	return (true);
 }

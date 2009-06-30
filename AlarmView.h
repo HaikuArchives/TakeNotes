@@ -8,7 +8,7 @@
  * 
  * Last revision: Stefano Celentano, 19th April 2009
  *
- * Description: TODO
+ * Description: Header of AlarmView
  */
 
 

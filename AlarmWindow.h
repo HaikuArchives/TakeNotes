@@ -8,9 +8,8 @@
  * 
  * Last revision: Stefano Celentano, 19th April 2009
  *
- * Description: TODO
+ * Description: header of AlarmWindow
  */
-
 
 #ifndef ALARM_WINDOW_H
 #define ALARM_WINDOW_H

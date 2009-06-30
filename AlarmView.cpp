@@ -8,9 +8,8 @@
  * 
  * Last revision: Stefano Celentano, 15th May 2009
  *
- * Description: TODO
- */
- 
+ * Description: AlarmView: it allows you to set an alarm
+ */ 
 
 #include "AlarmView.h"
 

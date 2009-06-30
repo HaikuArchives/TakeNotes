@@ -105,6 +105,8 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 
 // Function that is activated when I close the window
 bool ColorWindow :: QuitRequested() {
+	BMessage *message;
+	
 	message = new BMessage (COLOR_CLOSE);
 	fMessenger->SendMessage(message);
 		

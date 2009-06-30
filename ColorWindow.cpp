@@ -86,6 +86,7 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 			msg -> AddInt8 ("green", (int8)userColorChoice.green);
 			msg -> AddInt8 ("blue", (int8)userColorChoice.blue);
 			fMessenger->SendMessage(msg);
+			Quit();
 		}
 		break;
 			
@@ -108,15 +109,26 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 	}	
 }
 
-// Function that is activated when I close the window
-bool ColorWindow :: QuitRequested() {
+// Hook function-override, we should inform NoteWindow that ColorWindow will be closed
+void ColorWindow :: Quit(){
+	
+	//Variables
 	BMessage *message;
 	
-	// It tells that the window is going to quit
+	// Inform NoteWindow that this window is going to be closed
 	message = new BMessage (COLOR_CLOSE);
 	fMessenger->SendMessage(message);
 	
-	Quit();
+	// Execute the real code
+	BWindow :: Quit();
+
+}
+
+
+
+// Function that is activated when I close the window
+bool ColorWindow :: QuitRequested() {
 	
+	Quit();	
 	return (true);
 }

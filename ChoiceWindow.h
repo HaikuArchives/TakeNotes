@@ -27,11 +27,11 @@ class ChoiceWindow : public BWindow {
 	
 	public:
 		
-					 ChoiceWindow(BRect frame, BHandler *handler);
-					 ~ChoiceWindow();
-		virtual bool QuitRequested();
-		virtual void MessageReceived(BMessage*);
-	
+					 	ChoiceWindow(BRect frame, BHandler *handler);
+					 	~ChoiceWindow();
+		virtual void 	MessageReceived(BMessage*);
+		virtual bool 	QuitRequested();
+		virtual void	Quit();
 	private:
 		
 		BMessage		*fCurrentCheckedMessage;

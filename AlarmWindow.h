@@ -28,9 +28,10 @@ class AlarmWindow : public BWindow {
 	
 	public:
 			
-					 AlarmWindow(BRect frame, BHandler *handler);
-		virtual void MessageReceived(BMessage* message);
-		virtual bool QuitRequested();
+					 	AlarmWindow(BRect frame, BHandler *handler);
+		virtual void 	MessageReceived(BMessage* message);
+		virtual bool	QuitRequested();
+		virtual void	Quit();
 	
 	private:
 		

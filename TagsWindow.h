@@ -29,6 +29,7 @@ class TagsWindow : public BWindow{
  						~TagsWindow();
  		virtual void	MessageReceived(BMessage *message);	
  		virtual bool	QuitRequested();
+ 		virtual	void	Quit();
  
  	private:
  	

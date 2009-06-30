@@ -4,9 +4,10 @@
  * 
  * Authors:
  *
+ *			Ilio Catallo
  *			Stefano Celentano
  * 
- * Last revision: Stefano Celentano, 15th May 2009
+ * Last revision: Stefano Celentano, 30th June 2009
  *
  * Description: Alarm Window allows the user to create an alarm for the note
  */
@@ -298,13 +299,24 @@ int AlarmWindow :: GetTime(int element) {
 	}	
 }
 
-// If quit is requested send an ALARM_CLOSE message
-bool AlarmWindow :: QuitRequested () {
+void AlarmWindow :: Quit(){
+	
+	//Variables
 	BMessage *message;
 	
+	// Inform NoteWindow that this window is going to be closed
 	message = new BMessage (ALARM_CLOSE);
 	fMessenger->SendMessage(message);
-	Quit();
 	
+	// Execute the real code
+	BWindow :: Quit();
+
+}
+
+
+// If quit is requested send an ALARM_CLOSE message
+bool AlarmWindow :: QuitRequested () {
+
+	Quit();
 	return true;
 }

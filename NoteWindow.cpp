@@ -1233,6 +1233,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fTagsWindow = NULL;
 		
 		}
+		break;
 		
 		// It removes the choice window
 		case CHOICE_CLOSE: {
@@ -1240,6 +1241,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fChoiceWindow = NULL;
 			
 		} 	
+		break;
 		
 		// About menu
 		case ABOUT: {

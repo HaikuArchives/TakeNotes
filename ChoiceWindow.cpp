@@ -12,6 +12,7 @@
  * Description: ChoiceWindow; it allow you to select one application and associate it to a saved note
  */
 
+// Our Libraries
 #include "ChoiceWindow.h"
 
 // Libraries
@@ -56,17 +57,7 @@ ChoiceWindow :: ~ChoiceWindow(){
 	delete fCurrentCheckedMessage;
 }
 
-// Function that is activated when I close the window
-bool ChoiceWindow :: QuitRequested() {
-	BMessage *message;
-	
-	// Message that tells that the window is going to close
-	message = new BMessage (CHOICE_CLOSE);
-	fMessenger->SendMessage(message);
-	
-	Quit();	
-	return (true);
-}
+
 
 // Manages the message received
 void ChoiceWindow :: MessageReceived(BMessage* message) {
@@ -115,4 +106,30 @@ void ChoiceWindow :: MessageReceived(BMessage* message) {
 			BWindow::MessageReceived(message);
 			break;
 	}
+}
+
+void ChoiceWindow :: Quit(){
+	
+	//Variables
+	BMessage *message;
+	
+	// Inform NoteWindow that this window is going to be closed
+	message = new BMessage (CHOICE_CLOSE);
+	fMessenger->SendMessage(message);
+	
+	// Execute the real code
+	BWindow :: Quit();
+
+}
+
+// Function that is activated when I close the window
+bool ChoiceWindow :: QuitRequested() {
+	BMessage *message;
+	
+	// Message that tells that the window is going to close
+	message = new BMessage (CHOICE_CLOSE);
+	fMessenger->SendMessage(message);
+	
+	Quit();	
+	return (true);
 }

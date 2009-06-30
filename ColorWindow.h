@@ -29,6 +29,7 @@ class ColorWindow : public BWindow {
 					 ColorWindow(BRect frame, BHandler *handler);
 		virtual bool QuitRequested();
 		virtual	void MessageReceived(BMessage*);
+		virtual void Quit();
 	
 	private:
 	

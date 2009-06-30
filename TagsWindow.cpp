@@ -146,13 +146,27 @@ void TagsWindow :: MessageReceived(BMessage *message){
 
 }
 
-// FUnction that answer to a QUIT requested
-bool TagsWindow :: QuitRequested() {
+// Hook function-override, we should inform NoteWindow that TagsWindow will be closed
+void TagsWindow :: Quit(){
+	
+	//Variables
 	BMessage *message;
 	
-	// Message that tells that the window is closing
+	// Inform NoteWindow that this window is going to be closed
 	message = new BMessage (TAGS_CLOSE);
 	fMessenger->SendMessage(message);
+	
+	// Execute the real code
+	BWindow :: Quit();
+
+}
+
+// Function that answer to a QUIT requested
+bool TagsWindow :: QuitRequested() {
+
+	
+	
+
 	
 	Quit();
 	

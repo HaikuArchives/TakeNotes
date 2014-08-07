@@ -1,4 +1,4 @@
-## BeOS Generic Makefile v2.3 ##
+## BeOS Generic Makefile v2.5 ##
 
 ## Fill in this file to specify the project being created, and the referenced
 ## makefile-engine will do all of the hard work for you.  This handles both
@@ -15,6 +15,10 @@ NAME= TakeNotes
 #	STATIC:	Static library archive
 #	DRIVER: Kernel Driver
 TYPE= APP
+
+# 	if you plan to use localization features 
+# 	specify the application MIME siganture
+APP_MIME_SIG= 
 
 #	add support for new Pe and Eddie features
 #	to fill in generic makefile
@@ -44,7 +48,7 @@ RDEFS= TakeNotes.rdef
 #	specify the resource files to use. 
 #	full path or a relative path to the resource file can be used.
 #	both RDEFS and RSRCS can be defined in the same makefile.
-RSRCS= TakeNotes.rsrc
+RSRCS= 
 
 # @<-src@ 
 #%}
@@ -56,12 +60,18 @@ RSRCS= TakeNotes.rsrc
 #	-	if your library follows the naming pattern of:
 #		libXXX.so or libXXX.a you can simply specify XXX
 #		library: libbe.so entry: be
+#
+#	-	for version-independent linking of standard C++ libraries please add
+#		$(STDCPPLIBS) instead of raw "stdc++[.r4] [supc++]" library names
+#
+#	-	for localization support add following libs:
+#		locale localestub
 #		
 #	- 	if your library does not follow the standard library
 #		naming scheme you need to specify the path to the library
 #		and it's name
 #		library: my_lib.a entry: my_lib.a or path/my_lib.a
-LIBS=be $(STDCPPLIBS)
+LIBS= be tracker $(STDCPPLIBS)
 
 #	specify additional paths to directories following the standard
 #	libXXX.so or libXXX.a naming scheme.  You can specify full paths
@@ -84,6 +94,14 @@ LOCAL_INCLUDE_PATHS =
 #	specify the level of optimization that you desire
 #	NONE, SOME, FULL
 OPTIMIZE= 
+
+# 	specify here the codes for languages you are going
+# 	to support in this application. The default "en"
+# 	one must be provided too. "make catkeys" will recreate only
+# 	locales/en.catkeys file. Use it as template for creating other
+# 	languages catkeys. All localization files must be placed
+# 	in "locales" sub-directory.
+LOCALES=
 
 #	specify any preprocessor symbols to be defined.  The symbols will not
 #	have their values set automatically; you must supply the value (if any)
@@ -109,15 +127,15 @@ SYMBOLS =
 DEBUGGER = 
 
 #	specify additional compiler flags for all files
-COMPILER_FLAGS = -lbe -ltracker
+COMPILER_FLAGS =
 
 #	specify additional linker flags
-LINKER_FLAGS = -lbe -ltracker
+LINKER_FLAGS =
 
 #	specify the version of this particular item
 #	(for example, -app 3 4 0 d 0 -short 340 -long "340 "`echo -n -e '\302\251'`"1999 GNU GPL") 
 #	This may also be specified in a resource.
-APP_VERSION = -app 1 0 0
+APP_VERSION = 
 
 #	(for TYPE == DRIVER only) Specify desired location of driver in the /dev
 #	hierarchy. Used by the driverinstall rule. E.g., DRIVER_PATH = video/usb will
@@ -127,4 +145,6 @@ APP_VERSION = -app 1 0 0
 DRIVER_PATH = 
 
 ## include the makefile-engine
-include $(BUILDHOME)/etc/makefile-engine
+DEVEL_DIRECTORY := \
+	$(shell findpaths -r "makefile_engine" B_FIND_PATH_DEVELOP_DIRECTORY)
+include $(DEVEL_DIRECTORY)/etc/makefile-engine

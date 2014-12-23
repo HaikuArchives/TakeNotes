@@ -31,6 +31,7 @@
 #include <MenuBar.h>
 #include <MenuItem.h>
 #include <Message.h>
+#include <FilePanel.h>
 
 /* == DATA STRUCTURE ==
  * Structure containing all the informations about the current post-it

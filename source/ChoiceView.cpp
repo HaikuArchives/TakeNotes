@@ -31,8 +31,8 @@
 #define BUTTON_UNDO		'btun'
 
 // Constructor
-ChoiceView :: ChoiceView(BRect rect, char *name,BHandler *handler)
-	   	  : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS | B_FULL_UPDATE_ON_RESIZE){
+ChoiceView :: ChoiceView(BRect rect, char *vname,BHandler *handler)
+	   	  : BView(rect, vname, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS | B_FULL_UPDATE_ON_RESIZE){
 	   	  
 	// Variables
 	BStringView 	*instructions;

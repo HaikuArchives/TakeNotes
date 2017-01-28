@@ -977,7 +977,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 				// We look for the current instances of BeZilla that are running
        			for (count=0;count< aList->CountItems();count++){
-	                who = (team_id)aList->ItemAt(count);
+	                who = (team_id)(addr_t)aList->ItemAt(count);
 	 	         	  	be_roster->GetRunningAppInfo(who,appInfo);
    		 	            
 	 	         	// Is there an instance that is running?

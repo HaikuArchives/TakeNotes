@@ -68,7 +68,7 @@ ChoiceView :: ChoiceView(BRect rect, char *vname,BHandler *handler)
 	// We look for the current application instances that are running
 	for (count=0;count< aList->CountItems();count++){
 
-   	    who = (team_id)aList->ItemAt(count);
+   	    who = (team_id)(addr_t)aList->ItemAt(count);
    	  	be_roster->GetRunningAppInfo(who,appInfo);
    	  	
    	  	// Show the name of the running program istead of its signature

@@ -258,7 +258,7 @@ void NoteView :: MouseDown(BPoint point){
 
 		// We look for the current instances that are running
 		for (count=0;count< aList->CountItems();count++){
-   	    	team_id who = (team_id)aList->ItemAt(count);
+   	    	team_id who = (team_id)(addr_t)aList->ItemAt(count);
    	  		be_roster->GetRunningAppInfo(who,appInfo);
   		 	            	
          	

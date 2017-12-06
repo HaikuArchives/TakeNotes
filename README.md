@@ -1,5 +1,8 @@
 TakeNotes
 =========
+
+![A screenshot of a note from TakeNotes](/takenotes.png)
+
 With this application you can:
 
   - Write a note

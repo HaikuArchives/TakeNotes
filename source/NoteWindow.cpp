@@ -310,10 +310,10 @@ void NoteWindow :: InitWindow(){
 	/*************** Menu Item ***************/
 	
 	// File menu
-	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save as", 	new BMessage(SAVE_AS)));
-	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save", 	new BMessage(SAVE)));
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save as", 	new BMessage(SAVE_AS), 'S', B_SHIFT_KEY));
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save", 	new BMessage(SAVE), 'S'));
 	fFileMenu -> AddSeparatorItem();
-	fFileMenu -> AddItem (fQuitItem = new BMenuItem ("Quit",	new BMessage (QUIT_APPL)));
+	fFileMenu -> AddItem (fQuitItem = new BMenuItem ("Quit",	new BMessage (QUIT_APPL), 'Q'));
 	
 	// Settings	menu
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem 	= new BMenuItem ("Change background color",		new BMessage (SET_COLOR)));

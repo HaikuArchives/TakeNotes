@@ -522,7 +522,8 @@ status_t NoteWindow :: Save(BMessage *message) {
 	// Setting the title
 	SetTitle(name);
 	
-	fNoteView -> Archive(message, 1);
+	BMessage archive(*message);
+	fNoteView -> Archive(&archive, true);
 	fNoteView->SetReplicated(false);	
 	
 	if (fSaveMessage != message) {

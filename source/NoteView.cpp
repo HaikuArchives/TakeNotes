@@ -94,6 +94,8 @@ NoteView :: NoteView (BMessage *msg, BHandler *handler)
 	if (handler) 
 		fMessenger = new BMessenger(handler);
 			
+	SetBackgroundColor(ViewColor());
+
 	// Check if we are in the deskbar
 	if (be_app->GetAppInfo(&info) == B_OK && !strcasecmp(info.signature, "application/x-vnd.Be-TSKB")){
 		fInDeskbar = true;

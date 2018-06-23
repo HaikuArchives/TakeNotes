@@ -342,25 +342,20 @@ void NoteWindow :: InitWindow(){
 	sizeFont 	-> 	SetRadioMode (true);
 	fFontMenu 	-> 	AddItem (sizeFont);
 	// Writing the menu...
-	for (uint32 i = 0; i <= sizeof(fontSizes) / sizeof(fontSizes[0]); i++ ){
+	for (uint32 i = 0; i < sizeof(fontSizes) / sizeof(fontSizes[0]); i++ ){
 		message = new BMessage (FONT_SIZE);
 		message -> AddFloat ("size", fontSizes[i]);
-		
-		if (i != sizeof(fontSizes) / sizeof(fontSizes[0]) ){
-			char label[64];
-			snprintf(label, sizeof(label), "%ld", fontSizes[i]);
-			sizeFont -> AddItem (menuItem = new BMenuItem (label, message));
-		}
-		
-			if (i == 3)
-				menuItem -> SetMarked(true);
+		char label[64];
+		snprintf(label, sizeof(label), "%ld", fontSizes[i]);
+		sizeFont -> AddItem (menuItem = new BMenuItem (label, message));
+		if (i == 3)
+			menuItem -> SetMarked(true);
 	}
 	
 	// Font: Color
 	colorFont =  new BMenu ("Color");
 	colorFont -> SetRadioMode (true);
 	fFontMenu -> AddItem (colorFont);
-	delete message;
 	// Writing the menu...
 	for (uint32 i = 0; i < sizeof(colors) / sizeof(colors[0]); i++ ){
 

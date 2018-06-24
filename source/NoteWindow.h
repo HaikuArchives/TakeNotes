@@ -1,12 +1,12 @@
 /*
  * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
  * Distribuited under the terms of the GPL v2 license
- * 
+ *
  * Authors:
  *
  *			Eleonora Ciceri
  *			Ilio Catallo
- * 
+ *
  * Last revision: Ilio Catallo, 10th June 2009
  *
  * Description: Header of the window.
@@ -14,7 +14,7 @@
 
 
 #ifndef NOTE_WINDOW_H
-#define NOTE_WINDOW_H 
+#define NOTE_WINDOW_H
 
 // Out libraries
 #include "NoteView.h"
@@ -53,23 +53,23 @@ struct AlarmData {
 // Constructor
 class NoteWindow : public BWindow {
 
-	public:		
+	public:
 								NoteWindow(int32 id);
 								NoteWindow(entry_ref *ref);
 								~NoteWindow();
 			virtual void		MessageReceived(BMessage* message);
 			virtual void		Quit();
 			virtual bool		QuitRequested();
-				
+
 					void		InitWindow();
 					void		CreateOtherWindows();
 					void		_LoadDB();
 					void 		SetFontStyle (const char* fontFamily, const char *fontStyle);
 					status_t	Save (BMessage*);
 					status_t	_SaveDB(const char* signature);
-	
+
 	private:
-	
+
 		NoteView 		*fNoteView;
 		NoteText		*fNoteText;
 		ColorWindow 	*fColorWindow;
@@ -85,54 +85,51 @@ class NoteWindow : public BWindow {
 		BWindow 		*fTagWindow;
 		BMenuItem 		*fCurrentFont;
 		BScrollView		*fScrollView;
-		
+
 		// Menu Items: file menu
 		BMenuItem	*fSaveItem;
 		BMenuItem	*fQuitItem;
-		
+
 		// MenuItems (Edit menu)
-		
+
 		BMenuItem 	*fUndoItem;
 		BMenuItem 	*fCutItem;
 		BMenuItem 	*fCopyItem;
 		BMenuItem 	*fPasteItem;
 		BMenuItem 	*fSelectAllItem;
-		
+
 		// MenuItems (Settings menu)
-		
+
 		BMenuItem 	*fChangeBackgroundColorItem;
 		BMenuItem	*fAddDateAndTimeItem;
 		BMenuItem	*fSetTagsItem;
 		BMenuItem	*fSetAppItem;
 		BMenuItem 	*fSetAlarmItem;
 		BMenuItem   *fLink;
-		
+
 		// Undo flags
 		bool 		fUndoFlag;
 		bool 		fCanUndo;
 		bool 		fCanRedo;
 		bool 		fRedoFlag;
-		
+
 		// Data structure
 		AlarmData 	fData;
-		
+
 		//Messaging
 		BMessage		*fSaveMessage;
 		BMessenger 		fMessenger;
 		BMessageRunner 	*runner;
-		
+
 		//Alarm flag
 		bool alarm_set;
-		
+
 		// Save panel
 		BFilePanel	*fSavePanel;
-		
+
 		// Hash table
 		BFile			fDatabase;
 		AppHashTable	*fHash;
-
 };
 
-
 #endif
-

@@ -1,12 +1,12 @@
 /*
  * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
  * Distribuited under the terms of the GPL v2 license
- * 
+ *
  * Authors:
  *
  *			Ilio Catallo
  *			Eleonora Ciceri
- * 
+ *
  * Last revision: Ilio Catallo, 28th June 2009
  *
  * Description: TODO
@@ -35,7 +35,7 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 	Hash 	*newElement;
 	Hash 	*temp;
 	int 	found;
-	
+
 	// This is the first node we will insert
 	if (head == NULL)  {
 		newElement = new Hash();
@@ -46,22 +46,22 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 		// Initializing head and tail
 		head = newElement;
 		tail = newElement;	// It points to the last element
-	
+
 	}
 	// It is a generic element in the list
 	else {
 		// See if this signature is now in the list
 		temp = new Hash();
 		found = 0;
-		
+
 		for (temp = head; temp != NULL; temp = temp -> nextHash) {
 			if ( (temp->signature).Compare(mySignature) == 0){//if (strcmp(temp -> signature, mySignature) == 0) {
 				// Signature found
 				found = 1;
 				break;
-			}				
+			}
 		}
-		
+
 		// We insert the element
 		// Signature not found: we insert in the tail
 		if (found == 0){
@@ -70,18 +70,18 @@ void AppHashTable :: AddNote (BString mySignature, BString myPath) {
 			newElement -> notes[0] = myPath;
 			newElement -> numNotes = 1;
 			newElement -> nextHash = NULL;
-			// The tail is pushed to the next element	
+			// The tail is pushed to the next element
 			tail -> nextHash = newElement;
-			tail = tail -> nextHash;	
+			tail = tail -> nextHash;
 		}
 		// Signature found: we add there
 		else {
 			int position = temp -> numNotes;
-			
+
 			temp -> notes[position] = myPath;
 			temp -> numNotes ++;
-			
-		
+
+
 		}
 	}
 }
@@ -93,21 +93,21 @@ void AppHashTable :: DeleteNote (BString signature, BString note) {
 		i = 0,
 		nNotes;
 	Hash *temp = new Hash();
-	
+
 	for (temp = head; temp != NULL; temp = temp -> nextHash) {
 		if ( (temp -> signature).Compare(signature) == 0)
 			break;
 	}
-	
+
 	nNotes = temp -> numNotes;
 
 	// There's only a note
-	if (nNotes == 1){	
+	if (nNotes == 1){
 		if (temp->notes[nNotes-1].Compare(note.String()) == 0){
-				temp->numNotes = 0;		
+				temp->numNotes = 0;
 		}
-		
-	} 
+
+	}
 	else {
 			// It is the first note
 			if ((temp -> notes[0]).Compare(note) != 0)
@@ -122,17 +122,17 @@ void AppHashTable :: DeleteNote (BString signature, BString note) {
 				temp -> notes[j] = temp -> notes[j + 1];
 			}
 			temp -> notes [nNotes - 1] = "";
-			temp -> numNotes --;	
+			temp -> numNotes --;
 	}
-	
+
 	// There aren't any other notes in this signature
 	if (temp -> numNotes == 0) {
-		// I look for the signature that I have to erase		
+		// I look for the signature that I have to erase
 		if (!head->nextHash){
-		
+
 			 head = NULL;
 			 return;
-			 
+
 		}
 		else
 			if ((head -> signature).Compare(signature) == 0) {
@@ -140,24 +140,24 @@ void AppHashTable :: DeleteNote (BString signature, BString note) {
 				head = head -> nextHash;
 			}
 			else {
-				
-				for (temp = head; temp->nextHash; temp = temp -> nextHash){	
+
+				for (temp = head; temp->nextHash; temp = temp -> nextHash){
 					if ((temp -> nextHash -> signature).Compare(signature) == 0)
 						break;
 				}
-	
+
 				// We are at the tail?
 				if (temp->nextHash->signature.Compare(tail->signature) == 0){
-				
+
 					delete temp->nextHash;
 					temp->nextHash = NULL;
-					
+
 					tail = temp;
-					
+
 					return;
-				
+
 				}
-				
+
 				temp -> nextHash = temp -> nextHash -> nextHash;
 			}
 	}
@@ -168,10 +168,10 @@ int AppHashTable :: GetNumSignatures() {
 	// Variables
 	Hash *temp = new Hash();
 	int count = 0;
-	
+
 	for (temp = head; temp != NULL; temp = temp -> nextHash)
 		count ++;
-		
+
 	return count;
 }
 
@@ -180,13 +180,13 @@ int AppHashTable :: GetNumNotes(BString mySignature) {
 	// Variables
 	Hash *temp = new Hash();
 	int count = 0;
-	
+
 	for (temp = head; temp != NULL; temp = temp -> nextHash)
 		if ( (temp->signature).Compare(mySignature) == 0){ //if (strcmp(temp -> signature, mySignature) == 0) {
 			count = temp -> numNotes;
 			break;
 		}
-	
+
 	return count;
 }
 
@@ -195,13 +195,13 @@ char* AppHashTable ::GetNote (BString mySignature, int position) {
 	// Variables
 	Hash *temp = new Hash();
 	BString note = NULL;
-	
+
 	for (temp = head; temp != NULL; temp = temp -> nextHash)
 		if ((temp->signature).Compare(mySignature) == 0){ //if (strcmp (temp -> signature, mySignature) == 0) {
 			note = temp -> notes[position];
 			break;
 		}
-		
+
 	return (char *)note.String();
 }
 
@@ -209,17 +209,17 @@ char* AppHashTable ::GetNote (BString mySignature, int position) {
 char* AppHashTable :: GetSignature (int position) {
 	// Variables
 	Hash *temp = new Hash();
-	
+
 	temp = head;
 	for (int i = 0; i < position; i++)
 		temp = temp -> nextHash;
-		
+
 	return (char *)(temp -> signature).String();
 }
 
 bool AppHashTable :: HasElement(){
 
-	if (head) 
+	if (head)
 		return 1;
 	return 0;
 }
@@ -231,14 +231,14 @@ void AppHashTable :: PrintToStream(){
 	printf("(APPHASHTABLE) PrintToStream\n");
 
 	temp = head;
-		
+
 	for (temp = head;temp != NULL; temp = temp-> nextHash){
-		
+
 		printf("(APPHASHTABLE) Nodo: %s\n",temp->signature.String());
-			
+
 		for (int i=0;i<temp->numNotes;i++)
 			printf(">>(APPHASHTABLE) Nota: %s\n",temp->notes[i].String());
-		
-	}	
+
+	}
 
 }

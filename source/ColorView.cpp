@@ -1,12 +1,12 @@
 /*
  * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
  * Distribuited under the terms of the GPL v2 license
- * 
+ *
  * Authors:
  *
  *			Ilio Catallo
  *			Eleonora Ciceri
- * 
+ *
  * Last revision: Eleonora Ciceri, 23th June 2009
  *
  * Description: View that allows you to change the background color
@@ -38,10 +38,10 @@ void ColorView :: Draw (BRect updateRect) {
 	const char *text = "Press the button to change the color";
 
 	instructions = new BStringView (frame, "instructions", text);
-	AddChild(instructions);	
+	AddChild(instructions);
 }
 
 // When the user clicks...
 void ColorView :: MouseDown(BPoint point) {
-	
+
 }

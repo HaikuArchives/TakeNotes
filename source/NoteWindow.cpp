@@ -1,13 +1,13 @@
 /*
  * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
  * Distribuited under the terms of the GPL v2 license
- * 
+ *
  * Authors:
  *
  *			Ilio Catallo
  *			Stefano Celentano
  *			Eleonora Ciceri
- * 
+ *
  * Last revision: Ilio Catallo, 27th June 2009
  *
  * Description: Main window. In this file all the function of the window are implemented.
@@ -35,7 +35,7 @@
 // System libraries
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h> 
+#include <time.h>
 
 // Messages
 #define SET_COLOR 	'mcg'
@@ -76,62 +76,61 @@ const struct tm gettime() {
 // Constructor
 NoteWindow::NoteWindow(int32 id)
 		  : BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
-	
-	//Variables
+
+	// Variables
 	BRect		frameView,
 				frameText;
 	entry_ref	*directory = NULL;
-	BRefFilter	*refFilter = NULL;		
-	BString 	title("Untitled Note ");		
-				
+	BRefFilter	*refFilter = NULL;
+	BString 	title("Untitled Note ");
+
 	// Initialize the messenger: the handler is the window itself
 	fMessenger = BMessenger(this);
-	
+
 	// Init the windows to create the menu
 	InitWindow();
-	
-	//Create the Alarm, Choice, Background and Tags Window
+
+	// Create the Alarm, Choice, Background and Tags Window
 	CreateOtherWindows();
-	
-	// The main view is created 	
+
+	// The main view is created
 	frameView = Bounds();
 	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
-	
-	fNoteView = new NoteView (frameView, B_FOLLOW_ALL, false, this); 
-		
-	//Text and Scroll View
-	frameView = fNoteView -> Bounds();	
+
+	fNoteView = new NoteView (frameView, B_FOLLOW_ALL, false, this);
+
+	// Text and Scroll View
+	frameView = fNoteView -> Bounds();
 	frameView.top += 10;
 	frameView.right -= B_V_SCROLL_BAR_WIDTH;
 	frameView.bottom -= B_H_SCROLL_BAR_HEIGHT;
 	frameView.left = 0;
 	frameText = frameView;
-	
+
 	frameText.OffsetTo(B_ORIGIN);
 	frameText.InsetBy(TEXT_INSET, TEXT_INSET);
-	
+
 	fNoteText = new NoteText(frameView, frameText, "NoteText", this);
 	fNoteText->SetDoesUndo(true);
-	fNoteText->MakeFocus(); 
+	fNoteText->MakeFocus();
 	fNoteText->SetStylable(true);
 
 	// ScrollView
 	fScrollView = new BScrollView("scrollview", fNoteText, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
-	
-	//Set the title	
+
+	// Set the title
 	title << id;
 	SetTitle(title.String());
-	
+
 	// It will be associated to the window
 	AddChild(fNoteView);
 	fNoteView -> AddChild(fScrollView);
-	
+
 	// Creating the file panel
 	fSavePanel = new BFilePanel (B_SAVE_PANEL, new BMessenger (this), directory, B_FILE_NODE, false, NULL,
 				refFilter, false, true);
 
 	Show();
-	
 }
 
 // Construtor
@@ -143,97 +142,92 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 	BFile		f;
 	status_t 	result;
 	entry_ref	*directory = NULL;
-	BRefFilter	*refFilter = NULL;	
+	BRefFilter	*refFilter = NULL;
 	BAlert 		*alert;
 	BEntry 		entry(ref);
 	BRect		viewRect;
 	char 		name[B_FILE_NAME_LENGTH];
-				
+
 	// Initialize the messenger: the handler is the window itself
 	fMessenger = BMessenger(this);
-				
+
 	// Initialize all the "static" elements like MenuBar,Menu,MenuItems and so on
 	InitWindow();
-				
+
 	// Create the Alarm, Choice, Background and Tags Window
 	CreateOtherWindows();
-				
+
 	// Check if the file exists and if it is loadable
 	result = f.SetTo(ref, B_READ_ONLY);
 		switch(result){
-				
-			case B_OK: 
+
+			case B_OK:
 				printf("ok\n");
 			break;
-					
-			case B_BAD_VALUE: 
+
+			case B_BAD_VALUE:
 				printf("path nullo\n");
 			break;
-					
+
 			case B_ENTRY_NOT_FOUND:{
-					
 				printf("file not found\n");
 				alert = new BAlert("File Not Found","file not found", "OK");
 				alert->Go();
 			}
 			break;
-				
 		}
-				
+
 	// Set the message that will store the path of the current note on FS
 	fSaveMessage = new BMessage(B_SAVE_REQUESTED);
-	
+
 		if (fSaveMessage){
-				
-			// Add the required information to the fSaveMessage: the parent directory and the name of the file					
+			// Add the required information to the fSaveMessage: the parent directory and the name of the file
 			// Variables used ONLY in this case
 			BEntry 		entry(ref, true); 			// Create a BEntry object of the note
 			BEntry 		parent;			 			// Initialization of a BEntry object for the parent directory
 			entry_ref 	parentRef;
 			char 		name[B_FILE_NAME_LENGTH];
-		
+
 			entry.GetParent(&parent);		// We fill the BEntry parent object
 			entry.GetName(name);			// We obtain the name of the note
 			parent.GetRef(&parentRef);		// We fill the entry_ref parentRef struct
-	
-			// Actually add the necessary informations 
+
+			// Actually add the necessary informations
 			fSaveMessage->AddRef("directory", &parentRef);
 			fSaveMessage->AddString("name", name);
-				
-		}	
-				
-	// Create the view from the flatten message stored in the FS				
+		}
+
+	// Create the view from the flatten message stored in the FS
 	// Set the title as the name of the file
 	entry.GetName(name);
 	SetTitle(name);
-				
-	// Fetch the view from the file 
+
+	// Fetch the view from the file
 	msg->Unflatten(&f);
-				
+
 	msg->PrintToStream();
 	// Restore all the references for the NoteView's children
 	fNoteView = new NoteView(msg);
 	fScrollView = (BScrollView *)fNoteView->ChildAt(1);
 	fNoteText = (NoteText *)fScrollView->ChildAt(0);
-				
+
 	// We use NoteView::Archive both for replicant,deskbar and save/load so we neeed to say clearly these sort of things :D
 	fNoteView->SetReplicated(false);
 	fNoteText->SetReplicated(false);
-	
+
 	fNoteText->SetHandler(this);
-				
+
 	// Resize the window to fit the real view size
 	viewRect = fNoteView->Bounds();
 	ResizeTo(viewRect.Width(), (viewRect.Height() + B_H_SCROLL_BAR_HEIGHT + 5));
-				
+
 	// Creating the file panel
 	fSavePanel = new BFilePanel (B_SAVE_PANEL, new BMessenger (this), directory, B_FILE_NODE, false, NULL,
 		refFilter, false, true);
-				
+
 	// Add the view as a child and show the window
 	AddChild(fNoteView);
 	Show();
-		
 }
 
 // Destructor
@@ -245,20 +239,20 @@ NoteWindow :: ~NoteWindow(){
 void NoteWindow :: InitWindow(){
 
 	// Variables
-	BMessage	*message;	
-	BMessage	*check_alarm_msg;	
-	bigtime_t 	interval = 10000;		
-	BRect 		menuBarRect;				
-	BMenuItem 	*menuItem = NULL;	
+	BMessage	*message;
+	BMessage	*check_alarm_msg;
+	bigtime_t 	interval = 10000;
+	BRect 		menuBarRect;
+	BMenuItem 	*menuItem = NULL;
 	BMenu		*sizeFont,
 				*colorFont,
-				*fontMenu;	
-	char		*label;	
+				*fontMenu;
+	char		*label;
 	font_family plainFamily,
 	 			family;
 	font_style 	plainStyle,
-				style;	
-	uint32		flags;	
+				style;
+	uint32		flags;
 	int32		numFamilies,
 				numStyles,
 				fontSizes[] = {9,10,11,12,14,18,24,36,48,72};
@@ -269,52 +263,51 @@ void NoteWindow :: InitWindow(){
 				yellow = {254,254,92},
 				color;
 	rgb_color   colors[] = {black, red, green, blue, yellow};
-	
-	
+
 	//Initialize the fSaveMessage
 	fSaveMessage = NULL;
-	
+
 	// Create an empty message
 	check_alarm_msg = new BMessage(CHECK_ALARM);
-	
+
 	// Initialize the message runner
 	runner = new BMessageRunner(fMessenger, check_alarm_msg, interval);
-	
+
 	//Initialize the alarm flag to false (no one has set any alarm)
 	alarm_set = false;
-		
+
 	// Undo flags
 	fCanUndo 	= false;		// If there's no text I can't do undo
 	fUndoFlag 	= false;
-	
-	// Menu bar	
+
+	// Menu bar
 	menuBarRect = Bounds();
 	menuBarRect.bottom = MENU_BAR_HEIGHT;
 	fNoteMenuBar = new BMenuBar(menuBarRect,"Barra del menu");
-	
-	// Menu	
+
+	// Menu
 	fFileMenu 		= new BMenu("File");
 	fFontMenu 		= new BMenu("Font");
 	fEditMenu 		= new BMenu("Edit");
 	fSettingsMenu 	= new BMenu("Settings");
 	fAboutMenu 		= new BMenu("About");
-	
+
 	fNoteMenuBar -> AddItem (fFileMenu);
 	fNoteMenuBar -> AddItem (fEditMenu);
 	fNoteMenuBar -> AddItem (fFontMenu);
 	fNoteMenuBar -> AddItem (fSettingsMenu);
 	fNoteMenuBar -> AddItem (fAboutMenu);
-	
+
 	fFontMenu -> SetRadioMode(true);
-	
+
 	/*************** Menu Item ***************/
-	
+
 	// File menu
 	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save as" B_UTF8_ELLIPSIS, 	new BMessage(SAVE_AS), 'S', B_SHIFT_KEY));
 	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save", 	new BMessage(SAVE), 'S'));
 	fFileMenu -> AddSeparatorItem();
 	fFileMenu -> AddItem (fQuitItem = new BMenuItem ("Quit",	new BMessage (QUIT_APPL), 'Q'));
-	
+
 	// Settings	menu
 	fSettingsMenu -> AddItem (fChangeBackgroundColorItem 	= new BMenuItem ("Change background color",		new BMessage (SET_COLOR)));
 	fSettingsMenu -> AddItem (fAddDateAndTimeItem 			= new BMenuItem ("Add date and time",			new BMessage (ADD_DATA)));
@@ -322,22 +315,22 @@ void NoteWindow :: InitWindow(){
 	fSettingsMenu -> AddItem (fSetTagsItem 					= new BMenuItem ("Set tags",					new BMessage (SET_TAGS)));
 	fSettingsMenu -> AddItem (fSetAppItem 					= new BMenuItem ("Set preferred application",	new BMessage (SET_APP)));
 	fSettingsMenu -> AddItem (fLink 						= new BMenuItem ("Go to the selected link", 	new BMessage (GO_TO_LINK)));					
-	
+
 	// Edit menu
 	fEditMenu 		-> AddItem (fUndoItem 		= new BMenuItem("Can't Undo", 	new BMessage(B_UNDO), 		'Z'));
-	fUndoItem 		-> SetEnabled(false);		// I can't do undo without the message TEXT_CHANGED	
-	fEditMenu 		-> AddSeparatorItem();	
+	fUndoItem 		-> SetEnabled(false);		// I can't do undo without the message TEXT_CHANGED
+	fEditMenu 		-> AddSeparatorItem();
 	fEditMenu 		-> AddItem (fCutItem 		= new BMenuItem("Cut", 			new BMessage(B_CUT), 		'X'));
-	fCutItem 		-> SetTarget(this);		
+	fCutItem 		-> SetTarget(this);
 	fEditMenu 		-> AddItem (fCopyItem 		= new BMenuItem("Copy", 		new BMessage(B_COPY), 		'C'));
-	fCopyItem 		-> SetTarget(this);	
+	fCopyItem 		-> SetTarget(this);
 	fEditMenu 		-> AddItem (fPasteItem 		= new BMenuItem("Paste", 		new BMessage(B_PASTE), 		'V'));
-	fPasteItem 		-> SetTarget(this);	
+	fPasteItem 		-> SetTarget(this);
 	fEditMenu 		-> AddItem (fSelectAllItem 	= new BMenuItem("Select all", 	new BMessage(B_SELECT_ALL), 'A'));
 	fSelectAllItem 	-> SetTarget(this);
-	
+
 	// Font menu
-	// Font: Size	
+	// Font: Size
 	sizeFont 	= 	new BMenu ("Size");
 	sizeFont 	-> 	SetRadioMode (true);
 	fFontMenu 	-> 	AddItem (sizeFont);
@@ -351,7 +344,7 @@ void NoteWindow :: InitWindow(){
 		if (i == 3)
 			menuItem -> SetMarked(true);
 	}
-	
+
 	// Font: Color
 	colorFont =  new BMenu ("Color");
 	colorFont -> SetRadioMode (true);
@@ -363,7 +356,7 @@ void NoteWindow :: InitWindow(){
 		message -> AddInt8 ("red", (int8)colors[i].red);
 		message -> AddInt8 ("green", (int8)colors[i].green);
 		message -> AddInt8 ("blue", (int8)colors[i].blue);
-		
+
 		label = NULL;
 		switch (i) {
 			case 0: {
@@ -399,98 +392,98 @@ void NoteWindow :: InitWindow(){
 			if (i == 0)
 				menuItem -> SetMarked(true);
 	}
-	
+
 	fFontMenu -> AddSeparatorItem();
-	
-	// Font type	
+
+	// Font type
 	fCurrentFont = 0;
-	
+
 	be_plain_font -> GetFamilyAndStyle (&plainFamily,&plainStyle);
-	
+
 	// Taking the number of font families
 	numFamilies = count_font_families();
 	for (int32 i = 0; i < numFamilies; i++) {
-		
+
 		// Getting the font families
 		if (get_font_family(i, &family) == B_OK) {
-			
-			// Cerating a menu of that font family
+
+			// Creating a menu of that font family
 			fontMenu = new BMenu (family);
 			fontMenu -> SetRadioMode (true);	// I can set only one item as "in use"
 			fFontMenu -> AddItem (menuItem = new BMenuItem (fontMenu, new BMessage (FONT_FAMILY)));
-				
+
 			if (!strcmp (plainFamily,family)) {
 				menuItem -> SetMarked (true);
 				fCurrentFont = menuItem;
 			}
 			// Number of styles of that font family
 			numStyles = count_font_styles (family);
-				
+
 			// Creating a submenu about each of that styles
 			for (int32 j = 0; j < numStyles; j++) {
-				
+
 				if (get_font_style(family,j,&style,&flags)==B_OK) {
 					fontMenu -> AddItem (menuItem = new BMenuItem (style, new BMessage(FONT_STYLE)));
-						
-					if (!strcmp (plainStyle, style)) 
+
+					if (!strcmp (plainStyle, style))
 						menuItem -> SetMarked(true);
-							
+
 				}
 			}
 		}
 	}
-	
+
 	// About menu
-	fAboutMenu -> AddItem (menuItem = new BMenuItem ("About TakeNotes...", new BMessage (ABOUT)));	
-	
-	//Add the menu to the window
+	fAboutMenu -> AddItem (menuItem = new BMenuItem ("About TakeNotes...", new BMessage (ABOUT)));
+
+	// Add the menu to the window
 	AddChild(fNoteMenuBar);
 
 }
 
 // We are trying to avoid that two instances of the same window are opened together
 void NoteWindow :: CreateOtherWindows(){
-	
-	//Initialization of the other window to NULL
+
+	// Initialization of the other window to NULL
 	fTagsWindow = NULL;
 	fColorWindow = NULL;
 	fAlarmWindow = NULL;
-	fChoiceWindow = NULL;			
+	fChoiceWindow = NULL;
 
 }
-	
+
 // Function for the changes in the "type of font"
 void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) {
 	// Variables
 	BMenuItem 	*superItem;
 	BMenuItem	*menuItem;
-	BFont 		font;	
+	BFont 		font;
 	font_family oldFamily;
-	font_style 	oldStyle;	
+	font_style 	oldStyle;
 	uint32 		sameProperties;
 	rgb_color 	sameColor;
-	BMenuItem 	*oldItem;	
-	
+	BMenuItem 	*oldItem;
+
 	fNoteText -> GetFontAndColor (&font, &sameProperties, &sameColor);
 	// Copying the current font family and font style
-	font.GetFamilyAndStyle (&oldFamily, &oldStyle); 
-	
-	if (strcmp (oldFamily, fontFamily)) {			
+	font.GetFamilyAndStyle (&oldFamily, &oldStyle);
+
+	if (strcmp (oldFamily, fontFamily)) {
 		oldItem = fFontMenu -> FindItem (oldFamily);
-	
+
 		if (oldItem != NULL)
 			// Removing the check
-			oldItem -> SetMarked (false);		
-	}		
-	
+			oldItem -> SetMarked (false);
+	}
+
 	font.SetFamilyAndStyle (fontFamily, fontStyle);
 	fNoteText -> SetFontAndColor (&font);
-	
+
 	superItem = fFontMenu -> FindItem (fontFamily);
-	
+
 		if (superItem != NULL )
-			superItem -> SetMarked (true);	// Ckeck the one that was selected
-			
+			superItem -> SetMarked (true);	// Check the one that was selected
+
 	menuItem = fFontMenu -> FindItem("Black");
 	menuItem -> SetMarked(true);
 }
@@ -501,31 +494,31 @@ status_t NoteWindow :: Save(BMessage *message) {
 	entry_ref 	ref;
 	const char 	*name;
 	status_t 	err;
-	
+
 	message->PrintToStream();
-	
+
 	if (!message){
 		message = fSaveMessage;
 	}
-	
+
 	// Saving the directory and the path of the note
 	if ((err = message->FindRef("directory",&ref)) != B_OK)
 		return err;
 	if ((err = message -> FindString("name", &name)) != B_OK)
-		return err;	
-	
+		return err;
+
 	// Setting the title
 	SetTitle(name);
-	
+
 	BMessage archive(*message);
 	fNoteView -> Archive(&archive, true);
-	fNoteView->SetReplicated(false);	
-	
+	fNoteView->SetReplicated(false);
+
 	if (fSaveMessage != message) {
 		delete fSaveMessage;
 		fSaveMessage = new BMessage(*message);
-	}	
-	
+	}
+
 	return err;
 }
 
@@ -539,55 +532,50 @@ void NoteWindow :: _LoadDB(){
 	BString stringa;
 	BString	path;
 	BString signature;
-	
+
 	int32	firstComma;
 	int32	lastComma;
-			
+
 	// Check if the file exists and if it is readable
 	if (fDatabase.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_ONLY) != B_OK){
 		printf("Errore!\n");
 	}
-		
+
 	// Obtain the length of the file and sufficent memory is allocated for the file's contents
 	fDatabase.GetSize(&length);
 	input = (char *)malloc(length);
-	
-	// Actually read the database file
+
+	// Read the database file
 	if (input && (fDatabase.Read(input, length) >= B_OK)){
-		
 		stringa.SetTo(input);
 		free(input);
-			
-	} 
-	else {
-		
+	}	else {
+
 		printf("errore di lettura file\n");
 		return;
-			
 	}
-		
+
 	// Clean the string from random error
 	stringa.Remove(stringa.FindLast(":")+1,stringa.CountChars());
-		
+
 	while (stringa.CountChars() > 0 ){
-	
+
 		// Searching for the first :
 		firstComma = stringa.FindFirst(":")+1;
-		
+
 		// Removing the :
 		stringa.MoveInto(path, 0, firstComma);
 		path.RemoveLast(":");
-		
+
 		// Searching for the second :
 		lastComma = stringa.FindFirst(":")+1;
-		
+
 		// Removing the :
 		stringa.MoveInto(signature, 0, lastComma);
 		signature.RemoveLast(":");
-			
+
 		fHash->AddNote(signature,path);
 	}
-
 }
 
 // Functions that associates a note to an application
@@ -608,77 +596,77 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 	BAlert 		*alert;
 
 	if (signature){
-			
+
 		// Initialize a BEntry object starting from the informations stored in fSaveMessage
 		if (( err = fSaveMessage->FindRef("directory",&ref)) != B_OK)
 				return err;
 		if (( err = fSaveMessage->FindString("name", &name)) != B_OK)
 				return err;
-			
+
 		entry.SetTo(new BDirectory(&ref),name);
-			
+
 		// Finally obtain the BPath object that will allow us to retrain the path string
 		path.SetTo(&entry);
-			
+
 		fHash = new AppHashTable();
 		_LoadDB();
-			
+
 		// We take the number of the signatures...
 		countSignatures = fHash -> GetNumSignatures();
-			
+
 		// Searching if the signature is still present with this note
-		for (int i = 0; i < countSignatures; i++) {		
+		for (int i = 0; i < countSignatures; i++) {
 			sig = fHash -> GetSignature(i);
-			
+
 			// Signature found?
 			if (strcmp (signature, sig) == 0) {
-			
+
 				// Number of notes in this signature
 				BString str(signature);
 				countNotes = fHash -> GetNumNotes(str);
-				
+
 				for (int j = 0; j < countNotes; j++)
 					// Note found
 					if (strcmp(fHash -> GetNote(str, j), path.Path()) == 0) {
 						found = 1;
-						alert = new BAlert("Error", "Error: This selection is in the database!", 
+						alert = new BAlert("Error", "Error: This selection is in the database!",
 							"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 						alert->SetShortcut(0,B_ESCAPE);
 						alert->Go();
 					}
 			}
 		}
-		
+
 		if (found == 0) {
 			// Open the config file, if it doesn't exist we create it
 			if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
 				return err;
 			}
-	
-			// Prepare the string 
+
+			// Prepare the string
 			config.GetSize(&length);
 			toWrite.Append(path.Path());
 			toWrite.Append(":");
 			toWrite.Append(signature);
 			toWrite.Append(":");
-			
-			//Obtain the length of the file
+
+			// Obtain the length of the file
 			config.GetSize(&length);
-				
+
 			if (length == 0)
-				config.Write (toWrite.String(), toWrite.Length());	
-			else				
-				//Write the new value
+				config.Write (toWrite.String(), toWrite.Length());
+			else
+				// Write the new value
 				config.WriteAt(length, toWrite.String(), toWrite.Length());
-			
-				//Unload the file and return
+
+				// Unload the file and return
 				config.Unset();
 				return B_OK;
 			}
 		else
 			return B_ERROR;
-	
-	} 
+
+	}
 	else
 		return B_ERROR;
 
@@ -691,11 +679,11 @@ void NoteWindow :: MessageReceived(BMessage* message) {
   const char 	  *fontFamily,
   				  *fontStyle,
   				  *signature,
-  				  *alertstr; 		
+  				  *alertstr;
 		char	  *param[1];
-  		char	  stringa[2];	
-		char	  buffer[50];	  
-  		void	  *ptr;	
+  		char	  stringa[2];
+		char	  buffer[50];
+  		void	  *ptr;
 		int		  second,
 				  minute,
 				  hour,
@@ -714,218 +702,216 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		          length,
 		          offset,
 		          count = 0;
-		float     fontSize;	
+		float     fontSize;
 		rgb_color colore,
-			 	  sameColor;			 	  
-		entry_ref reference;		
+			 	  sameColor;
+		entry_ref reference;
 		BAlert 	  *myAlert,
-				  *alert;		
-		BList     *aList;		
-		app_info  *appInfo;        		
-        team_id   who;        
+				  *alert;
+		BList     *aList;
+		app_info  *appInfo;
+        team_id   who;
         BMenuItem *item;
         BMenu     *menu;
         struct tm *timeinfo;
-        
-			  
-	// Receiving the messages...	
+
+	// Receiving the messages
 	switch (message -> what) {
-	
+
 		// Show the panel that allows to save the note
 		case SAVE_AS: {
-		
+
 			fSavePanel -> Show();
-			
+
 		}
 		break;
-		
+
 		// Save the changes
 		case SAVE:{
-		
+
 			if (!fSaveMessage){
-				 fSavePanel -> Show(); 
-			} 
+				 fSavePanel -> Show();
+			}
 			else {
 				Save(fSaveMessage);
 			}
-			
+
 		}
 		break;
-		
+
 		// Save the note
 		case B_SAVE_REQUESTED: {
-		
+
 			Save(message);
-			
+
 		}
 		break;
-		
+
 		// Close the application
 		case QUIT_APPL: {
-		
+
 			Quit();
-			
+
 		}
 		break;
-		
-		//Edit messages	
-		// Cut the selected text	
+
+		// Edit messages
+		// Cut the selected text
 		case B_CUT:
-		
+
 			fNoteText -> Cut(be_clipboard);
-			
+
 		break;
-		
+
 		// Copy the selected text
 		case B_COPY:
-		
+
 			fNoteText -> Copy(be_clipboard);
-			
+
 		break;
-		
+
 		// Paste the selected text
 		case B_PASTE:
-		
+
 			fNoteText -> Paste(be_clipboard);
-			
+
 		break;
-		
+
 		// Select all the text
 		case B_SELECT_ALL:
-		
+
 			fNoteText -> SelectAll();
-			
+
 		break;
-				
-		// Message for the undo function	
+
+		// Message for the undo function
 		case B_UNDO: {		// If I have received a B_UNDO message...
-			
+
 			if (fCanUndo)	//...and I can do "Undo"
 				fUndoFlag = true;
 			if (fCanRedo)	//...and I can do "Redo"
 				fRedoFlag = true;
-			
+
 			fNoteText -> Undo(be_clipboard);
-			
+
 		}
 		break;
-		
+
 		// Message that tells if the text is changes (it is used for the "can't undo")
 		case TEXT_CHANGED:	{
-			
+
 			if (fUndoFlag) {
-			
+
 				fCanUndo = false;
 				fCanRedo = true;
 				fUndoItem -> SetLabel("Redo");
 				fUndoItem -> SetEnabled(true);
 				fUndoFlag = false;
-				
-			}			
+
+			}
 			else {
-			
-				fCanUndo = true;		
+
+				fCanUndo = true;
 				fCanRedo = false;
 				fUndoItem -> SetLabel("Undo");
 				fUndoItem -> SetEnabled(true);
 				fRedoFlag = false;
-			
 		    }
 		}
 		break;
-		
+
 		// Font size
 		case FONT_SIZE: {
-		
-			if (message -> FindFloat ("size", &fontSize) == B_OK){		
+
+			if (message -> FindFloat ("size", &fontSize) == B_OK){
 				fNoteText -> GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
 				fNoteText -> SetFontAndColor (&font, B_FONT_SIZE);
 			}
-			
+
 		}
 		break;
-		
+
 		// Font Color
 		case FONT_COLOR: {
-		
+
 			message->FindInt8("red", &c);
 			colore.red = (uint8)c;
 			message->FindInt8("green", &c);
 			colore.green = (uint8)c;
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
-			
+
 			// Setting a different color for the font
 			fNoteText -> GetFontAndColor(&font, &sameProperties);
 			fNoteText -> SetFontAndColor(&font,0,&colore);
-			
+
 		}
 		break;
-		
+
 		// Font type
 		case FONT_FAMILY: {
-		
+
 			fontFamily = NULL;
 			fontStyle = NULL;
-			
+
 			// Setting the font family
 			message -> FindPointer ("source", &ptr);
 			fCurrentFont = static_cast <BMenuItem*>(ptr);
 			fontFamily = fCurrentFont -> Label();
 			SetFontStyle (fontFamily, fontStyle);
-			
+
 		}
 		break;
-		
+
 		// Font style
 		case FONT_STYLE: {
-		
+
 			fontFamily = NULL;
 			fontStyle = NULL;
-			
+
 			// Setting the font style
 			message -> FindPointer ("source", &ptr);
 			item = static_cast <BMenuItem*>(ptr);
 			fontStyle = item -> Label();
 			menu = item -> Menu();
-			
+
 			if (menu != NULL) {
 				fCurrentFont = menu -> Superitem();
 				if (fCurrentFont != NULL)
 					fontFamily = fCurrentFont -> Label();
-			}			
+			}
 			SetFontStyle (fontFamily, fontStyle);
-			
+
 		}
 		break;
-		
+
 		// Mail and Browser: it opens BeZilla or Mail
 		case GO_TO_LINK: {
-		
+
 			// Copying the selected link
 			fNoteText -> GetSelection(&k,&j);
 			length = j - k + 1;
-				
-			//If nothing was selected we need to break
-			if(length <= 1)
+
+			// If nothing was selected we need to break
+			if (length <= 1)
 				break;
-							
-			offset = k;				
-			fNoteText -> GetText(offset, length, buffer);				
+
+			offset = k;
+			fNoteText -> GetText(offset, length, buffer);
 			found = 0;
-				
+
 			printf(buffer);
 			printf("\n");
-				
+
 			// Verifying if the link passed is an email or a link
 			for (count = 0; buffer[count] != '\0'; count++){
-				if(buffer[count] == '@') {
+				if (buffer[count] == '@') {
 					found = 1;
 					break;
 				}
 			}
-			// Mail found?					
+			// Mail found?
 			if (found == 0) {	// No
 				// Signature of BeZilla
 				signature = strdup("application/x-vnd.Mozilla-Firefox");
@@ -936,22 +922,22 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				signature = strdup("application/x-vnd.Be-MAIL");
 				mail = 1;
 			}
-				
+
 			// We write "mailto:mail" as required by the program "Mail"
 			if (mail == 1) {
 				// Variables
 				char m[50];
-				
+
 				// Copying the email
 				fNoteText -> GetSelection(&k,&j);
 				length = j - k + 1;
 				offset = k;
 				fNoteText -> GetText(offset, length, m);
-				
+
 				// Writing "mailto:mail"
 				// Variables
 				BString string;
-				
+
 				string.SetTo("mailto:");
 				string.Append(m, sizeof(m));
 				string.Append("\0", 1);
@@ -960,86 +946,86 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				be_roster -> Launch(signature, 1, param, NULL);
 			}
 			else {
-				// Browser				
+				// Browser
 				// Flag
 				found = 0;
-			
+
 				// Initialization
         		aList = new BList;
         		appInfo = new app_info();
 
 	        	// Obtaining the applications that are running
-	        	be_roster->GetAppList(aList); 
+	        	be_roster->GetAppList(aList);
 
 				// We look for the current instances of BeZilla that are running
        			for (count=0;count< aList->CountItems();count++){
 	                who = (team_id)(addr_t)aList->ItemAt(count);
 	 	         	  	be_roster->GetRunningAppInfo(who,appInfo);
-   		 	            
+
 	 	         	// Is there an instance that is running?
 	   		    	 if (strcmp (appInfo->signature, signature) == 0) {
-						myAlert = new BAlert("BeZilla is opened", 
-							"Close the browser first, then open this link", 
+						myAlert = new BAlert("BeZilla is opened",
+							"Close the browser first, then open this link",
 							"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 						myAlert -> Go();
 						found = 1;
 						break;
 					}
-       			} 
-        			
-       			// BeZilla is not running 
-       			if (found == 0) {						
+       			}
+
+       			// BeZilla is not running
+       			if (found == 0) {
 					// We launch the application
 					// Variables
 					char* buffer2 = buffer;
-					
+
 					be_roster -> Launch(signature, 1, &buffer2, NULL);
        			}
-       		}	
-       					
+       		}
+
 		}
 		break;
-		
+
 		// Adding the date
 		case ADD_DATA: {
-		
+
 			// Getting the date
 			day = gettime().tm_mday;
 			month = gettime().tm_mon + 1;
 			year = gettime().tm_year+1900;
 			second = gettime().tm_sec;
 			minute = gettime().tm_min;
-			hour = gettime().tm_hour;			
-			
+			hour = gettime().tm_hour;
+
 			sprintf(stringa, "%d/%d/%d - %d:%d:%d", day,
 					month, year, hour, minute, second);
-			
+
 			// Inserting the string
 			fNoteText -> MakeFocus();
 			fNoteText -> Insert(stringa);
-			
+
 		}
 		break;
-		
+
 		// Show the window that allow the user to change the background color
 		case SET_COLOR:{
-				
-			if (fColorWindow == NULL){	
-			
+
+			if (fColorWindow == NULL){
+
 				fColorWindow = new ColorWindow(BRect(300,300,700,680),this);
 				fColorWindow -> Show();
-			
+
 			} else {
-			
+
 				fColorWindow->Activate();
 			}
-			
+
 		}
 		break;
-				
+
 		// Background color changed
 		case COLOR_CHANGED: {
-				
+
 			message->FindInt8("red", &c);
 			colore.red = (uint8)c;
 			message->FindInt8("green", &c);
@@ -1047,101 +1033,101 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
 			fNoteView -> SetBackgroundColor(colore);
-			
+
 		}
-		break;	
-		
+		break;
+
 		// Allows you to add an association between a note and an application
-		case SET_APP: {	
-			
+		case SET_APP: {
+
 			if (!fSaveMessage){
-			
+
 				alert = new BAlert("Warning","You must save your note before!","OK");
 				alert->Go();
-			
-			} else {			
-			
+
+			} else {
+
 				if (fChoiceWindow == NULL){
-				
+
 					// We have to adapt the height of the window in function of the number
 					// of applications that are running
 	        		aList = new BList;
 
 				    // Obtaining the applications that are running
-		    	    be_roster->GetAppList(aList); 
+		    	    be_roster->GetAppList(aList);
 			    	countApps = aList -> CountItems();
-		        
+
 		       		 h = countApps * 17 + 300;
-		       		 printf("Altezza: %d\n", h);
-					
+		       		 printf("Height: %d\n", h);
+
 					fChoiceWindow = new ChoiceWindow(BRect(300,300,800,h), this);
 					fChoiceWindow -> Show();
-				
+
 					delete aList;
 					aList = NULL;
-				
+
 				} else
-					fChoiceWindow->Activate();	 
-			} 
-		
+					fChoiceWindow->Activate();
+			}
+
 		}
 		break;
-		
+
 		// Associate an application to the post-it
 		case RADIO_CHECKED: {
-					
+
 			const char* stringa;
-						
-			message -> FindString("signature", &stringa);			
-			//Save the new association into the config file	
+
+			message -> FindString("signature", &stringa);
+			// Save the new association into the config file
 			_SaveDB(stringa);
-					
+
 		}
 		break;
-		
+
 		// It allows you to set the tags of a note
 		case SET_TAGS: {
-		
+
 			if (!fSaveMessage){
-			
+
 				alert = new BAlert("Warning","You must save your note before!","OK");
 				alert->Go();
-			
+
 			} else {
 				// It creates a window
 				if (fTagsWindow == NULL){
 
 					fTagsWindow = new TagsWindow(fSaveMessage, this);
-					fTagsWindow -> Show();  
-			
-				} else 
+					fTagsWindow -> Show();
+
+				} else
 					fTagsWindow->Activate();
-		
-			}	
-		
+
+			}
+
 		}
-		break;		
-		
+		break;
+
 		// Setting the alarm with the window opened
-		case SET_ALARM: {	
-				
+		case SET_ALARM: {
+
 			if (fAlarmWindow == NULL){
-			
+
 				fAlarmWindow = new AlarmWindow(BRect(300,300,800,600),this);
 				fAlarmWindow->Show();
-			
-			} 
-			else 			
+
+			}
+			else
 				fAlarmWindow->Activate();
-		
-		}		
+
+		}
 		break;
-		
+
 		// Setting the alarm in the data structure
 		case ALARM_MSG: {
-				
+
 			alarm_set = true;
-				
+
 			message -> FindInt16("year", &i);
 			fData.Year = i;
 			message -> FindInt16("month", &i);
@@ -1152,46 +1138,46 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fData.Hour = i;
 			message -> FindInt16("minute", &i);
 			fData.Minute = i;
-			
+
 		}
 		break;
-		
+
 		// Check for alarm to show (after the user has set one)
 		case CHECK_ALARM: {
-		
-			// First check if an alarm has been set			
-			if(!(alarm_set)) {
+
+			// First check if an alarm has been set
+			if (!(alarm_set)) {
 				break;
-			} 			
-			// Second check if the runner has been correctly started			
-			if(runner -> InitCheck() < B_NO_ERROR) {		
-				break;			
-			}			
-		
-			// Check if date/time saved in data struct comes after system time			
-			// Declaring two timers: rawtime represents system time, userTime represents user input saved in the struct	
+			}
+			// Second check if the runner has been correctly started
+			if (runner -> InitCheck() < B_NO_ERROR) {
+				break;
+			}
+
+			// Check if date/time saved in data struct comes after system time
+			// Declaring two timers: rawtime represents system time, userTime represents user input saved in the struct
 			time_t rawtime;
 			time_t userTime;
-	
-			// Get the current time (number of seconds from the "epoch"), stores it in the timer		
+
+			// Get the current time (number of seconds from the "epoch"), stores it in the timer
 			time( &rawtime );
-	
-			// Convert time_t time value to a tm struct	
+
+			// Convert time_t time value to a tm struct
 			timeinfo = localtime ( &rawtime );
-		
-			// Fill the timeinfo struct with data saved in data struct	
+
+			// Fill the timeinfo struct with data saved in data struct
 			timeinfo -> tm_year = fData.Year - 1900;
 			timeinfo -> tm_mon = fData.Month - 1;
 			timeinfo -> tm_mday = fData.Day;
 			timeinfo -> tm_hour = fData.Hour;
 			timeinfo -> tm_min = fData.Minute;
-			timeinfo -> tm_sec = 0;	
-	
-			// Convert from struct tm to data type time_t	
-			userTime = mktime(timeinfo);	
-			
-			// Compare user time and system time	
-			if( difftime(userTime, time( &rawtime) ) < 0 ) {			
+			timeinfo -> tm_sec = 0;
+
+			// Convert from struct tm to data type time_t
+			userTime = mktime(timeinfo);
+
+			// Compare user time and system time
+			if (difftime(userTime, time( &rawtime) ) < 0 ) {
 				BString string;
 				string.SetTo("Alarm activated for note: ");
 				string.Append(Title());
@@ -1199,62 +1185,62 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				alertstr = (char*) string.String();
 				myAlert = new BAlert("Alarm activated", alertstr, "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 				myAlert -> Go();
-				
+
 				// PAY ATTENTION!!!! We have to think about this: when an alarm has been activated, remember to "delete" it otherwise the alarm will appear over and over
 				alarm_set = false;
-			}	
-						
+			}
+
 		}
 		break;
-			
+
 		// It removes the color window
 		case COLOR_CLOSE: {
-		
+
 			fColorWindow = NULL;
-		
+
 		}
-		break;	
-		
+		break;
+
 		// It removes the alarm window
 		case ALARM_CLOSE: {
-		
+
 			fAlarmWindow = NULL;
-			
+
 		}
 		break;
-		
+
 		// It removes the tag window
 		case TAGS_CLOSE: {
-		
+
 			fTagsWindow = NULL;
-		
+
 		}
 		break;
-		
+
 		// It removes the choice window
 		case CHOICE_CLOSE: {
-		
+
 			fChoiceWindow = NULL;
-			
-		} 	
+
+		}
 		break;
-		
+
 		// About menu
 		case ABOUT: {
-		
-				myAlert = new BAlert("About TakeNotes", 
+
+				myAlert = new BAlert("About TakeNotes",
 				"Copyright 2009\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile", 
 				"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 			myAlert -> Go();
-					
+
 		}
 		break;
-			
+
 		default:
 			BWindow::MessageReceived(message);
 	}
 }
-	
+
 // Closing the window
 bool NoteWindow :: QuitRequested(){
 
@@ -1268,4 +1254,4 @@ void NoteWindow :: Quit(){
 	note_app->CloseNote();
 	BWindow::Quit();
 
-} 
+}

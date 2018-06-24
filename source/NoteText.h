@@ -1,17 +1,17 @@
 /*
  * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
  * Distribuited under the terms of the GPL v2 license
- * 
+ *
  * Authors:
  *
  *			Ilio Catallo
- * 
+ *
  * Last revision: Ilio Catallo, 29th June 2009
  *
  * Description: Header of the NoteText
  */
- 
- 
+
+
 #ifndef NOTE_TEXT_H
 #define NOTE_TEXT_H
 
@@ -25,9 +25,9 @@
 
 // Definition of the class
 class NoteText : public BTextView {
- 
+
  	public:
- 	
+
  								NoteText(BRect frame, BRect frameText, char *name,BHandler *handler);
  								NoteText(BMessage *message);
  							 	~NoteText();
@@ -36,24 +36,20 @@ class NoteText : public BTextView {
 
  		virtual	void			MessageReceived(BMessage *message);
 
- 		virtual void			FrameResized(float width, float height);		
- 		virtual void			MouseDown(BPoint point); 				
+ 		virtual void			FrameResized(float width, float height);
+ 		virtual void			MouseDown(BPoint point);
  				status_t		Archive(BMessage *msg, bool deep=true) const;
- 				
+
  				void			SetReplicated(bool flag);
  				bool			GetReplicated();
  				void			SetHandler(BHandler *handler);
- 			
- 		
+
+
  	private:
- 	
+
  		bool		fReplicated;
  		BHandler	*handler;
  		BMessenger	*fMessenger;
-
 };
- 
- 
-#endif		
- 
- 
+
+#endif

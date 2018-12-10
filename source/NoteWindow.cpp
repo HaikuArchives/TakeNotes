@@ -76,6 +76,7 @@ const struct tm gettime() {
 // Constructor
 NoteWindow::NoteWindow(int32 id)
 		  : BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
+	SetSizeLimits(250, 10000, 250, 10000);
 
 	// Variables
 	BRect		frameView,
@@ -136,6 +137,7 @@ NoteWindow::NoteWindow(int32 id)
 // Construtor
 NoteWindow :: NoteWindow(entry_ref *ref)
 	: BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
+	SetSizeLimits(250, 10000, 250, 10000);
 
 	// Variables
 	BMessage 	*msg = new BMessage;

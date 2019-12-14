@@ -20,6 +20,7 @@
 
 // Other Libraries
 #include <Alert.h>
+#include <AboutWindow.h>
 #include <Application.h>
 #include <Autolock.h>
 #include <Clipboard.h>
@@ -436,7 +437,7 @@ void NoteWindow :: InitWindow(){
 	}
 
 	// About menu
-	fAboutMenu -> AddItem (menuItem = new BMenuItem ("About TakeNotes...", new BMessage (ABOUT)));
+	fAboutMenu -> AddItem (menuItem = new BMenuItem ("About TakeNotes...", new BMessage (B_ABOUT_REQUESTED)));
 
 	// Add the menu to the window
 	AddChild(fNoteMenuBar);
@@ -1228,13 +1229,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		break;
 
 		// About menu
-		case ABOUT: {
-
-				myAlert = new BAlert("About TakeNotes",
-				"Copyright 2009\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile", 
-				"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-			myAlert -> Go();
-
+		case B_ABOUT_REQUESTED: {
+			AboutRequested();
 		}
 		break;
 
@@ -1243,12 +1239,33 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	}
 }
 
+
+
 // Closing the window
 bool NoteWindow :: QuitRequested(){
 
 	Quit();
 	return(true);
 }
+
+void NoteWindow :: AboutRequested()
+{
+	BAboutWindow* about = new BAboutWindow("TakeNotes", kSignature);
+
+	const char* authors[] = {
+		"Ilio Catallo",
+		"Stefano Celentano",
+		"Eleonora Ciceri",
+		NULL
+	};
+
+	about->AddCopyright(2009, "Ilio Catallo");
+	about->AddAuthors(authors);
+	about->AddText("Distribuited under the terms of the GPLv2 license");
+	about->AddText("Icons by Meanwhile");
+	about->Show();
+}
+	
 
 // Function that quits the window
 void NoteWindow :: Quit(){

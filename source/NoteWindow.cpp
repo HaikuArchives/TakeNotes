@@ -84,6 +84,7 @@ NoteWindow::NoteWindow(int32 id)
 	entry_ref	*directory = NULL;
 	BRefFilter	*refFilter = NULL;
 	BString 	title("Untitled Note ");
+	bool unsaved = false;
 
 	// Initialize the messenger: the handler is the window itself
 	fMessenger = BMessenger(this);
@@ -520,6 +521,8 @@ status_t NoteWindow :: Save(BMessage *message) {
 		delete fSaveMessage;
 		fSaveMessage = new BMessage(*message);
 	}
+	
+	unsaved = false;
 
 	return err;
 }
@@ -748,12 +751,12 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 		}
 		break;
-
-		// Close the application
+		
+		//Close the application
 		case QUIT_APPL: {
-
-			Quit();
-
+			
+			QuitRequested();
+			
 		}
 		break;
 
@@ -819,6 +822,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				fUndoItem -> SetEnabled(true);
 				fRedoFlag = false;
 		    }
+		    
+		    unsaved = true;
 		}
 		break;
 
@@ -829,6 +834,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				fNoteText -> GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
 				fNoteText -> SetFontAndColor (&font, B_FONT_SIZE);
+				unsaved = true;
 			}
 
 		}
@@ -847,6 +853,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			// Setting a different color for the font
 			fNoteText -> GetFontAndColor(&font, &sameProperties);
 			fNoteText -> SetFontAndColor(&font,0,&colore);
+			unsaved = true;
 
 		}
 		break;
@@ -862,6 +869,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fCurrentFont = static_cast <BMenuItem*>(ptr);
 			fontFamily = fCurrentFont -> Label();
 			SetFontStyle (fontFamily, fontStyle);
+			unsaved = true;
 
 		}
 		break;
@@ -884,6 +892,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 					fontFamily = fCurrentFont -> Label();
 			}
 			SetFontStyle (fontFamily, fontStyle);
+			unsaved = true;
 
 		}
 		break;
@@ -1035,6 +1044,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
 			fNoteView -> SetBackgroundColor(colore);
+			unsaved = true;
 
 		}
 		break;
@@ -1245,9 +1255,29 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 // Closing the window
 bool NoteWindow :: QuitRequested(){
-
-	Quit();
-	return(true);
+			
+	if (unsaved) {
+		BAlert* alert = new BAlert("Close and save dialog", "Save changes before closing?",
+			"Cancel", "Don't Save", "Save first", B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
+		alert->SetShortcut(0, B_ESCAPE);
+		int32 button_index = alert->Go();
+		switch (button_index) {
+			case 0:
+				break;
+			case 1:
+				Quit();
+				break;
+			case 2:
+				if (!fSaveMessage){
+				 	fSavePanel -> Show();
+				} else {
+					Save(fSaveMessage);
+				}
+				break;
+		}			
+	} else {
+		Quit();
+	}
 }
 
 // Function that quits the window

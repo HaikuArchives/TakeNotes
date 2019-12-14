@@ -112,6 +112,7 @@ class NoteWindow : public BWindow {
 		bool 		fCanUndo;
 		bool 		fCanRedo;
 		bool 		fRedoFlag;
+		bool  		unsaved;
 
 		// Data structure
 		AlarmData 	fData;

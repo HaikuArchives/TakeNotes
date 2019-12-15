@@ -116,6 +116,9 @@ class NoteWindow : public BWindow {
 		// Saved flag
 		bool  		fIsDirty;
 
+		// Quit after successful save flag
+		bool		fQuitAfterSave;
+
 		// Data structure
 		AlarmData 	fData;
 

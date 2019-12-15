@@ -265,6 +265,7 @@ void NoteWindow :: InitWindow(){
 				yellow = {254,254,92},
 				color;
 	rgb_color   colors[] = {black, red, green, blue, yellow};
+	fQuitAfterSave = false;
 
 	//Initialize the fSaveMessage
 	fSaveMessage = NULL;
@@ -522,6 +523,8 @@ status_t NoteWindow :: Save(BMessage *message) {
 	}
 	
 	fIsDirty = false;
+	if (fQuitAfterSave)
+		QuitRequested();
 
 	return err;
 }
@@ -1259,7 +1262,7 @@ bool NoteWindow :: QuitRequested(){
 	if (fIsDirty) {
 		BAlert* saveAlert = new BAlert("Close and save dialog",
 			"Save changes before closing?","Cancel",
-			"Don't save", "Save first",
+			"Don't save", "Save",
 			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
 		saveAlert->SetShortcut(0, B_ESCAPE);
 		int32 button_index = saveAlert->Go();
@@ -1270,12 +1273,13 @@ bool NoteWindow :: QuitRequested(){
 				Quit();
 				break;
 			case 2:
+				fQuitAfterSave = true;
 				if (!fSaveMessage)
 				 	fSavePanel -> Show();
 				else
 					Save(fSaveMessage);
 				break;
-		}			
+		}
 	} else
 		Quit();
 }

@@ -750,12 +750,12 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 		}
 		break;
-		
+
 		//Close the application
 		case QUIT_APPL: {
-			
+
 			QuitRequested();
-			
+
 		}
 		break;
 
@@ -1259,7 +1259,7 @@ bool NoteWindow :: QuitRequested(){
 	if (fIsDirty) {
 		BAlert* saveAlert = new BAlert("Close and save dialog",
 			"Save changes before closing?","Cancel",
-			"Don't Save", "Save first",
+			"Don't save", "Save first",
 			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
 		saveAlert->SetShortcut(0, B_ESCAPE);
 		int32 button_index = saveAlert->Go();
@@ -1270,16 +1270,14 @@ bool NoteWindow :: QuitRequested(){
 				Quit();
 				break;
 			case 2:
-				if (!fSaveMessage){
+				if (!fSaveMessage)
 				 	fSavePanel -> Show();
-				} else {
+				else
 					Save(fSaveMessage);
-				}
 				break;
 		}			
-	} else {
+	} else
 		Quit();
-	}
 }
 
 // Function that quits the window

@@ -84,7 +84,6 @@ NoteWindow::NoteWindow(int32 id)
 	entry_ref	*directory = NULL;
 	BRefFilter	*refFilter = NULL;
 	BString 	title("Untitled Note ");
-	bool unsaved = false;
 
 	// Initialize the messenger: the handler is the window itself
 	fMessenger = BMessenger(this);
@@ -522,7 +521,7 @@ status_t NoteWindow :: Save(BMessage *message) {
 		fSaveMessage = new BMessage(*message);
 	}
 	
-	unsaved = false;
+	fIsDirty = false;
 
 	return err;
 }
@@ -823,7 +822,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				fRedoFlag = false;
 		    }
 		    
-		    unsaved = true;
+		    fIsDirty = true;
 		}
 		break;
 
@@ -834,7 +833,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				fNoteText -> GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
 				fNoteText -> SetFontAndColor (&font, B_FONT_SIZE);
-				unsaved = true;
+				fIsDirty = true;
 			}
 
 		}
@@ -853,7 +852,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			// Setting a different color for the font
 			fNoteText -> GetFontAndColor(&font, &sameProperties);
 			fNoteText -> SetFontAndColor(&font,0,&colore);
-			unsaved = true;
+			fIsDirty = true;
 
 		}
 		break;
@@ -869,7 +868,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fCurrentFont = static_cast <BMenuItem*>(ptr);
 			fontFamily = fCurrentFont -> Label();
 			SetFontStyle (fontFamily, fontStyle);
-			unsaved = true;
+			fIsDirty = true;
 
 		}
 		break;
@@ -892,7 +891,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 					fontFamily = fCurrentFont -> Label();
 			}
 			SetFontStyle (fontFamily, fontStyle);
-			unsaved = true;
+			fIsDirty = true;
 
 		}
 		break;
@@ -1044,7 +1043,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
 			fNoteView -> SetBackgroundColor(colore);
-			unsaved = true;
+			fIsDirty = true;
 
 		}
 		break;
@@ -1255,12 +1254,15 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 // Closing the window
 bool NoteWindow :: QuitRequested(){
-			
-	if (unsaved) {
-		BAlert* alert = new BAlert("Close and save dialog", "Save changes before closing?",
-			"Cancel", "Don't Save", "Save first", B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
-		alert->SetShortcut(0, B_ESCAPE);
-		int32 button_index = alert->Go();
+	
+	//Show an alert if the note has not been saved		
+	if (fIsDirty) {
+		BAlert* saveAlert = new BAlert("Close and save dialog",
+			"Save changes before closing?","Cancel",
+			"Don't Save", "Save first",
+			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
+		saveAlert->SetShortcut(0, B_ESCAPE);
+		int32 button_index = saveAlert->Go();
 		switch (button_index) {
 			case 0:
 				break;

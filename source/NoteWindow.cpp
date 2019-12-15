@@ -20,7 +20,7 @@
 
 // Other Libraries
 #include <Alert.h>
-#include <AboutWindow.h>
+#include <private/interface/AboutWindow.h>
 #include <Application.h>
 #include <Autolock.h>
 #include <Clipboard.h>

@@ -46,12 +46,10 @@
 #define	OPEN_FILE			'onfl'
 #define REMOVE_ASSOCIATION	'rmsc'
 
-// Constructor
-NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *handler)
+NoteView::NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *handler)
 	   	 : BView(frame, "TakeNotes", resizingMode, B_FRAME_EVENTS | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE),
-	   		fInDeskbar(inDeskbar){
-
-	// Variable
+	   		fInDeskbar(inDeskbar)
+{
 	BDragger *dragger;
 
 	// Initilization
@@ -62,18 +60,14 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 		fMessenger = new BMessenger(handler);
 
 	// Graphical Stuff
-	if (!inDeskbar){
-
+	if (!inDeskbar) {
 		// We don't have to add the dragger if the view is in the deskbar
 		SetViewColor(254,254,92,255);
 		dragger = new BDragger(BRect(0,0,7,7),this,B_FOLLOW_NONE);
 		AddChild(dragger);
 		dragger->SetViewColor(ViewColor());
-
 	} else {
-
 		fReplicated = false;
-		printf("sono nella deskbar\n");
 		InitBitmap();
 	}
 }
@@ -82,10 +76,9 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 * Costructor by message
 * We can restore a NoteText starting from a BMessage that contains its structure
 */
-NoteView :: NoteView (BMessage *msg, BHandler *handler)
-		   : BView(msg){
-
-	// Variables
+NoteView::NoteView(BMessage *msg, BHandler *handler)
+		   : BView(msg)
+{
 	app_info	info;
 
 	// Initialization
@@ -96,7 +89,7 @@ NoteView :: NoteView (BMessage *msg, BHandler *handler)
 	SetBackgroundColor(ViewColor());
 
 	// Check if we are in the deskbar
-	if (be_app->GetAppInfo(&info) == B_OK && !strcasecmp(info.signature, "application/x-vnd.Be-TSKB")){
+	if (be_app->GetAppInfo(&info) == B_OK && !strcasecmp(info.signature, "application/x-vnd.Be-TSKB")) {
 		fInDeskbar = true;
 		fReplicated = false;
 
@@ -106,10 +99,10 @@ NoteView :: NoteView (BMessage *msg, BHandler *handler)
 }
 
 // Destructor (actually empty, no dynamic object to destory here)
-NoteView :: ~NoteView(){}
+NoteView::~NoteView() {}
 
 // Function used to draw in the view
-void NoteView :: Draw (BRect update){
+void NoteView::Draw(BRect update) {
 
 	printf("fReplicated: %d\n",fReplicated);
 
@@ -127,9 +120,7 @@ void NoteView :: Draw (BRect update){
 }
 
 // Function InitBitmap
-void NoteView :: InitBitmap(){
-
-	// Variables
+void NoteView::InitBitmap() {
 	image_info 	info;
 	BFile		file;
 	const 		void*		data = NULL;
@@ -137,7 +128,7 @@ void NoteView :: InitBitmap(){
 	BBitmap 	*icon;
 
 	// Initialization
-	if (fBitmap){
+	if (fBitmap) {
 		delete fBitmap;
 	}
 
@@ -157,13 +148,13 @@ void NoteView :: InitBitmap(){
 		return;
 
 	// Load the vectorial icon into a void pointer
-	data = resources.LoadResource(B_VECTOR_ICON_TYPE,1,&size);
-	if (data != NULL){
+	data = resources.LoadResource(B_VECTOR_ICON_TYPE, 1, &size);
+	if (data != NULL) {
 
 		// Obtain the icon from the blob
 		icon = new BBitmap(Bounds(), B_RGBA32);
 
-		if (icon->InitCheck() == B_OK && BIconUtils::GetVectorIcon((const uint8 *)data,size,icon) == B_OK){
+		if (icon->InitCheck() == B_OK && BIconUtils::GetVectorIcon((const uint8 *)data,size,icon) == B_OK) {
 			// We succeed in creating the icon so we can associate it to fBitmap and invalidate the view
 			fBitmap = icon;
 			Invalidate();
@@ -173,7 +164,6 @@ void NoteView :: InitBitmap(){
 		}
 	} else {
 		// No B_VECTOR_ICON_TYPE data in the application resource
-		return;
 	}
 }
 
@@ -181,20 +171,18 @@ void NoteView :: InitBitmap(){
 * Hook function-override, when the view is attached to a parent window we
 * find if this parent is the deskbar or the NoteWindow
 */
-void NoteView :: AttachedToWindow(){
-
+void NoteView::AttachedToWindow() {
 	// Actually execute the real code
-	BView :: AttachedToWindow();
+	BView::AttachedToWindow();
 
 	/*
 	* if there's a parent it means we're in the deskbar
 	* so we set the background color the same as the deksbar
 	* in order to obtain the alpha trasparency for the icon
 	*/
-	if (Parent() && !fReplicated){
+	if (Parent() && !fReplicated) {
 		SetViewColor(Parent()->ViewColor());
 		SetLowColor(ViewColor());
-
 	}
 }
 
@@ -206,9 +194,7 @@ void NoteView :: AttachedToWindow(){
 * note/application associations.
 *
 */
-void NoteView :: MouseDown(BPoint point){
-
-	// Variables
+void NoteView::MouseDown(BPoint point) {
 	BList 		*aList;
 	app_info 	*appInfo;
     int 		count;
@@ -223,10 +209,8 @@ void NoteView :: MouseDown(BPoint point){
     BMessage 	*mess,
     			*messRemove;
 
-
 	// If we're in Deskbar and we aren't a replicated note
 	if (fInDeskbar && !fReplicated) {
-
 		// Load the database of notes
 		fHash = new AppHashTable();
 		_LoadDB();
@@ -239,7 +223,8 @@ void NoteView :: MouseDown(BPoint point){
 		// Fill the menu
 		menu->AddItem(new BMenuItem("Open TakeNotes" B_UTF8_ELLIPSIS,new BMessage(OPEN_TAKENOTES)));
 		menu->AddItem(new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED)));
-		if (fHash->HasElement()) menu->AddSeparatorItem();
+		if (fHash->HasElement())
+			menu->AddSeparatorItem();
 
 		// Initialization
     	aList = new BList;
@@ -249,7 +234,7 @@ void NoteView :: MouseDown(BPoint point){
    		be_roster->GetAppList(aList);
 
 		// We look for the current instances that are running
-		for (count=0;count< aList->CountItems();count++){
+		for (count = 0; count < aList->CountItems(); count++) {
    	    	team_id who = (team_id)(addr_t)aList->ItemAt(count);
    	  		be_roster->GetRunningAppInfo(who,appInfo);
 
@@ -264,42 +249,41 @@ void NoteView :: MouseDown(BPoint point){
    		 		name.Compare("media_addon_server") != 0 && name.Compare("afp_server") != 0 && name.Compare("debug_server") != 0) {
 
    		 		// Obtain the signature number
-   				countSignatures = fHash -> GetNumSignatures();
+   				countSignatures = fHash->GetNumSignatures();
 
    				// For each signature in the list we check if it is the hash table and in case we add it to the menu
    				for (int i = 0; i < countSignatures; i++) {
-   					sig = fHash -> GetSignature(i);
-   					if (strcmp (appInfo -> signature, sig) == 0) {
-   						subMenu = new BMenu (ref.name);
+   					sig = fHash->GetSignature(i);
+   					if (strcmp (appInfo->signature, sig) == 0) {
+   						subMenu = new BMenu(ref.name);
 
    						// Make the list of the notes releated to that application
-   						int countNotes = fHash -> GetNumNotes(sig);
+   						int countNotes = fHash->GetNumNotes(sig);
    						for (int j = 0; j < countNotes; j++) {
 
    							// Obtain the current note path
-   							note = fHash -> GetNote(sig, j);
+   							note = fHash->GetNote(sig, j);
 
    							// Create the list of notes for a given application
    							mess = new BMessage(OPEN_FILE);
-   							mess -> AddString("Note", note);
+   							mess->AddString("Note", note);
 
-   							messRemove = new BMessage (REMOVE_ASSOCIATION);
-   							messRemove -> AddString ("Note", note);
-   							messRemove -> AddString ("Signature", sig);
+   							messRemove = new BMessage(REMOVE_ASSOCIATION);
+   							messRemove->AddString("Note", note);
+   							messRemove->AddString("Signature", sig);
 
    							// Sub-menu useful to open or remove a note
    							noteMenu = new BMenu (note);
-   							noteMenu -> AddItem (new BMenuItem ("Open", mess));
-   							noteMenu -> AddItem (new BMenuItem ("Remove the association", messRemove));
-   							noteMenu -> SetTargetForItems(this);
-   							subMenu -> AddItem (noteMenu);
+   							noteMenu->AddItem(new BMenuItem("Open", mess));
+   							noteMenu->AddItem(new BMenuItem("Remove the association", messRemove));
+   							noteMenu->SetTargetForItems(this);
+   							subMenu->AddItem(noteMenu);
    						}
 
-   						subMenu -> SetTargetForItems(this);
-   						menu -> AddItem (subMenu);
+   						subMenu->SetTargetForItems(this);
+   						menu->AddItem(subMenu);
    					}
    				}
-
    			}
      	}
 
@@ -317,12 +301,10 @@ void NoteView :: MouseDown(BPoint point){
 *										- the application lives in the deskbar
 */
 
-status_t NoteView :: Archive (BMessage *msg,bool deep) const{
-
-	// Variables
+status_t NoteView::Archive(BMessage *msg,bool deep) const {
 	BFile 		file;
 	BNodeInfo 	nodeinfo;
-	BString		string;
+	BString	tring;
 	entry_ref	ref;
 	status_t	err;
 	const char	*name;
@@ -339,8 +321,7 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 	msg->AddString("class","NoteView");
 
 	// If the function has been called by NoteWindow::Save we should find this information and use them to save 
-	if (msg->FindRef("directory",&ref) == B_OK && msg -> FindString("name", &name) == B_OK) {
-
+	if (msg->FindRef("directory",&ref) == B_OK && msg->FindString("name", &name) == B_OK) {
 		dir.SetTo(&ref);
 		if ((err = dir.InitCheck()) != B_OK)
 			return err;
@@ -357,7 +338,6 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 
 		//Deallocate the BFile object
 		file.Unset();
-
 	}
 
 	return B_OK;
@@ -369,16 +349,12 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 *							- when we restore a saved note
 *							- when we install the application in the Deskbar
 */
-BArchivable* NoteView :: Instantiate(BMessage *msg){
-
-		return new NoteView(msg);
-
+BArchivable* NoteView::Instantiate(BMessage *msg) {
+	return new NoteView(msg);
 }
 
 // Hook function-override,that shows some information about us and our work
-void NoteView :: AboutRequested(){
-
-	// Variable
+void NoteView::AboutRequested() {
 	BAlert *alert;
 
 	alert = new BAlert("About TakeNotes",
@@ -386,7 +362,6 @@ void NoteView :: AboutRequested(){
 			"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 	alert->SetShortcut(0,B_ESCAPE);
 	alert->Go();
-
 }
 
 /*
@@ -399,9 +374,7 @@ void NoteView :: AboutRequested(){
 * to update the informations stored in the config file.
 */
 
-status_t NoteView :: _SaveDB(){
-
-	// Variable
+status_t NoteView::_SaveDB() {
 	BFile		config;
 	BEntry		entry;
 	BPath		path;
@@ -412,7 +385,7 @@ status_t NoteView :: _SaveDB(){
 				countNotes;
 
 	// Open the config file in RW, if the file exits it will be replaced
-	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE |  B_CREATE_FILE | B_ERASE_FILE)) != B_OK){
+	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE |  B_CREATE_FILE | B_ERASE_FILE)) != B_OK) {
 		return err;
 	}
 
@@ -420,16 +393,16 @@ status_t NoteView :: _SaveDB(){
 	toWrite.SetTo("");
 
 	// Writing the structure, for each signature...
-	countSignatures = fHash -> GetNumSignatures();
+	countSignatures = fHash->GetNumSignatures();
 	for (int i = 0; i < countSignatures; i++) {
 
 		// Prepare the string
-		char* signature = fHash -> GetSignature(i);
-		countNotes = fHash -> GetNumNotes(signature);
+		char* signature = fHash->GetSignature(i);
+		countNotes = fHash->GetNumNotes(signature);
 
 		// Parse the string
 		for (int j = 0; j < countNotes; j++) {
-			char* note = fHash -> GetNote (signature, j);
+			char* note = fHash->GetNote (signature, j);
 			printf(">>(FILE) nota: %d, path: %s\n", j, note);
 			toWrite.Append(note);
 			toWrite.Append(":");
@@ -447,48 +420,46 @@ status_t NoteView :: _SaveDB(){
 }
 
 // Function that handles all the messages that arrives to the view
-void NoteView :: MessageReceived(BMessage *message){
-
-	// Variables
+void NoteView::MessageReceived(BMessage *message) {
 	char	*argv[1];
 
-	switch(message->what){
-
+	switch (message->what) {
 		// The user wants more information about us
 		case B_ABOUT_REQUESTED:
 			AboutRequested();
-		break;
+			break;
 
 		// The user wants to open takenotes and write a new note
 		case OPEN_TAKENOTES:
 			_OpenTakeNotes();
-		break;
+			break;
 
 		// The user wants to open a note releated to an application that is currently running
-		case OPEN_FILE:{
+		case OPEN_FILE:
+		{
 
 			// Find the note path of the releated application
-			argv[0] = (char*)message -> FindString("Note");
+			argv[0] = (char*)message->FindString("Note");
 
 			//Open the note
-			be_roster -> Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
+			be_roster->Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
+			break;
 		}
-		break;
 
 		// Remove the association between a note and an application
-		case REMOVE_ASSOCIATION: {
-
+		case REMOVE_ASSOCIATION:
+		{
 			// Find what has to be removed
 			BString n(message->FindString("Note"));
 			BString s(message->FindString("Signature"));
 
 			// Removing from the data structure
-			fHash -> DeleteNote (s, n);
+			fHash->DeleteNote (s, n);
 
 			// Rewriting the file
 			_SaveDB();
+			break;
 		};
-		break;
 
 		/*
 		* The user wants to close the view, the view receives this
@@ -497,19 +468,17 @@ void NoteView :: MessageReceived(BMessage *message){
 
 		case B_QUIT_REQUESTED:
 			_Quit();
-		break;
+			break;
 
 		// All the other messages are forwarded to the superclass method
 		default:
 			BView::MessageReceived(message);
-		break;
+			break;
 	}
 }
 
 // Function used to load the database of the associations between an application and a note
-void NoteView :: _LoadDB(){
-
-	// Variables
+void NoteView::_LoadDB() {
 	BFile	config;
 	off_t	length;
 	char	*input;
@@ -522,7 +491,7 @@ void NoteView :: _LoadDB(){
 	int32	lastComma;
 
 	// Check if the file exists and if it is readable
-	if (fDatabase.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_ONLY) != B_OK){
+	if (fDatabase.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_ONLY) != B_OK) {
 
 	}
 
@@ -531,13 +500,10 @@ void NoteView :: _LoadDB(){
 	input = (char *)malloc(length);
 
 	// Actually read the database file
-	if (input && (fDatabase.Read(input, length) >= B_OK)){
+	if (input && (fDatabase.Read(input, length) >= B_OK)) {
 		stringa.SetTo(input);
 		free(input);
-	} else {
-		return;
 	}
-
 	// Deallocate the BFile object
 	fDatabase.Unset();
 
@@ -545,7 +511,7 @@ void NoteView :: _LoadDB(){
 	stringa.Remove(stringa.FindLast(":")+1,stringa.CountChars());
 
 	// Parser loop
-	while (stringa.CountChars() > 0 ){
+	while (stringa.CountChars() > 0) {
 
 		// We look for the initial point
 		firstComma = stringa.FindFirst(":")+1;
@@ -567,25 +533,18 @@ void NoteView :: _LoadDB(){
 }
 
 // Launch TakeNotes
-void NoteView :: _OpenTakeNotes(){
-
+void NoteView::_OpenTakeNotes() {
 	be_roster->Launch("application/x-vnd.ccc-TakeNotes");
-
 }
 
 // Quit the application
-void NoteView :: _Quit(){
-
-	if (fInDeskbar){
-
+void NoteView::_Quit() {
+	if (fInDeskbar) {
 		BDeskbar deskbar;
 		deskbar.RemoveItem(kDeskbarItemName);
-
 	} else {
-
 		be_app->PostMessage(B_QUIT_REQUESTED);
     }
-
 }
 
 /*
@@ -594,29 +553,24 @@ void NoteView :: _Quit(){
 * fReplicated = true everytime Archive is called, and then use this function to
 * change the value
 */
-void NoteView :: SetReplicated(bool flag){
-
+void NoteView::SetReplicated(bool flag) {
 	fReplicated = flag;
-
 }
 
 // Getter function (see the NoteView::SetReplicated explanation)
-bool NoteView :: GetReplicated(){
-
+bool NoteView::GetReplicated() const {
 	return fReplicated;
-
 }
 
 // Set the background color of the view
-void NoteView :: SetBackgroundColor(rgb_color color){
+void NoteView::SetBackgroundColor(rgb_color color) {
 
 	// Change NoteView and NoteView's dragger color
 	SetViewColor(color);
 	ChildAt(0)->SetViewColor(ViewColor());
 
 	// Find the text view and change the color
-	if (FindView("NoteText") != NULL){
-
+	if (FindView("NoteText") != NULL) {
 		FindView("NoteText")->SetViewColor(color);
 
 		// Tell the view to refresh itself
@@ -626,7 +580,6 @@ void NoteView :: SetBackgroundColor(rgb_color color){
 	}
 }
 
-extern "C" _EXPORT BView *instantiate_deskbar_item(void){
-
+extern "C" _EXPORT BView *instantiate_deskbar_item(void) {
 	return new NoteView(BRect(0, 0, 15, 15), B_FOLLOW_LEFT | B_FOLLOW_TOP,true);
 }

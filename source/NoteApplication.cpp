@@ -55,13 +55,10 @@ const char*	kDeskbarItemName = "TakeNotes";
 * This function fills the image_info image struct with the app image of itself
 * and eventually return B_OK
 */
-status_t our_image(image_info& image){
-
-	// Variables
+status_t our_image(image_info& image) {
 	int32 cookie = 0;
 
 	while (get_next_image_info(B_CURRENT_TEAM, &cookie, &image) == B_OK) {
-
 		if ((char *)our_image >= (char *)image.text
 			&& (char *)our_image <= (char *)image.text + image.text_size)
 			return B_OK;
@@ -71,9 +68,8 @@ status_t our_image(image_info& image){
 }
 
 // Constructor
-NoteApplication :: NoteApplication()
-			    : BApplication("application/x-vnd.ccc-TakeNotes"){
-
+NoteApplication::NoteApplication()
+			    : BApplication("application/x-vnd.ccc-TakeNotes") {
 	// Check (and install) the MIME type
 	CheckMime();
 
@@ -93,15 +89,12 @@ NoteApplication :: NoteApplication()
 }
 
 // Function ReadyToRun
-void NoteApplication :: ReadyToRun(){
-
-	// Variables
+void NoteApplication::ReadyToRun() {
 	BDeskbar	deskbar;
 	BAlert 		*alert;
 
 	// Check if the replicant isn't already installed in the Deskbar, avoid to ask if we already opened a note
-	if (!deskbar.HasItem(kDeskbarItemName) && fWindowCount == 0){
-
+	if (!deskbar.HasItem(kDeskbarItemName) && fWindowCount == 0) {
 		alert = new BAlert("", "Do you want TakeNotes to live in the Deskbar?", "Don't", "Install", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->SetShortcut(0, B_ESCAPE);
 		// In case we have to install it in the deskbar...
@@ -112,18 +105,13 @@ void NoteApplication :: ReadyToRun(){
 
 	}
 
-	// If there's some window opened return
-	if (fWindowCount > 0)
-		return;
 	// If there aren't windows opened, we open a note
-	else
+	if (fWindowCount <= 0)
 		OpenNote();
 }
 
 // Function CheckMime
-status_t NoteApplication :: CheckMime(){
-
-	// Variables
+	status_t NoteApplication::CheckMime() {
 	BMimeType 	takenotes("application/takenotes");
 
 	image_info		appInfo;
@@ -160,21 +148,20 @@ status_t NoteApplication :: CheckMime(){
 	// Load the icon as a blob from the resource
 	data = resource.LoadResource(B_VECTOR_ICON_TYPE,2,&size);
 
-	if (data != NULL){
+	if (data != NULL) {
 		// Set the icon for the mimetype
 		appFileInfo.SetIconForType(takenotes.Type(), (uint8 *)data, size);
 
-	} else
+	} else {
 		return B_ERROR;
+	}
 
 	appFileInfo.SetSupportedTypes(&msg);
 
 	// Check if the mimetype is installed or not
-	if (takenotes.InitCheck() == B_OK){
-
-
+	if (takenotes.InitCheck() == B_OK) {
 		// Check if the mimetype is already installed in the DB
-		if (takenotes.IsInstalled()){
+		if (takenotes.IsInstalled()) {
 
 			return B_OK;
 		}
@@ -184,13 +171,13 @@ status_t NoteApplication :: CheckMime(){
 				return B_ERROR;
 
 
-		if (takenotes.SetFileExtensions(&msg) != B_OK){
+		if (takenotes.SetFileExtensions(&msg) != B_OK) {
 				return B_ERROR;
 
 		}
 
 		// Set the preferred application
-		if (takenotes.SetPreferredApp("application/x-vnd.ccc-TakeNotes") != B_OK){
+		if (takenotes.SetPreferredApp("application/x-vnd.ccc-TakeNotes") != B_OK) {
 				return B_ERROR;
 		}
 
@@ -237,7 +224,7 @@ status_t NoteApplication :: CheckMime(){
 		attr.AddInt32("attr:alignment",0);
 		attr.AddInt32("attr:alignment",0);
 
-		if (takenotes.SetAttrInfo(&attr) != B_OK){
+		if (takenotes.SetAttrInfo(&attr) != B_OK) {
 			return B_ERROR;
 		}
 
@@ -250,46 +237,40 @@ status_t NoteApplication :: CheckMime(){
 
 		// If we arrived here, it should be all okay!
 		return B_OK;
-	}
-	else
+	} else {
 		return B_ERROR;
+	}
 }
 
 // Function used to open a note, counting how many notes are opened
-void NoteApplication :: OpenNote(){
-
+void NoteApplication::OpenNote() {
 	new NoteWindow(fWindowCountUntitled++);
 	fWindowCount++;		// Count of the notes
 }
 
 // Another function "OpenNote"
-void NoteApplication :: OpenNote(entry_ref *ref){
-
+void NoteApplication::OpenNote(entry_ref *ref) {
 	new NoteWindow(ref);
 	fWindowCount++;
 }
 
 // Function used to close a note
-void NoteApplication :: CloseNote(){
-
+void NoteApplication::CloseNote() {
 	fWindowCount--;
-	if (fWindowCount == 0){
+	if (fWindowCount == 0) {
 
 		BAutolock lock(this);
 		Quit();
 	}
-
 }
 
 // Function that is activated when we receive some arguments
-void NoteApplication :: ArgvReceived(int32 argc, char** argv){
-
-	// Variables
+void NoteApplication::ArgvReceived(int32 argc, char** argv) {
 	const 		char 		*cwd = "";
 	BMessage 	*message = CurrentMessage();
 
 	// Extract the cwd (current working directory)
-	if (message != NULL){
+	if (message != NULL) {
 
 		if (message->FindString("cwd",&cwd) != B_OK)
 			cwd = "";
@@ -300,13 +281,13 @@ void NoteApplication :: ArgvReceived(int32 argc, char** argv){
 	* If the path is a relative one we make it absolute
 	* Eventually we open the note(s)
 	*/
-	for (int i=1; i < argc; i++){
+	for (int i=1; i < argc; i++) {
 
-		// Variables
+	
 		BPath path;
 		entry_ref ref;
 
-		if (argv[i][0] == '/'){
+		if (argv[i][0] == '/') {
 			path.SetTo(argv[i]);
 		} else {
 			path.SetTo(cwd, argv[i]);
@@ -319,30 +300,27 @@ void NoteApplication :: ArgvReceived(int32 argc, char** argv){
 }
 
 // Function RefsReceived
-void NoteApplication :: RefsReceived(BMessage *message){
-
-	// Variables
+void NoteApplication::RefsReceived(BMessage *message) {
 	int32 index = 0;
 	entry_ref ref;
 
-	while(message->FindRef("refs", index++, &ref) == B_OK){
+	while (message->FindRef("refs", index++, &ref) == B_OK) {
 		OpenNote(&ref);
 	}
 }
 
 // Function used to receive messages
-void NoteApplication :: MessageReceived(BMessage *message){
+void NoteApplication::MessageReceived(BMessage *message) {
 
 	// Search if the message that was caputed is handled by the application
-	switch(message->what){
-
+	switch (message->what) {
 		case B_SILENT_RELAUNCH:
 			OpenNote();
-		break;
+			break;
 
 		default:
 			BApplication::MessageReceived(message);
-		break;
+			break;
 	}
 }
 
@@ -350,14 +328,14 @@ void NoteApplication :: MessageReceived(BMessage *message){
 * Function used to install the replicant in the deskbar
 * The replicant will act as the controller of the application
 */
-void NoteApplication :: _InstallReplicantInDeskbar(){
+void NoteApplication::_InstallReplicantInDeskbar() {
 
-	// Variables
+
 	image_info  info;
 	entry_ref	ref;
 
 	// If it succeded in finding itself
-	if (our_image(info) == B_OK && get_ref_for_path(info.name, &ref) == B_OK){
+	if (our_image(info) == B_OK && get_ref_for_path(info.name, &ref) == B_OK) {
 
 		// Find itself in the file system
 		BPath path(&ref);
@@ -383,10 +361,9 @@ void NoteApplication :: _InstallReplicantInDeskbar(){
 }
 
 // Main
-int main(){
-
+int main() {
 	NoteApplication myApp;
-
+	
 	myApp.Run();
 	return(0);
 }

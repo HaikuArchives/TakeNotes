@@ -20,28 +20,28 @@
 #define COLOR_CHANGED 'ccrq'
 
 // Constructor
-ColorView :: ColorView(BRect rect, char *name,BHandler *handler)
-	   	  : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW){
+ColorView::ColorView(BRect rect, char *name,BHandler *handler)
+	   	  : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW)
+{
 }
 
 // Font
-void ColorView :: AttachedToWindow() {
+void ColorView::AttachedToWindow() {
 	SetFont (be_bold_font);
 	SetFontSize(12);
 }
 
 // Drawing the window
-void ColorView :: Draw (BRect updateRect) {
-	// Variables
+void ColorView::Draw(BRect updateRect) {
 	BStringView *instructions;
 	BRect frame(10,20,600,35);
 	const char *text = "Press the button to change the color";
 
-	instructions = new BStringView (frame, "instructions", text);
+	instructions = new BStringView(frame, "instructions", text);
 	AddChild(instructions);
 }
 
 // When the user clicks...
-void ColorView :: MouseDown(BPoint point) {
-
+void ColorView::MouseDown(BPoint point)
+{
 }

@@ -17,7 +17,7 @@ NAME= TakeNotes
 TYPE= APP
 
 # 	if you plan to use localization features 
-# 	specify the application MIME siganture
+# pecify the application MIME siganture
 APP_MIME_SIG= 
 
 #	add support for new Pe and Eddie features
@@ -26,7 +26,7 @@ APP_MIME_SIG=
 #%{
 # @src->@ 
 
-#	specify the source files to use
+#pecify the source files to use
 #	full paths or paths relative to the makefile can be included
 # 	all files, regardless of directory, will have their object
 #	files created in the common object directory.
@@ -41,11 +41,11 @@ ColorMenuItem.cpp ColorView.cpp ColorWindow.cpp \
 NoteApplication.cpp NoteText.cpp NoteView.cpp NoteWindow.cpp \
 TagsWindow.cpp 
 
-#	specify the resource definition files to use
+#pecify the resource definition files to use
 #	full path or a relative path to the resource file can be used.
 RDEFS= TakeNotes.rdef
 	
-#	specify the resource files to use. 
+#pecify the resource files to use. 
 #	full path or a relative path to the resource file can be used.
 #	both RDEFS and RSRCS can be defined in the same makefile.
 RSRCS= 
@@ -55,7 +55,7 @@ RSRCS=
 
 #	end support for Pe and Eddie
 
-#	specify additional libraries to link against
+#pecify additional libraries to link against
 #	there are two acceptable forms of library specifications
 #	-	if your library follows the naming pattern of:
 #		libXXX.so or libXXX.a you can simply specify XXX
@@ -73,7 +73,7 @@ RSRCS=
 #		library: my_lib.a entry: my_lib.a or path/my_lib.a
 LIBS= be tracker $(STDCPPLIBS)
 
-#	specify additional paths to directories following the standard
+#pecify additional paths to directories following the standard
 #	libXXX.so or libXXX.a naming scheme.  You can specify full paths
 #	or paths relative to the makefile.  The paths included may not
 #	be recursive, so include all of the paths where libraries can
@@ -83,19 +83,19 @@ LIBPATHS=
 
 #	additional paths to look for system headers
 #	thes use the form: #include <header>
-#	source file directories are NOT auto-included here
+#ource file directories are NOT auto-included here
 SYSTEM_INCLUDE_PATHS = 
 
 #	additional paths to look for local headers
 #	thes use the form: #include "header"
-#	source file directories are automatically included
+#ource file directories are automatically included
 LOCAL_INCLUDE_PATHS = 
 
-#	specify the level of optimization that you desire
+#pecify the level of optimization that you desire
 #	NONE, SOME, FULL
 OPTIMIZE= 
 
-# 	specify here the codes for languages you are going
+# pecify here the codes for languages you are going
 # 	to support in this application. The default "en"
 # 	one must be provided too. "make catkeys" will recreate only
 # 	locales/en.catkeys file. Use it as template for creating other
@@ -103,36 +103,36 @@ OPTIMIZE=
 # 	in "locales" sub-directory.
 LOCALES=
 
-#	specify any preprocessor symbols to be defined.  The symbols will not
+#pecify any preprocessor symbols to be defined.  The symbols will not
 #	have their values set automatically; you must supply the value (if any)
 #	to use.  For example, setting DEFINES to "DEBUG=1" will cause the
 #	compiler option "-DDEBUG=1" to be used.  Setting DEFINES to "DEBUG"
 #	would pass "-DDEBUG" on the compiler's command line.
 DEFINES= 
 
-#	specify special warning levels
+#pecify special warning levels
 #	if unspecified default warnings will be used
 #	NONE = supress all warnings
 #	ALL = enable all warnings
 WARNINGS = 
 
-#	specify whether image symbols will be created
-#	so that stack crawls in the debugger are meaningful
+#pecify whether image symbols will be created
+#o that stack crawls in the debugger are meaningful
 #	if TRUE symbols will be created
 SYMBOLS = 
 
-#	specify debug settings
+#pecify debug settings
 #	if TRUE will allow application to be run from a source-level
 #	debugger.  Note that this will disable all optimzation.
 DEBUGGER = 
 
-#	specify additional compiler flags for all files
+#pecify additional compiler flags for all files
 COMPILER_FLAGS =
 
-#	specify additional linker flags
+#pecify additional linker flags
 LINKER_FLAGS =
 
-#	specify the version of this particular item
+#pecify the version of this particular item
 #	(for example, -app 3 4 0 d 0 -short 340 -long "340 "`echo -n -e '\302\251'`"1999 GNU GPL") 
 #	This may also be specified in a resource.
 APP_VERSION = 

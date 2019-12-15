@@ -27,7 +27,7 @@ resource app_version {
 	variety = B_APPV_BETA,
 	internal = 0,
 
-	short_info = "TakeNotes",
+short_info = "TakeNotes",
 	long_info = "TakeNotes ©2009 Ilio Catallo, Stefano Celentano, Eleonora Ciceri"
 };
 

@@ -30,10 +30,10 @@
 #define TAGS_CLOSE		'_tgc'
 
 
-TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
-		   : BWindow (BRect(300,300,700,550),"Set Tags for this note",B_TITLED_WINDOW, B_NOT_RESIZABLE){
+TagsWindow::TagsWindow(BMessage *fSaveMessage, BHandler *handler)
+		   : BWindow (BRect(300,300,700,550),"Set Tags for this note",B_TITLED_WINDOW, B_NOT_RESIZABLE) {
 
-	// Variables
+
 	fMessenger = new BMessenger(handler);
 
 	BDirectory		dir;
@@ -74,10 +74,10 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
 	fTagsView->AddChild(fUndoButton);
 
 	// Open the file from FS starting from the fSaveMessage message
-	if (fSaveMessage->FindRef("directory",&ref) == B_OK && fSaveMessage->FindString("name", &name) == B_OK){
+	if (fSaveMessage->FindRef("directory",&ref) == B_OK && fSaveMessage->FindString("name", &name) == B_OK) {
 
 		dir.SetTo(&ref);
-		if ((err = dir.InitCheck()) != B_OK){
+		if ((err = dir.InitCheck()) != B_OK) {
 			BAlert *myalert = new BAlert("ERR","errore di inizializzazione del file","OK");
 			myalert->Go();
 			exit(-1);
@@ -104,7 +104,7 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
 }
 
 // Destructor
-TagsWindow :: ~TagsWindow(){
+TagsWindow::~TagsWindow() {
 
 	if (fFile.InitCheck() == B_OK)
 		fFile.Unset();
@@ -112,11 +112,12 @@ TagsWindow :: ~TagsWindow(){
 }
 
 // FUnction that received all the messages
-void TagsWindow :: MessageReceived(BMessage *message){
+void TagsWindow::MessageReceived(BMessage *message) {
 
-	switch(message->what){
+	switch (message->what) {
 		// Message that answer to an OK request
-		case BUTTON_OK: {
+		case BUTTON_OK:
+{
 
 			// Set each attribute to text field's content
 			fFile.WriteAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, fTag1->Text(), 30);
@@ -129,7 +130,8 @@ void TagsWindow :: MessageReceived(BMessage *message){
 		break;
 
 		// Message that answer to an UNDO request
-		case BUTTON_UNDO: {
+		case BUTTON_UNDO:
+{
 
 			BAlert *alert = new BAlert("", "The tags haven't been saved yet, do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
@@ -149,24 +151,21 @@ void TagsWindow :: MessageReceived(BMessage *message){
 }
 
 // Hook function-override, we should inform NoteWindow that TagsWindow will be closed
-void TagsWindow :: Quit(){
+void TagsWindow::Quit() {
 
-	// Variables
 	BMessage *message;
 
 	// Inform NoteWindow that this window is going to be closed
-	message = new BMessage (TAGS_CLOSE);
+	message = new BMessage(TAGS_CLOSE);
 	fMessenger->SendMessage(message);
 
 	// Execute the real code
-	BWindow :: Quit();
+	BWindow::Quit();
 
 }
 
 // Function that answer to a QUIT requested
-bool TagsWindow :: QuitRequested() {
-
+bool TagsWindow::QuitRequested() {
 	Quit();
 	return true;
-
 }

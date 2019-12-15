@@ -31,10 +31,9 @@
 #define BUTTON_UNDO		'btun'
 
 // Constructor
-ChoiceView :: ChoiceView(BRect rect, char *vname,BHandler *handler)
-	   	  : BView(rect, vname, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS | B_FULL_UPDATE_ON_RESIZE){
-
-	// Variables
+ChoiceView::ChoiceView(BRect rect, char *vname,BHandler *handler)
+	   	  : BView(rect, vname, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS | B_FULL_UPDATE_ON_RESIZE)
+{
 	BStringView 	*instructions;
 	BRect 			frame(10,20,600,35);
 	BString			name;
@@ -53,7 +52,7 @@ ChoiceView :: ChoiceView(BRect rect, char *vname,BHandler *handler)
 	const char *text = "Choose the application that is related to the note:";
 
 	// Show a little instruction about what to do
-	instructions = new BStringView (frame, "instructions", text);
+	instructions = new BStringView(frame, "instructions", text);
 	instructions->SetFont(be_bold_font);
 	instructions->SetFontSize(12);
 	AddChild(instructions);
@@ -66,8 +65,7 @@ ChoiceView :: ChoiceView(BRect rect, char *vname,BHandler *handler)
    	be_roster->GetAppList(aList);
 
 	// We look for the current application instances that are running
-	for (count=0;count< aList->CountItems();count++){
-
+	for (count = 0; count < aList->CountItems(); count++) {
    	    who = (team_id)(addr_t)aList->ItemAt(count);
    	  	be_roster->GetRunningAppInfo(who,appInfo);
 
@@ -79,18 +77,18 @@ ChoiceView :: ChoiceView(BRect rect, char *vname,BHandler *handler)
    		if (name.Compare("registrar") != 0 && name.Compare("Tracker") != 0 && name.Compare("Deskbar") != 0 &&
    			name.Compare("net_server") != 0 && name.Compare("syslog_daemon") !=0 && name.Compare("input_server") != 0 &&
    			name.Compare("midi_server") !=0 && name.Compare("print_server") !=0 && name.Compare("media_server") != 0 &&
-   			name.Compare("media_addon_server") != 0 && name.Compare("afp_server") != 0 && name.Compare("debug_server") != 0){
+   			name.Compare("media_addon_server") != 0 && name.Compare("afp_server") != 0 && name.Compare("debug_server") != 0) {
 
-				// Create the message for the current radio button and fills it with the application signature
- 	 	 	  	message = new BMessage (RADIO_CHECKED);
-   	  			message->AddString("signature", appInfo->signature);
+			// Create the message for the current radio button and fills it with the application signature
+ 	 	 	message = new BMessage(RADIO_CHECKED);
+   	  		message->AddString("signature", appInfo->signature);
 
-   	  			// Show a new Radio Button and place it on the view
-   	  			frame.Set(x, y, 300, 20);
-   	  			button = new BRadioButton(frame, appInfo->signature, ref.name, message);
-   	  			AddChild(button);
+   	  		// Show a new Radio Button and place it on the view
+   	  		frame.Set(x, y, 300, 20);
+   	  		button = new BRadioButton(frame, appInfo->signature, ref.name, message);
+   	  		AddChild(button);
 
-   	  			y += 20;
+   	  		y += 20;
    	  	}
     }
 
@@ -100,14 +98,14 @@ ChoiceView :: ChoiceView(BRect rect, char *vname,BHandler *handler)
     frame.top = frame.bottom - 40;
     frame.right-= 90;
     frame.bottom -= 10;
-    fUndoButton = new BButton(frame,"undo","Undo",new BMessage(BUTTON_UNDO));
+    fUndoButton = new BButton(frame,"undo", "Undo", new BMessage(BUTTON_UNDO));
 
    	frame = Bounds();
     frame.left += 430;
     frame.top = frame.bottom - 40;
     frame.right-= 10;
     frame.bottom -= 10;
-   	fOkayButton = new BButton(frame,"ok","OK",new BMessage(BUTTON_OK));
+   	fOkayButton = new BButton(frame, "ok", "OK", new BMessage(BUTTON_OK));
 
   	// Make them children
   	AddChild(fUndoButton);
@@ -118,7 +116,7 @@ ChoiceView :: ChoiceView(BRect rect, char *vname,BHandler *handler)
 }
 
 // Font
-void ChoiceView :: AttachedToWindow() {
-	SetFont (be_bold_font);
+void ChoiceView::AttachedToWindow() {
+	SetFont(be_bold_font);
 	SetFontSize(12);
 }

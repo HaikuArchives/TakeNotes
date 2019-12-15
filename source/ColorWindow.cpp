@@ -25,13 +25,11 @@
 #define COLOR_CLOSE		'_clc'
 
 /*
-* Constructor
-* It is created with the dimensions of BRect
-*/
-ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
-			: BWindow (frame, "Change the background color", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
-
-	// Variables
+ * It is created with the dimensions of BRect
+ */
+ColorWindow::ColorWindow (BRect frame, BHandler *handler)
+			: BWindow (frame, "Change the background color", B_TITLED_WINDOW,B_NOT_RESIZABLE)
+{
 	BPoint 				 leftTop(20.0, 50.0);
 	color_control_layout matrix;
 	long 				 cellSide;
@@ -52,47 +50,46 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
 	cellSide = 16;
 
 	fColorControl = new BColorControl (leftTop, matrix, cellSide, "ColorControl");
-	fColorView -> AddChild(fColorControl);
+	fColorView->AddChild(fColorControl);
 
 	okButton = new BButton (BRect(280, 320, 350, 350), "ok", "Change", new BMessage(BUTTON_OK));
-	fColorView -> AddChild(okButton);
+	fColorView->AddChild(okButton);
 
 	undoButton = new BButton (BRect(200, 320, 270, 350), "undo", "Undo", new BMessage(BUTTON_UNDO));
-	fColorView -> AddChild(undoButton);
+	fColorView->AddChild(undoButton);
 
 	Show();
 }
 
 // Messages received by the ColorWindow
-void ColorWindow :: MessageReceived (BMessage* message) {
-	// Variables
+void ColorWindow::MessageReceived (BMessage* message) {
 	rgb_color 	userColorChoice;
 	BMessage  	*msg;
 	BAlert 		*alert;
 
 	message->PrintToStream();
 
-	switch (message -> what) {
+	switch (message->what) {
 
 		// It answer to an OK request
-		case BUTTON_OK: {
-
+		case BUTTON_OK:
+		{
 			// I catch the color that was chosen by the user
-			userColorChoice = fColorControl -> ValueAsColor();
+			userColorChoice = fColorControl->ValueAsColor();
 
 			// Sending the message...
-			msg = new BMessage (COLOR_CHANGED);
-			msg -> AddInt8 ("red", (int8)userColorChoice.red);
-			msg -> AddInt8 ("green", (int8)userColorChoice.green);
-			msg -> AddInt8 ("blue", (int8)userColorChoice.blue);
+			msg = new BMessage(COLOR_CHANGED);
+			msg->AddInt8 ("red", (int8)userColorChoice.red);
+			msg->AddInt8 ("green", (int8)userColorChoice.green);
+			msg->AddInt8 ("blue", (int8)userColorChoice.blue);
 			fMessenger->SendMessage(msg);
 			Quit();
+			break;
 		}
-		break;
 
 		// It answer to an UNDO request
-		case BUTTON_UNDO: {
-
+		case BUTTON_UNDO:
+		{
 			alert = new BAlert("", "Latest changes will be discarded", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 
@@ -100,34 +97,29 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 				// Discard all the changes
 				Quit();
 			}
+			break;
 		}
-		break;
 
 		default:
 			BWindow::MessageReceived(message);
-		break;
+			break;
 	}
 }
 
 // Hook function-override, we should inform NoteWindow that ColorWindow will be closed
-void ColorWindow :: Quit(){
-
-	// Variables
+void ColorWindow::Quit() {
 	BMessage *message;
 
 	// Inform NoteWindow that this window is going to be closed
-	message = new BMessage (COLOR_CLOSE);
+	message = new BMessage(COLOR_CLOSE);
 	fMessenger->SendMessage(message);
 
 	// Execute the real code
-	BWindow :: Quit();
+	BWindow::Quit();
 }
 
-
-
 // Function that is activated when I close the window
-bool ColorWindow :: QuitRequested() {
-
+bool ColorWindow::QuitRequested() {
 	Quit();
-	return (true);
+	return true;
 }

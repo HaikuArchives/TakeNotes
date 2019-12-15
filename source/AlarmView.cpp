@@ -15,19 +15,17 @@
 
 // Constructor
 AlarmView::AlarmView(BRect rect, char *name)
-		 : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW) {
-
+		 : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW)
+{
 }
 
-void AlarmView :: AttachedToWindow() {
-	SetFont (be_bold_font);
+void AlarmView::AttachedToWindow() {
+	SetFont(be_bold_font);
 	SetFontSize(12);
 }
 
 // Drawing the window
-void AlarmView :: Draw (BRect updateRect) {
+void AlarmView::Draw(BRect updateRect) {
 	MovePenTo(BPoint(20.0, 20.0));
-	DrawString ("Insert time and date to set an alarm");
+	DrawString("Insert time and date to set an alarm");
 }
-
-

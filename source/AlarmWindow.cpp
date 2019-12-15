@@ -32,10 +32,9 @@
 * Constructor
 * It is created with the dimensions of BRect
 */
-AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
-			: BWindow (frame, "Set alarm for this note", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
-
-	// Variables
+AlarmWindow::AlarmWindow (BRect frame, BHandler *handler)
+			: BWindow (frame, "Set alarm for this note", B_TITLED_WINDOW, B_NOT_RESIZABLE)
+{
     fMessenger = new BMessenger(handler);
 
     char	dayDefaultField[3];
@@ -58,18 +57,18 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	AddChild(fAlarmView);
 
 	// Text fields for the data
-	hour = new BTextControl(BRect(20,40,100,35),   "hour",     "hour:", hourDefaultField , NULL);
-	minute = new BTextControl(BRect(120,40,200,35), "minute",  "min:", minuteDefaultField, NULL);
-	day = new BTextControl(BRect(20,100,100,35),   "day",     "day:", dayDefaultField, NULL);
-	month = new BTextControl(BRect(120,100,200,35), "month",    "month:", monthDefaultField, NULL);
-	year = new BTextControl(BRect(220,100,300,35),  "year",     "year:", yearDefaultField, NULL);
+	hour = new BTextControl(BRect(20,40,100,35), "hour", "hour:", hourDefaultField, NULL);
+	minute = new BTextControl(BRect(120,40,200,35), "minute", "min:", minuteDefaultField, NULL);
+	day = new BTextControl(BRect(20,100,100,35), "day", "day:", dayDefaultField, NULL);
+	month = new BTextControl(BRect(120,100,200,35), "month", "month:", monthDefaultField, NULL);
+	year = new BTextControl(BRect(220,100,300,35), "year", "year:", yearDefaultField, NULL);
 
 	// Text field label: visible
-	hour -> SetDivider(hour->StringWidth("hour:") + 5);
-	minute -> SetDivider(minute->StringWidth("min:") + 5);
-	day -> SetDivider(day->StringWidth("day:") + 5);
-	month -> SetDivider(month->StringWidth("month:") + 5);
-	year -> SetDivider(year->StringWidth("year:") + 5);
+	hour->SetDivider(hour->StringWidth("hour:") + 5);
+	minute->SetDivider(minute->StringWidth("min:") + 5);
+	day->SetDivider(day->StringWidth("day:") + 5);
+	month->SetDivider(month->StringWidth("month:") + 5);
+	year->SetDivider(year->StringWidth("year:") + 5);
 
 	// Allocate the OK button
 	fButtonOk = new BButton (BRect(400,230,450,240),"ok", "Done", new BMessage(BUTTON_ALARM_OK));
@@ -86,20 +85,19 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	fAlarmView->AddChild(fButtonUndo);
 
 	Show();
-
 }
 
 // Receiving the messages
-void AlarmWindow :: MessageReceived(BMessage* message) {
-	// Variables
+void AlarmWindow::MessageReceived(BMessage* message) {
+
 	BMessage 	*msg;
 	int16 		i;
 	int32		hourN,minuteN,dayN,monthN,yearN;
 	int32 		daysInMonth;
 
-	switch (message -> what) {
-
-		case BUTTON_ALARM_OK: {
+	switch (message->what) {
+		case BUTTON_ALARM_OK:
+		{
 			/*
 			 * When I press OK I throw the message that fills the struct
 			 * We prepare the data to be included in the message
@@ -115,11 +113,11 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			* (returns null if empty) and convert to int
 			*/
 
-			hourTextField = hour -> Text();
-			minuteTextField = minute -> Text();
-			dayTextField = day -> Text();
-			monthTextField = month -> Text();
-			yearTextField = year -> Text();
+			hourTextField = hour->Text();
+			minuteTextField = minute->Text();
+			dayTextField = day->Text();
+			monthTextField = month->Text();
+			yearTextField = year->Text();
 
 			hourN = atoi(hourTextField);
 			minuteN = atoi(minuteTextField);
@@ -133,65 +131,62 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			*/
 
 			// First check if there are any values (in a correct range)
-			if( (hourN > 0 && hourN < 24)  && (minuteN > 0 && minuteN < 60) && (dayN > 0) && (monthN > 0  && monthN <= 12) && (yearN >= 1970 && yearN <= 2150) ) {
+			if ((hourN > 0 && hourN < 24)  && (minuteN > 0 && minuteN < 60) && (dayN > 0) && (monthN > 0  && monthN <= 12) && (yearN >= 1970 && yearN <= 2150)) {
 
 				// Second check if day is correct in its month
 				daysInMonth = GetDaysInMonth(monthN,yearN);
 
-				if(dayN > daysInMonth) {
+				if (dayN > daysInMonth) {
 
 					BAlert *myAlert = new BAlert("Incorrect days in month", "Insert a correct day for selected month", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-					myAlert -> Go();
+					myAlert->Go();
 					break;
 				}
 
 				// Third check if input user date/time comes after system time
-				if ( !(IsAfter(minuteN,hourN,dayN,monthN,yearN)) ) {
+				if (!(IsAfter(minuteN,hourN,dayN,monthN,yearN))) {
 
 					BAlert *myAlert = new BAlert("Previous date-time", "Date-time should come after system time", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-					myAlert -> Go();
+					myAlert->Go();
 					break;
 
 				}
 
 				// Instantiate a new message and fill it with time values
-				msg = new BMessage (ALARM_MSG);
+				msg = new BMessage(ALARM_MSG);
 
-				i = atoi (hourTextField);
-				msg -> AddInt16 ("hour", i);
+				i = atoi(hourTextField);
+				msg->AddInt16("hour", i);
 
-				i = atoi (minuteTextField);
-				msg -> AddInt16 ("minute", i);
+				i = atoi(minuteTextField);
+				msg->AddInt16("minute", i);
 
-				i = atoi (dayTextField);
-				msg -> AddInt16 ("day", i);
+				i = atoi(dayTextField);
+				msg->AddInt16("day", i);
 
-				i = atoi (monthTextField);
-				msg -> AddInt16 ("month", i);
+				i = atoi(monthTextField);
+				msg->AddInt16("month", i);
 
-				i = atoi (yearTextField);
-				msg -> AddInt16 ("year", i);
+				i = atoi(yearTextField);
+				msg->AddInt16("year", i);
 
 				// Sending the message
 				fMessenger->SendMessage(msg);
 
 				// Closing the window
 				Quit();
-
-
 			} else {
 
 				// If some values are missing show an alert
 				BAlert *myAlert = new BAlert("Missing values", "Fill all the fields with correct values", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-				myAlert -> Go();
+				myAlert->Go();
 
 			}
-
+			break;
 		}
-		break;
 
-		case BUTTON_ALARM_UNDO:{
-
+		case BUTTON_ALARM_UNDO:
+		{
 			BAlert *alert = new BAlert("", "The alarm hasn't been saved yet, do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 
@@ -199,26 +194,25 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 				// Discard all the changes
 				Quit();
 			}
-
-
+			break;
 		}
-		break;
 
 		default:
 			BWindow::MessageReceived(message);
+			break;
 	}
 }
 
 // Returns days in month
-int32 AlarmWindow :: GetDaysInMonth(int month, int year) {
-
-	switch(month) {
+int32 AlarmWindow::GetDaysInMonth(int month, int year) {
+	switch (month) {
 		case 0:
 			return 0;
 		case 1:
 			return 31;
-		case 2: {
-			if ( (year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
+		case 2:
+		{
+			if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
 				return 29;
 			else
 				return 28;
@@ -248,47 +242,33 @@ int32 AlarmWindow :: GetDaysInMonth(int month, int year) {
 	}
 }
 
-bool AlarmWindow :: IsAfter(int min, int h, int d, int mon, int y) {
-
-	// Variables
+bool AlarmWindow::IsAfter(int min, int h, int d, int mon, int y) {
 	time_t rawtime;
 	time_t userTime;
 	struct tm *timeinfo;
 
 	// Get the current time (number of seconds from the "epoch"), stores it in the timer
-	time( &rawtime );
+	time(&rawtime);
 
 	// Convert time_t time value to a tm struct
-	timeinfo = localtime ( &rawtime );
-
+	timeinfo = localtime (&rawtime);
 
 	// Fill the struct with user input
-	timeinfo -> tm_year = y - 1900;
-	timeinfo -> tm_mon = mon - 1;
-	timeinfo -> tm_mday = d;
-	timeinfo -> tm_hour = h;
-	timeinfo -> tm_min = min;
-	timeinfo -> tm_sec = 0;
-
+	timeinfo->tm_year = y - 1900;
+	timeinfo->tm_mon = mon - 1;
+	timeinfo->tm_mday = d;
+	timeinfo->tm_hour = h;
+	timeinfo->tm_min = min;
+	timeinfo->tm_sec = 0;
 
 	// Convert from struct tm to data type time_t
 	userTime = mktime(timeinfo);
 
 	// Compare user time and system time
-	if( difftime(userTime, time( &rawtime) ) > 0 ) {
-
-		return true;
-	}
-
-	else {
-
-		return false;
-	}
+	return difftime(userTime, time(&rawtime)) > 0;
 }
 
-int AlarmWindow :: GetTime(int element) {
-
-	// Variables
+int AlarmWindow::GetTime(int element) {
 	struct tm *now;
 	time_t time_value;
 
@@ -302,41 +282,37 @@ int AlarmWindow :: GetTime(int element) {
 	// Get time and date structure
 	now = localtime(&time_value);
 
-	switch(element) {
+	switch (element) {
 		case 0:
-			return now -> tm_min;
+			return now->tm_min;
 		case 1:
-			return now -> tm_hour;
+			return now->tm_hour;
 		case 2:
-			return now -> tm_mday;
+			return now->tm_mday;
 		case 3:
-			return now -> tm_mon + 1;
+			return now->tm_mon + 1;
 		case 4:
-			return now -> tm_year + 1900;
+			return now->tm_year + 1900;
 		default:
 			return 0;
-
 	}
 }
 
-void AlarmWindow :: Quit(){
+void AlarmWindow::Quit() {
 
-	// Variables
 	BMessage *message;
 
 	// Inform NoteWindow that this window is going to be closed
-	message = new BMessage (ALARM_CLOSE);
+	message = new BMessage(ALARM_CLOSE);
 	fMessenger->SendMessage(message);
 
 	// Execute the real code
-	BWindow :: Quit();
-
+	BWindow::Quit();
 }
 
 
 // If quit is requested send an ALARM_CLOSE message
-bool AlarmWindow :: QuitRequested () {
-
+bool AlarmWindow::QuitRequested () {
 	Quit();
 	return true;
 }

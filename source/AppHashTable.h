@@ -20,7 +20,7 @@
 
 // Structure of a node
 struct Hash {
-	BString	signature;
+	BString signature;
 	BString	notes[20];
 	int		numNotes;
 	Hash	*nextHash;
@@ -39,7 +39,7 @@ class AppHashTable {
 				char*	GetSignature (int);
 				int		GetNumNotes(BString);
 				int		GetNumSignatures();
-				bool	HasElement();
+				bool	HasElement() const;
 				void	PrintToStream();
 
 	private:

@@ -55,7 +55,7 @@ class NoteView : public BView {
 
 
 			void			SetReplicated(bool flag);
- 			bool			GetReplicated();
+ 			bool			GetReplicated() const;
 
 
 	private:

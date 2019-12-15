@@ -24,10 +24,10 @@ class ColorView : public BView {
 
 	public:
 
-					 ColorView (BRect frame, char *name, BHandler *handler);
-		virtual void AttachedToWindow ();
-		virtual void Draw(BRect updateRect);
-		virtual void MouseDown(BPoint point);
+						ColorView (BRect frame, char *name, BHandler *handler);
+		virtual void	AttachedToWindow ();
+		virtual void	Draw(BRect updateRect);
+		virtual void	MouseDown(BPoint point);
 };
 
 #endif

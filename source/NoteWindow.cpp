@@ -521,7 +521,7 @@ status_t NoteWindow :: Save(BMessage *message) {
 		delete fSaveMessage;
 		fSaveMessage = new BMessage(*message);
 	}
-	
+
 	fIsDirty = false;
 	if (fQuitAfterSave)
 		QuitRequested();

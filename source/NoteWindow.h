@@ -60,7 +60,7 @@ class NoteWindow : public BWindow {
 			virtual void		MessageReceived(BMessage* message);
 			virtual void		Quit();
 			virtual bool		QuitRequested();
-
+					void		AboutRequested();
 					void		InitWindow();
 					void		CreateOtherWindows();
 					void		_LoadDB();

@@ -1239,8 +1239,6 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	}
 }
 
-
-
 // Closing the window
 bool NoteWindow :: QuitRequested(){
 
@@ -1248,6 +1246,7 @@ bool NoteWindow :: QuitRequested(){
 	return(true);
 }
 
+// Function that shows about window
 void NoteWindow :: AboutRequested()
 {
 	BAboutWindow* about = new BAboutWindow("TakeNotes", kSignature);
@@ -1265,7 +1264,6 @@ void NoteWindow :: AboutRequested()
 	about->AddText("Icons by Meanwhile");
 	about->Show();
 }
-	
 
 // Function that quits the window
 void NoteWindow :: Quit(){

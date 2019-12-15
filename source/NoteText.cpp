@@ -150,60 +150,6 @@ void NoteText :: InsertText(const char *text, int32 length, int32 offset, const 
 }
 
 /*
-* Hook function-override, this function shows the contextual menu only
-* if the user click with the right button
-*/
-void NoteText :: MouseDown(BPoint point){
-
-	// Variables
-	uint32 		fMouseButtons;
-	BMessage 	*currentMessage;
-
-	BPopUpMenu 	*popupmenu;
-
-	BMenuItem  	*item1;
-	BMenuItem 	*item2;
-	BMenuItem 	*item3;
-
-	BMenuItem   *selected;
-
-	// Obtain the current message from window (B_MOUSE_DOWN)
-	currentMessage = Window()->CurrentMessage();
-
-
-	if (currentMessage) {
-
-		// Extract which mouse button information from current message
-		currentMessage -> FindInt32("buttons", (int32*)&fMouseButtons);
-
-		// If mouse button is the secondary one I show the pop up menu
-		if (fMouseButtons == B_SECONDARY_MOUSE_BUTTON) {
-
-			// Instantiate pop up menu
-			popupmenu = new BPopUpMenu("popupmenu");
-
-			// Populate the pop up menu with menu items
-			popupmenu -> AddItem(item1 = new BMenuItem("Cut", new BMessage(B_CUT)));
-			popupmenu -> AddItem(item2 = new BMenuItem("Copy", new BMessage(B_COPY)));
-			popupmenu -> AddItem(item3 = new BMenuItem("Paste", new BMessage(B_PASTE)));
-
-			item1->SetTarget(this);
-			item2->SetTarget(this);
-			item3->SetTarget(this);
-
-			// Convert mouse position to screen coordinates
-			ConvertToScreen(&point);
-
-			// Show the pop up menu and get the selected item
-			selected = popupmenu -> Go(point, true, true, true);
-		}
-	}
-
-	// All the rest is handled by the superclassh method
-	BTextView::MouseDown(point);
-}
-
-/*
 * Setter function, NoteText::Archive is called several times in several different situations
 * (replicant creation, note loading, note saving). The default behaviour is to set
 * fReplicated = true everytime Archive is called, and then use this function to

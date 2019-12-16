@@ -126,10 +126,15 @@ class NoteWindow : public BWindow {
 
 		// Save panel
 		BFilePanel	*fSavePanel;
+		
+		// Open panel
+		BFilePanel	*fOpenPanel;
 
 		// Hash table
 		BFile			fDatabase;
 		AppHashTable	*fHash;
+
+		void _CreateNoteView(void);
 };
 
 #endif

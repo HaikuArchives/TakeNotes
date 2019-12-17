@@ -93,16 +93,14 @@ NoteView :: NoteView (BMessage *msg, BHandler *handler)
 	if (handler)
 		fMessenger = new BMessenger(handler);
 
-	SetBackgroundColor(ViewColor());
-
 	// Check if we are in the deskbar
 	if (be_app->GetAppInfo(&info) == B_OK && !strcasecmp(info.signature, "application/x-vnd.Be-TSKB")){
 		fInDeskbar = true;
 		fReplicated = false;
-
-	}
-	else
+	} else {
 		printf("%s\n",info.signature);
+		SetBackgroundColor(ViewColor());
+	}
 }
 
 // Destructor (actually empty, no dynamic object to destory here)
@@ -157,7 +155,7 @@ void NoteView :: InitBitmap(){
 		return;
 
 	// Load the vectorial icon into a void pointer
-	data = resources.LoadResource(B_VECTOR_ICON_TYPE,1,&size);
+	data = resources.LoadResource(B_VECTOR_ICON_TYPE, 2, &size);
 	if (data != NULL){
 
 		// Obtain the icon from the blob

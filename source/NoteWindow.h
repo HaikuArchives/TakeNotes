@@ -130,6 +130,8 @@ class NoteWindow : public BWindow {
 		// Hash table
 		BFile			fDatabase;
 		AppHashTable	*fHash;
+
+		void _CreateNoteView(void);
 };
 
 #endif

@@ -29,6 +29,7 @@
 #include <File.h>
 #include <Message.h>
 #include <MessageRunner.h>
+#include <NodeInfo.h>
 #include <Path.h>
 #include <Roster.h>
 #include <FilePanel.h>
@@ -77,48 +78,13 @@ const struct tm gettime() {
 // Constructor
 NoteWindow::NoteWindow(int32 id)
 		  : BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
-	SetSizeLimits(250, 10000, 250, 10000);
 
-	// Variables
-	BRect		frameView,
-				frameText;
-	entry_ref	*directory = NULL;
-	BRefFilter	*refFilter = NULL;
 	BString 	title("Untitled Note ");
-
-	// Initialize the messenger: the handler is the window itself
-	fMessenger = BMessenger(this);
 
 	// Init the windows to create the menu
 	InitWindow();
 
-	// Create the Alarm, Choice, Background and Tags Window
-	CreateOtherWindows();
-
-	// The main view is created
-	frameView = Bounds();
-	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
-
-	fNoteView = new NoteView (frameView, B_FOLLOW_ALL, false, this);
-
-	// Text and Scroll View
-	frameView = fNoteView -> Bounds();
-	frameView.top += 10;
-	frameView.right -= B_V_SCROLL_BAR_WIDTH;
-	frameView.bottom -= B_H_SCROLL_BAR_HEIGHT;
-	frameView.left = 0;
-	frameText = frameView;
-
-	frameText.OffsetTo(B_ORIGIN);
-	frameText.InsetBy(TEXT_INSET, TEXT_INSET);
-
-	fNoteText = new NoteText(frameView, frameText, "NoteText", this);
-	fNoteText->SetDoesUndo(true);
-	fNoteText->MakeFocus();
-	fNoteText->SetStylable(true);
-
-	// ScrollView
-	fScrollView = new BScrollView("scrollview", fNoteText, B_FOLLOW_ALL, 0, true, true, B_NO_BORDER);
+	_CreateNoteView();
 
 	// Set the title
 	title << id;
@@ -126,11 +92,10 @@ NoteWindow::NoteWindow(int32 id)
 
 	// It will be associated to the window
 	AddChild(fNoteView);
-	fNoteView -> AddChild(fScrollView);
 
 	// Creating the file panel
-	fSavePanel = new BFilePanel (B_SAVE_PANEL, new BMessenger (this), directory, B_FILE_NODE, false, NULL,
-				refFilter, false, true);
+	fSavePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, 0,
+		false);
 
 	Show();
 }
@@ -138,50 +103,41 @@ NoteWindow::NoteWindow(int32 id)
 // Construtor
 NoteWindow :: NoteWindow(entry_ref *ref)
 	: BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
-	SetSizeLimits(250, 10000, 250, 10000);
 
 	// Variables
 	BMessage 	*msg = new BMessage;
 	BFile		f;
 	status_t 	result;
-	entry_ref	*directory = NULL;
-	BRefFilter	*refFilter = NULL;
 	BAlert 		*alert;
-	BEntry 		entry(ref);
+	BEntry		entry(ref, true);	// entry of possibly linked file
 	BRect		viewRect;
-	char 		name[B_FILE_NAME_LENGTH];
-
-	// Initialize the messenger: the handler is the window itself
-	fMessenger = BMessenger(this);
+	char 		name[B_FILE_NAME_LENGTH] = "Untitled Note 0";
+	bool		isNoteFile = false;	// readable takenotes file
+	bool		isNewFile = false;
 
 	// Initialize all the "static" elements like MenuBar,Menu,MenuItems and so on
 	InitWindow();
 
-	// Create the Alarm, Choice, Background and Tags Window
-	CreateOtherWindows();
-
-	// Check if the file exists and if it is loadable
-	result = f.SetTo(ref, B_READ_ONLY);
-		switch(result){
-
-			case B_OK:
-				printf("ok\n");
-			break;
-
-			case B_BAD_VALUE:
-				printf("path nullo\n");
-			break;
-
-			case B_ENTRY_NOT_FOUND:{
-				printf("file not found\n");
-				alert = new BAlert("File Not Found","file not found", "OK");
-				alert->Go();
+	// Check if the file exists and if it is a loadable takenotes file
+	if (entry.InitCheck() == B_OK)
+		if (entry.Exists()) {
+			BNode node(&entry);
+			if (node.InitCheck() == B_OK) {
+				BNodeInfo nodeInfo(&node);
+				if (nodeInfo.InitCheck() == B_OK) {
+					char type[B_MIME_TYPE_LENGTH];
+					if (nodeInfo.GetType(type) == B_OK &&
+						strcmp(type, "application/takenotes") == 0 &&
+						f.SetTo(ref, B_READ_ONLY) == B_OK)
+						isNoteFile = true;
+				}
 			}
-			break;
-		}
+		} else
+			isNewFile = true;
 
-	// Set the message that will store the path of the current note on FS
-	fSaveMessage = new BMessage(B_SAVE_REQUESTED);
+	if (isNoteFile || isNewFile) {
+		// Set the message that will store the path of the current note on FS
+		fSaveMessage = new BMessage(B_SAVE_REQUESTED);
 
 		if (fSaveMessage){
 			// Add the required information to the fSaveMessage: the parent directory and the name of the file
@@ -200,33 +156,43 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 			fSaveMessage->AddString("name", name);
 		}
 
-	// Create the view from the flatten message stored in the FS
-	// Set the title as the name of the file
-	entry.GetName(name);
+		entry.GetName(name);
+	} else {
+		alert = new BAlert("error", "Can't open the file!", "OK");
+		alert->Go();
+	}
+
+	// Set the title of the window
 	SetTitle(name);
 
-	// Fetch the view from the file
-	msg->Unflatten(&f);
+	// Create the view from the flatten message stored in the FS
+	if (isNoteFile) {
+		// Fetch the view from the file
+		msg->Unflatten(&f);
 
-	msg->PrintToStream();
-	// Restore all the references for the NoteView's children
-	fNoteView = new NoteView(msg);
-	fScrollView = (BScrollView *)fNoteView->ChildAt(1);
-	fNoteText = (NoteText *)fScrollView->ChildAt(0);
+		msg->PrintToStream();
+		// Restore all the references for the NoteView's children
+		fNoteView = new NoteView(msg);
+		fScrollView = (BScrollView*) fNoteView->ChildAt(1);
+		fNoteText = (NoteText*) fScrollView->ChildAt(0);
 
-	// We use NoteView::Archive both for replicant,deskbar and save/load so we neeed to say clearly these sort of things :D
-	fNoteView->SetReplicated(false);
-	fNoteText->SetReplicated(false);
+		// We use NoteView::Archive both for replicant,deskbar and save/load
+		// so we neeed to say clearly these sort of things :D
+		fNoteView->SetReplicated(false);
+		fNoteText->SetReplicated(false);
 
-	fNoteText->SetHandler(this);
+		fNoteText->SetHandler(this);
 
-	// Resize the window to fit the real view size
-	viewRect = fNoteView->Bounds();
-	ResizeTo(viewRect.Width(), (viewRect.Height() + B_H_SCROLL_BAR_HEIGHT + 5));
+		// Resize the window to fit the real view size
+		viewRect = fNoteView->Bounds();
+		ResizeTo(viewRect.Width(),
+			viewRect.Height() + B_H_SCROLL_BAR_HEIGHT + 5);
+	} else
+		_CreateNoteView();
 
 	// Creating the file panel
-	fSavePanel = new BFilePanel (B_SAVE_PANEL, new BMessenger (this), directory, B_FILE_NODE, false, NULL,
-		refFilter, false, true);
+	fSavePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, 0,
+		false);
 
 	// Add the view as a child and show the window
 	AddChild(fNoteView);
@@ -240,6 +206,10 @@ NoteWindow :: ~NoteWindow(){
 
 // Initializing the window
 void NoteWindow :: InitWindow(){
+	SetSizeLimits(250, 10000, 250, 10000);
+
+	// Initialize the messenger: the handler is the window itself
+	fMessenger = BMessenger(this);
 
 	// Variables
 	BMessage	*message;
@@ -442,6 +412,8 @@ void NoteWindow :: InitWindow(){
 	// Add the menu to the window
 	AddChild(fNoteMenuBar);
 
+	// Create the Alarm, Choice, Background and Tags Window
+	CreateOtherWindows();
 }
 
 // We are trying to avoid that two instances of the same window are opened together
@@ -454,6 +426,40 @@ void NoteWindow :: CreateOtherWindows(){
 	fChoiceWindow = NULL;
 
 }
+
+
+void
+NoteWindow::_CreateNoteView(void)
+{
+	// The main view is created
+	BRect frameView = Bounds();
+	frameView.top = fNoteMenuBar->Bounds().Height() + 1;
+
+	fNoteView = new NoteView(frameView, B_FOLLOW_ALL, false, this);
+
+	// Text and Scroll View
+	frameView = fNoteView->Bounds();
+	frameView.top += 10;
+	frameView.right -= B_V_SCROLL_BAR_WIDTH;
+	frameView.bottom -= B_H_SCROLL_BAR_HEIGHT;
+	frameView.left = 0;
+
+	BRect frameText = frameView;
+
+	frameText.OffsetTo(B_ORIGIN);
+	frameText.InsetBy(TEXT_INSET, TEXT_INSET);
+
+	fNoteText = new NoteText(frameView, frameText, "NoteText", this);
+	fNoteText->SetDoesUndo(true);
+	fNoteText->MakeFocus();
+	fNoteText->SetStylable(true);
+
+	// ScrollView
+	fScrollView = new BScrollView("scrollview", fNoteText, B_FOLLOW_ALL, 0,
+		true, true, B_NO_BORDER);
+	fNoteView->AddChild(fScrollView);
+}
+
 
 // Function for the changes in the "type of font"
 void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) {

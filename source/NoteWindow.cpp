@@ -123,14 +123,13 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 		if (entry.Exists()) {
 			BNode node(&entry);
 			if (node.InitCheck() == B_OK) {
+				char type[B_MIME_TYPE_LENGTH];
 				BNodeInfo nodeInfo(&node);
-				if (nodeInfo.InitCheck() == B_OK) {
-					char type[B_MIME_TYPE_LENGTH];
-					if (nodeInfo.GetType(type) == B_OK &&
-						strcmp(type, "application/takenotes") == 0 &&
-						f.SetTo(ref, B_READ_ONLY) == B_OK)
-						isNoteFile = true;
-				}
+				if (nodeInfo.InitCheck() == B_OK &&
+					nodeInfo.GetType(type) == B_OK &&
+					strcmp(type, "application/takenotes") == 0 &&
+					f.SetTo(ref, B_READ_ONLY) == B_OK)
+					isNoteFile = true;
 			}
 		} else
 			isNewFile = true;

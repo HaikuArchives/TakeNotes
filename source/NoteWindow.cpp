@@ -55,8 +55,9 @@
 #define GO_TO_LINK 			'gtlk'
 #define ABOUT 				'bout'
 #define CHECK_ALARM 		'chal'
-#define SAVE_AS 			'svas'
+#define OPEN				'open'
 #define SAVE				'save'
+#define SAVE_AS 			'svas'
 #define QUIT_APPL 			'qtpp'
 #define CHOOSE_APPL 		'cspp'
 #define RADIO_CHECKED 		'rdck'
@@ -93,9 +94,14 @@ NoteWindow::NoteWindow(int32 id)
 	// It will be associated to the window
 	AddChild(fNoteView);
 
-	// Creating the file panel
+	// Creating the file panels
+	// Save file panel
 	fSavePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, 0,
 		false);
+
+	// Open file panel
+	fOpenPanel = new BFilePanel (B_OPEN_PANEL, new BMessenger (this), NULL, B_FILE_NODE, false, NULL,
+		&fNoteRefFilter);
 
 	Show();
 }
@@ -189,9 +195,14 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 	} else
 		_CreateNoteView();
 
-	// Creating the file panel
+	// Creating the file panels
+	// Save file panel
 	fSavePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, 0,
 		false);
+
+	// Open file panel
+	fOpenPanel = new BFilePanel (B_OPEN_PANEL, new BMessenger (this), NULL, B_FILE_NODE, false, NULL,
+		&fNoteRefFilter);
 
 	// Add the view as a child and show the window
 	AddChild(fNoteView);
@@ -200,7 +211,8 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 
 // Destructor
 NoteWindow :: ~NoteWindow(){
-
+	delete fSavePanel;
+	delete fOpenPanel;
 }
 
 // Initializing the window
@@ -275,8 +287,10 @@ void NoteWindow :: InitWindow(){
 	/*************** Menu Item ***************/
 
 	// File menu
-	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save as" B_UTF8_ELLIPSIS, 	new BMessage(SAVE_AS), 'S', B_SHIFT_KEY));
-	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save", 	new BMessage(SAVE), 'S'));
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Open" B_UTF8_ELLIPSIS, new BMessage(OPEN), 'O'));
+	fFileMenu -> AddSeparatorItem();
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save", new BMessage(SAVE), 'S'));
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save as" B_UTF8_ELLIPSIS, new BMessage(SAVE_AS), 'S', B_SHIFT_KEY));
 	fFileMenu -> AddSeparatorItem();
 	fFileMenu -> AddItem (fQuitItem = new BMenuItem ("Quit",	new BMessage (QUIT_APPL), 'Q'));
 
@@ -726,6 +740,12 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	// Receiving the messages
 	switch (message -> what) {
 
+		// Open a note
+		case OPEN: {
+			fOpenPanel -> Show();
+			break;
+		}
+
 		// Show the panel that allows to save the note
 		case SAVE_AS: {
 
@@ -754,6 +774,15 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 		}
 		break;
+
+		// Open a note
+		case B_REFS_RECEIVED: {
+			entry_ref ref;
+			if (message -> FindRef("refs", &ref) == B_OK)
+				note_app -> OpenNote(&ref);
+		}
+		break;
+
 
 		// Close the application
 		case QUIT_APPL: {

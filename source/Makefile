@@ -38,8 +38,8 @@ SRCS= AlarmView.cpp AlarmWindow.cpp \
 AppHashTable.cpp \
 ChoiceView.cpp ChoiceWindow.cpp \
 ColorMenuItem.cpp ColorView.cpp ColorWindow.cpp \
-NoteApplication.cpp NoteText.cpp NoteView.cpp NoteWindow.cpp \
-TagsWindow.cpp 
+NoteApplication.cpp NoteRefFilter.cpp NoteText.cpp NoteView.cpp NoteWindow.cpp \
+TagsWindow.cpp
 
 #	specify the resource definition files to use
 #	full path or a relative path to the resource file can be used.

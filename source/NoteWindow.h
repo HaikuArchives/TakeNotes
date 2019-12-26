@@ -16,13 +16,14 @@
 #ifndef NOTE_WINDOW_H
 #define NOTE_WINDOW_H
 
-// Out libraries
+// Our libraries
 #include "NoteView.h"
 #include "NoteText.h"
 #include "ColorWindow.h"
 #include "AlarmWindow.h"
 #include "ChoiceWindow.h"
 #include "TagsWindow.h"
+#include "NoteRefFilter.h"
 
 // Other Libraries
 #include <Window.h>
@@ -126,6 +127,12 @@ class NoteWindow : public BWindow {
 
 		// Save panel
 		BFilePanel	*fSavePanel;
+		
+		// Open panel
+		BFilePanel	*fOpenPanel;
+
+		// Ref filter
+		NoteRefFilter	fNoteRefFilter;
 
 		// Hash table
 		BFile			fDatabase;

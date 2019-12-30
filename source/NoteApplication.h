@@ -17,6 +17,7 @@
 #define NOTE_APPLICATION_H
 
 #include "NoteWindow.h"
+#include "NoteRefFilter.h"
 
 #include <Application.h>
 #include <String.h>
@@ -29,22 +30,23 @@ class NoteApplication : public BApplication {
 	public:
 
 							NoteApplication();
+							~NoteApplication();
+
 		virtual void		ArgvReceived(int32 argc, char** argv);
-		virtual void		RefsReceived(BMessage *message);
-		virtual void		MessageReceived(BMessage *message);
+		virtual void		RefsReceived(BMessage* message);
+		virtual void		MessageReceived(BMessage* message);
 		virtual void		ReadyToRun();
 
 				void		_InstallReplicantInDeskbar();
 
-				void 		OpenNote();
-				void		OpenNote(entry_ref *ref);
+				void		OpenNote(entry_ref* ref = NULL);
 				void		CloseNote();
 				status_t	CheckMime();
-
 	private:
 
 		int32		fWindowCount;
-		int32		fWindowCountUntitled;
+		BFilePanel	*fOpenPanel;
+		NoteRefFilter	fNoteRefFilter;
 
 };
 

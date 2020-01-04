@@ -453,8 +453,8 @@ NoteWindow::_CreateNoteView(void)
 	// Text and Scroll View
 	frameView = fNoteView->Bounds();
 	frameView.top += 10;
-	frameView.right -= B_V_SCROLL_BAR_WIDTH;
-	frameView.bottom -= B_H_SCROLL_BAR_HEIGHT;
+	frameView.right -= B_V_SCROLL_BAR_WIDTH + 1;
+	frameView.bottom -= B_H_SCROLL_BAR_HEIGHT + 1;
 	frameView.left = 0;
 
 	BRect frameText = frameView;

@@ -40,8 +40,9 @@
 #include <stdio.h>
 
 // Constants
-#define COLOR_CHANGED 	'ccrq'
+#define COLOR_CHANGED	'ccrq'
 #define FONT_BOLD 		'fntb'
+#define OPEN			'open'
 
 // Global variables
 NoteApplication *note_app;
@@ -88,8 +89,17 @@ NoteApplication :: NoteApplication()
 
 	// Private data members initialization
 	fWindowCount = 0;
-	fWindowCountUntitled = 0;
 	note_app = this;
+
+	// Create the file open panel
+	fOpenPanel = new BFilePanel(B_OPEN_PANEL, NULL, NULL, B_FILE_NODE, true,
+		NULL, &fNoteRefFilter);
+}
+
+// Destructor
+NoteApplication::~NoteApplication()
+{
+	delete fOpenPanel;
 }
 
 // Function ReadyToRun
@@ -256,16 +266,32 @@ status_t NoteApplication :: CheckMime(){
 }
 
 // Function used to open a note, counting how many notes are opened
-void NoteApplication :: OpenNote(){
+void
+NoteApplication::OpenNote(entry_ref *ref)
+{
 
-	new NoteWindow(fWindowCountUntitled++);
-	fWindowCount++;		// Count of the notes
-}
+	if (ref == NULL) {
+		new NoteWindow();
+		fWindowCount++;
+		return;
+	}
 
-// Another function "OpenNote"
-void NoteApplication :: OpenNote(entry_ref *ref){
+	entry_ref linkedRef;
+	BEntry entry(ref, true);
+	if(entry.InitCheck() != B_OK || !entry.Exists() ||
+			entry.GetRef(&linkedRef) != B_OK)
+		return;
 
-	new NoteWindow(ref);
+	for (int32 i = 0; i < CountWindows(); i++) {
+		NoteWindow *noteWin = dynamic_cast<NoteWindow*>(WindowAt(i));
+		if (noteWin == NULL || noteWin->fRef == NULL ||
+			*(noteWin->fRef) != linkedRef)
+			continue;
+
+		noteWin->Activate();
+		return;
+	}
+	new NoteWindow(&linkedRef);
 	fWindowCount++;
 }
 
@@ -335,6 +361,10 @@ void NoteApplication :: MessageReceived(BMessage *message){
 
 	// Search if the message that was caputed is handled by the application
 	switch(message->what){
+
+		case OPEN:
+			fOpenPanel->Show();
+		break;
 
 		case B_SILENT_RELAUNCH:
 			OpenNote();

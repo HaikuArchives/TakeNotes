@@ -77,38 +77,35 @@ const struct tm gettime() {
 }
 
 // Constructor
-NoteWindow::NoteWindow(int32 id)
-		  : BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
-
-	BString 	title("Untitled Note ");
+NoteWindow::NoteWindow()
+	:
+	BWindow(BRect(100, 100, 350, 350), "Untitled", B_DOCUMENT_WINDOW,
+		B_ASYNCHRONOUS_CONTROLS),
+	fRef(NULL)
+{
 
 	// Init the windows to create the menu
 	InitWindow();
 
 	_CreateNoteView();
 
-	// Set the title
-	title << id;
-	SetTitle(title.String());
-
 	// It will be associated to the window
 	AddChild(fNoteView);
 
-	// Creating the file panels
-	// Save file panel
+	// Create the save file panel
 	fSavePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, 0,
 		false);
-
-	// Open file panel
-	fOpenPanel = new BFilePanel (B_OPEN_PANEL, new BMessenger (this), NULL, B_FILE_NODE, false, NULL,
-		&fNoteRefFilter);
 
 	Show();
 }
 
 // Construtor
 NoteWindow :: NoteWindow(entry_ref *ref)
-	: BWindow (BRect(100,100,350,350) , "TakeNotes", B_DOCUMENT_WINDOW, B_ASYNCHRONOUS_CONTROLS){
+	:
+	BWindow(BRect(100, 100, 350, 350), "Untitled", B_DOCUMENT_WINDOW,
+		B_ASYNCHRONOUS_CONTROLS),
+	fRef(new entry_ref(*ref))
+{
 
 	// Variables
 	BMessage 	*msg = new BMessage;
@@ -117,7 +114,7 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 	BAlert 		*alert;
 	BEntry		entry(ref, true);	// entry of possibly linked file
 	BRect		viewRect;
-	char 		name[B_FILE_NAME_LENGTH] = "Untitled Note 0";
+	char 		name[B_FILE_NAME_LENGTH] = "Untitled";
 	bool		isNoteFile = false;	// readable takenotes file
 	bool		isNewFile = false;
 
@@ -195,14 +192,9 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 	} else
 		_CreateNoteView();
 
-	// Creating the file panels
-	// Save file panel
+	// Create the save file panel
 	fSavePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, 0,
 		false);
-
-	// Open file panel
-	fOpenPanel = new BFilePanel (B_OPEN_PANEL, new BMessenger (this), NULL, B_FILE_NODE, false, NULL,
-		&fNoteRefFilter);
 
 	// Add the view as a child and show the window
 	AddChild(fNoteView);
@@ -211,8 +203,8 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 
 // Destructor
 NoteWindow :: ~NoteWindow(){
+	delete fRef;
 	delete fSavePanel;
-	delete fOpenPanel;
 }
 
 // Initializing the window
@@ -288,6 +280,7 @@ void NoteWindow :: InitWindow(){
 
 	// File menu
 	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Open" B_UTF8_ELLIPSIS, new BMessage(OPEN), 'O'));
+	fSaveItem -> SetTarget(note_app);
 	fFileMenu -> AddSeparatorItem();
 	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save", new BMessage(SAVE), 'S'));
 	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save as" B_UTF8_ELLIPSIS, new BMessage(SAVE_AS), 'S', B_SHIFT_KEY));
@@ -513,6 +506,8 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 // Function that saves the note
 status_t NoteWindow :: Save(BMessage *message) {
 	// Variables
+	BDirectory	dir;
+	BEntry		entry;
 	entry_ref 	ref;
 	const char 	*name;
 	status_t 	err;
@@ -527,6 +522,22 @@ status_t NoteWindow :: Save(BMessage *message) {
 	if ((err = message->FindRef("directory",&ref)) != B_OK)
 		return err;
 	if ((err = message -> FindString("name", &name)) != B_OK)
+		return err;
+
+	// Set fRef
+	err = dir.SetTo(&ref);
+	if (err != B_OK)
+		return err;
+
+	err = entry.SetTo(&dir, name);
+	if (err != B_OK)
+		return err;
+
+	if (fRef == NULL)
+		fRef = new entry_ref;
+
+	err = entry.GetRef(fRef);
+	if (err != B_OK)
 		return err;
 
 	// Setting the title
@@ -740,12 +751,6 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	// Receiving the messages
 	switch (message -> what) {
 
-		// Open a note
-		case OPEN: {
-			fOpenPanel -> Show();
-			break;
-		}
-
 		// Show the panel that allows to save the note
 		case SAVE_AS: {
 
@@ -774,15 +779,6 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 		}
 		break;
-
-		// Open a note
-		case B_REFS_RECEIVED: {
-			entry_ref ref;
-			if (message -> FindRef("refs", &ref) == B_OK)
-				note_app -> OpenNote(&ref);
-		}
-		break;
-
 
 		// Close the application
 		case QUIT_APPL: {

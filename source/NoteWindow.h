@@ -23,7 +23,6 @@
 #include "AlarmWindow.h"
 #include "ChoiceWindow.h"
 #include "TagsWindow.h"
-#include "NoteRefFilter.h"
 
 // Other Libraries
 #include <Window.h>
@@ -55,8 +54,8 @@ struct AlarmData {
 class NoteWindow : public BWindow {
 
 	public:
-								NoteWindow(int32 id);
-								NoteWindow(entry_ref *ref);
+								NoteWindow();
+								NoteWindow(entry_ref* ref);
 								~NoteWindow();
 			virtual void		MessageReceived(BMessage* message);
 			virtual void		Quit();
@@ -68,6 +67,8 @@ class NoteWindow : public BWindow {
 					void 		SetFontStyle (const char* fontFamily, const char *fontStyle);
 					status_t	Save (BMessage*);
 					status_t	_SaveDB(const char* signature);
+
+		entry_ref	*fRef;
 
 	private:
 
@@ -128,12 +129,6 @@ class NoteWindow : public BWindow {
 		// Save panel
 		BFilePanel	*fSavePanel;
 		
-		// Open panel
-		BFilePanel	*fOpenPanel;
-
-		// Ref filter
-		NoteRefFilter	fNoteRefFilter;
-
 		// Hash table
 		BFile			fDatabase;
 		AppHashTable	*fHash;

@@ -66,13 +66,12 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 
 		// We don't have to add the dragger if the view is in the deskbar
 		SetViewColor(254,254,92,255);
-	//	dragger = new BDragger(BRect(frame.right-B_V_SCROLL_BAR_WIDTH-8,frame.bottom-B_H_SCROLL_BAR_HEIGHT-8,frame.right-B_V_SCROLL_BAR_WIDTH-1,frame.bottom-B_H_SCROLL_BAR_HEIGHT-1),this,B_FOLLOW_LEFT|B_FOLLOW_BOTTOM);
-	//	dragger = new BDragger(BRect(69,69,76,76), this, B_FOLLOW_LEFT|B_FOLLOW_BOTTOM);
-		dragger = new BDragger(BRect(frame.right-22, frame.bottom-44, frame.right-15, frame.bottom-37), this, B_FOLLOW_ALL_SIDES);
+		dragger = new BDragger(
+		BRect(	Bounds().right - B_V_SCROLL_BAR_WIDTH - 8, Bounds().bottom - B_H_SCROLL_BAR_HEIGHT - 8, 
+				Bounds().right - B_V_SCROLL_BAR_WIDTH - 1, Bounds().bottom - B_H_SCROLL_BAR_HEIGHT - 1), 
+		this, B_FOLLOW_ALL_SIDES);
 		AddChild(dragger);
 		dragger->SetViewColor(ViewColor());
-	//	SetViewColor(B_TRANSPARENT_COLOR); //Stupid testing funtion thingy.
-
 	} else {
 
 		fReplicated = false;

@@ -4,6 +4,7 @@
 // System libraries
 #include <NodeInfo.h>
 
+#include <string.h>
 
 // Filter hook method
 bool

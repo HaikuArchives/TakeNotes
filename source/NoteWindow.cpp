@@ -1298,6 +1298,7 @@ void NoteWindow :: AboutRequested()
 // Function that quits the window
 void NoteWindow :: Quit(){
 
+	fNoteView->RemoveSelf();
 	note_app->CloseNote();
 	BWindow::Quit();
 

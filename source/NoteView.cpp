@@ -66,7 +66,10 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 
 		// We don't have to add the dragger if the view is in the deskbar
 		SetViewColor(254,254,92,255);
-		dragger = new BDragger(BRect(0,0,7,7),this,B_FOLLOW_NONE);
+		int xMax = Bounds().RightBottom().x - B_V_SCROLL_BAR_WIDTH - 1;
+		int yMax = Bounds().RightBottom().y - B_H_SCROLL_BAR_HEIGHT - 1;
+		dragger = new BDragger(BRect(xMax-7,yMax-7,xMax,yMax),
+			this,B_FOLLOW_ALL_SIDES);
 		AddChild(dragger);
 		dragger->SetViewColor(ViewColor());
 

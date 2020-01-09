@@ -3,6 +3,8 @@
 
 // System libraries
 #include <NodeInfo.h>
+
+// Header for strcmp
 #include <string.h>
 
 // Filter hook method

@@ -65,8 +65,11 @@ NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *
 	if (!inDeskbar){
 
 		// We don't have to add the dragger if the view is in the deskbar
-		SetViewColor(254,254,92,255);
-		dragger = new BDragger(BRect(0,0,7,7),this,B_FOLLOW_NONE);
+		SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		BRect rect(Bounds());
+		rect.left = rect.right - 7;
+		rect.top = rect.bottom - 7;
+		dragger = new BDragger(rect, this, B_FOLLOW_BOTTOM | B_FOLLOW_RIGHT);
 		AddChild(dragger);
 		dragger->SetViewColor(ViewColor());
 
@@ -99,7 +102,6 @@ NoteView :: NoteView (BMessage *msg, BHandler *handler)
 		fReplicated = false;
 	} else {
 		printf("%s\n",info.signature);
-		SetBackgroundColor(ViewColor());
 	}
 }
 
@@ -608,10 +610,6 @@ bool NoteView :: GetReplicated(){
 // Set the background color of the view
 void NoteView :: SetBackgroundColor(rgb_color color){
 
-	// Change NoteView and NoteView's dragger color
-	SetViewColor(color);
-	ChildAt(0)->SetViewColor(ViewColor());
-
 	// Find the text view and change the color
 	if (FindView("NoteText") != NULL){
 
@@ -619,8 +617,6 @@ void NoteView :: SetBackgroundColor(rgb_color color){
 
 		// Tell the view to refresh itself
 		FindView("NoteText")->Invalidate();
-		ChildAt(0)->Invalidate();
-		Invalidate();
 	}
 }
 

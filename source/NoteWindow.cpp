@@ -176,7 +176,7 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 		// Restore all the references for the NoteView's children
 		fNoteView = new NoteView(msg);
 		fScrollView = (BScrollView*) fNoteView->ChildAt(1);
-		fNoteText = (NoteText*) fScrollView->ChildAt(0);
+		fNoteText = (NoteText*) fScrollView->ChildAt(2);
 
 		// We use NoteView::Archive both for replicant,deskbar and save/load
 		// so we neeed to say clearly these sort of things :D

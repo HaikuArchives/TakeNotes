@@ -79,7 +79,7 @@ const struct tm gettime() {
 // Constructor
 NoteWindow::NoteWindow()
 	:
-	BWindow(BRect(100, 100, 350, 350), "Untitled", B_DOCUMENT_WINDOW,
+	BWindow(BRect(100, 100, 350, 350), "Untitled", B_TITLED_WINDOW,
 		B_ASYNCHRONOUS_CONTROLS),
 	fRef(NULL)
 {
@@ -102,7 +102,7 @@ NoteWindow::NoteWindow()
 // Construtor
 NoteWindow :: NoteWindow(entry_ref *ref)
 	:
-	BWindow(BRect(100, 100, 350, 350), "Untitled", B_DOCUMENT_WINDOW,
+	BWindow(BRect(100, 100, 350, 350), "Untitled", B_TITLED_WINDOW,
 		B_ASYNCHRONOUS_CONTROLS),
 	fRef(new entry_ref(*ref))
 {
@@ -177,18 +177,21 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 		fNoteView = new NoteView(msg);
 		fScrollView = (BScrollView*) fNoteView->ChildAt(1);
 		fNoteText = (NoteText*) fScrollView->ChildAt(2);
-
+    
 		// We use NoteView::Archive both for replicant,deskbar and save/load
 		// so we neeed to say clearly these sort of things :D
 		fNoteView->SetReplicated(false);
-		fNoteText->SetReplicated(false);
 
-		fNoteText->SetHandler(this);
+		fNoteText = dynamic_cast<NoteText*>(fScrollView->Target());
+		if (fNoteText != NULL) {
+			fNoteText->SetReplicated(false);
+			fNoteText->SetHandler(this);
+		}
 
 		// Resize the window to fit the real view size
 		viewRect = fNoteView->Bounds();
 		ResizeTo(viewRect.Width(),
-			viewRect.Height() + B_H_SCROLL_BAR_HEIGHT + 5);
+			viewRect.Height() + fNoteMenuBar->Bounds().Height() + 1);
 	} else
 		_CreateNoteView();
 

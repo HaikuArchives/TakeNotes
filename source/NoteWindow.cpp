@@ -242,6 +242,9 @@ void NoteWindow :: InitWindow(){
 				color;
 	rgb_color   colors[] = {black, red, green, blue, yellow};
 
+	fQuitAfterSave = false;
+	fIsDirty = false;
+
 	//Initialize the fSaveMessage
 	fSaveMessage = NULL;
 
@@ -553,6 +556,10 @@ status_t NoteWindow :: Save(BMessage *message) {
 		fSaveMessage = new BMessage(*message);
 	}
 
+	fIsDirty = false;
+	if (fQuitAfterSave)
+		QuitRequested();
+
 	return err;
 }
 
@@ -784,7 +791,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		// Close the application
 		case QUIT_APPL: {
 
-			Quit();
+			QuitRequested();
 
 		}
 		break;
@@ -851,6 +858,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				fUndoItem -> SetEnabled(true);
 				fRedoFlag = false;
 		    }
+		    fIsDirty = true;
 		}
 		break;
 
@@ -861,6 +869,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				fNoteText -> GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
 				fNoteText -> SetFontAndColor (&font, B_FONT_SIZE);
+				fIsDirty = true;
 			}
 
 		}
@@ -879,6 +888,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			// Setting a different color for the font
 			fNoteText -> GetFontAndColor(&font, &sameProperties);
 			fNoteText -> SetFontAndColor(&font,0,&colore);
+			fIsDirty = true;
 
 		}
 		break;
@@ -894,6 +904,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fCurrentFont = static_cast <BMenuItem*>(ptr);
 			fontFamily = fCurrentFont -> Label();
 			SetFontStyle (fontFamily, fontStyle);
+			fIsDirty = true;
 
 		}
 		break;
@@ -916,6 +927,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 					fontFamily = fCurrentFont -> Label();
 			}
 			SetFontStyle (fontFamily, fontStyle);
+			fIsDirty = true;
 
 		}
 		break;
@@ -1067,6 +1079,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
 			fNoteView -> SetBackgroundColor(colore);
+			fIsDirty = true;
 
 		}
 		break;
@@ -1273,8 +1286,29 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 // Closing the window
 bool NoteWindow :: QuitRequested(){
 
-	Quit();
-	return(true);
+	if (fIsDirty) {
+		BAlert* saveAlert = new BAlert("Close and save dialog",
+			"Save changes before closing?", "Cancel",
+			"Don't save", "Save",
+			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
+		saveAlert->SetShortcut(0, B_ESCAPE);
+		int32 buttonIndex = saveAlert->Go();
+		switch (buttonIndex) {
+			case 0:
+				break;
+			case 1:
+				Quit();
+				break;
+			case 2:
+				fQuitAfterSave = true;
+				if (!fSaveMessage)
+					fSavePanel->Show();
+				else
+					Save(fSaveMessage);
+				break;
+		}
+	} else
+		Quit();
 }
 
 // Function that shows about window

@@ -115,6 +115,10 @@ class NoteWindow : public BWindow {
 		bool 		fCanRedo;
 		bool 		fRedoFlag;
 
+		// Save flags
+		bool		fIsDirty;
+		bool		fQuitAfterSave;
+
 		// Data structure
 		AlarmData 	fData;
 

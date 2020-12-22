@@ -32,6 +32,8 @@
 #include <Roster.h>
 #include <Volume.h>
 #include <VolumeRoster.h>
+#include <Catalog.h>
+#include <TranslationUtils.h>
 
 #include <kernel/fs_index.h>
 #include <sys/stat.h>
@@ -43,6 +45,9 @@
 #define COLOR_CHANGED	'ccrq'
 #define FONT_BOLD 		'fntb'
 #define OPEN			'open'
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "NoteApplication"
 
 // Global variables
 NoteApplication *note_app;
@@ -112,7 +117,7 @@ void NoteApplication :: ReadyToRun(){
 	// Check if the replicant isn't already installed in the Deskbar, avoid to ask if we already opened a note
 	if (!deskbar.HasItem(kDeskbarItemName) && fWindowCount == 0){
 
-		alert = new BAlert("", "Do you want TakeNotes to live in the Deskbar?", "Don't", "Install", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert = new BAlert("", B_TRANSLATE("Do you want TakeNotes to live in the Deskbar?"), B_TRANSLATE("No thanks"), B_TRANSLATE("Install"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->SetShortcut(0, B_ESCAPE);
 		// In case we have to install it in the deskbar...
 		if (alert->Go() == 1) {

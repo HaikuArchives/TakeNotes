@@ -1,0 +1,42 @@
+1	English	application/x-vnd.TakeNotes	992719617
+Color	NoteWindow		Farbe
+NoteText	NoteWindow		NoteText
+day:	AlarmWindow		day:
+Done	AlarmWindow		Done
+Paste	NoteWindow		Paste
+Add date and time	NoteWindow		Add date and time
+month	AlarmWindow		month
+Cut	NoteWindow		Cut
+Change background color	NoteWindow		Change background color
+Insert time and date to set an alarm	AlarmView		Insert time and date to set an alarm
+Untitled	NoteWindow		Untitled
+Edit	NoteWindow		Edit
+Save	NoteWindow		Save
+File	NoteWindow		File
+Select all	NoteWindow		Select all
+Set tags	NoteWindow		Set tags
+Save as…	NoteWindow		Save as…
+hour:	AlarmWindow		hour:
+Set alarm	NoteWindow		Set alarm
+Settings	NoteWindow		Settings
+Size	NoteWindow		Size
+Set preferred application	NoteWindow		Set preferred application
+minute	AlarmWindow		minute
+Open…	NoteWindow		Open…
+Copy	NoteWindow		Copy
+hour	AlarmWindow		hour
+min:	AlarmWindow		min:
+Can't Undo	NoteWindow		Can't Undo
+Do you want TakeNotes to live in the Deskbar?	NoteApplication		Do you want TakeNotes to live in the Deskbar?
+Font	NoteWindow		Font
+About	NoteWindow		About
+year	AlarmWindow		year
+day	AlarmWindow		day
+Undo	AlarmWindow		Undo
+Install	NoteApplication		Install
+Go to the selected link	NoteWindow		Go to the selected link
+Set alarm for this note	AlarmWindow		Set alarm for this note
+Quit	NoteWindow		Quit
+month:	AlarmWindow		month:
+year:	AlarmWindow		year:
+No thanks	NoteApplication		No thanks

@@ -8,7 +8,7 @@
  *			Stefano Celentano
  *			Eleonora Ciceri
  *
- * Last revision: Ilio Catallo, 29th June 2009
+ * Last revision: thaflo, december 2020
  *
  * Description: View of the note. It can be implemented in three instances:
  *				- the view in the deskbar is the controller of the application
@@ -382,7 +382,7 @@ void NoteView :: AboutRequested(){
 	BAlert *alert;
 
 	alert = new BAlert("About TakeNotes",
-			"Copyright 2009\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile", 
+			"Copyright 2020\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\nFlorian Thaler\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile", 
 			"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 	alert->SetShortcut(0,B_ESCAPE);
 	alert->Go();

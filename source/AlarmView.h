@@ -21,7 +21,7 @@ class AlarmView : public BView {
 
 	public:
 
-						AlarmView (BRect frame, char *name);
+						AlarmView (BRect frame, const char *name);
 		virtual void 	AttachedToWindow ();
 		virtual void 	Draw(BRect updateRect);
 };

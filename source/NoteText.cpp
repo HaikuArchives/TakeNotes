@@ -28,7 +28,7 @@
 #define TEXT_INSET 10
 
 // Costructor
-NoteText :: NoteText(BRect frame, BRect frameText, char *name, BHandler *handler)
+NoteText :: NoteText(BRect frame, BRect frameText, const char *name, BHandler *handler)
 		 : BTextView(frame, name, frameText, B_FOLLOW_ALL, B_FRAME_EVENTS | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE){
 
 	// Initialization

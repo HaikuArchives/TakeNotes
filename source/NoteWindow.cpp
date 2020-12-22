@@ -33,11 +33,16 @@
 #include <Path.h>
 #include <Roster.h>
 #include <FilePanel.h>
+#include <Catalog.h>
+#include <TranslationUtils.h>
 
 // System libraries
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "NoteWindow"
 
 // Messages
 #define SET_COLOR 	'mcg'
@@ -70,6 +75,8 @@
 #define MENU_BAR_HEIGHT 18
 #define TEXT_INSET 10
 
+using namespace std;
+
 // Structures
 const struct tm gettime() {
     time_t    t=time(NULL);
@@ -79,7 +86,7 @@ const struct tm gettime() {
 // Constructor
 NoteWindow::NoteWindow()
 	:
-	BWindow(BRect(100, 100, 350, 350), "Untitled", B_TITLED_WINDOW,
+	BWindow(BRect(100, 100, 350, 350), B_TRANSLATE("Untitled"), B_TITLED_WINDOW,
 		B_ASYNCHRONOUS_CONTROLS),
 	fRef(NULL)
 {
@@ -102,7 +109,7 @@ NoteWindow::NoteWindow()
 // Construtor
 NoteWindow :: NoteWindow(entry_ref *ref)
 	:
-	BWindow(BRect(100, 100, 350, 350), "Untitled", B_TITLED_WINDOW,
+	BWindow(BRect(100, 100, 350, 350), B_TRANSLATE("Untitled"), B_TITLED_WINDOW,
 		B_ASYNCHRONOUS_CONTROLS),
 	fRef(new entry_ref(*ref))
 {
@@ -114,6 +121,7 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 	BAlert 		*alert;
 	BEntry		entry(ref, true);	// entry of possibly linked file
 	BRect		viewRect;
+	BString filename = B_TRANSLATE("Untitled");
 	char 		name[B_FILE_NAME_LENGTH] = "Untitled";
 	bool		isNoteFile = false;	// readable takenotes file
 	bool		isNewFile = false;
@@ -225,7 +233,8 @@ void NoteWindow :: InitWindow(){
 	BMenu		*sizeFont,
 				*colorFont,
 				*fontMenu;
-	char		*label;
+//	 char		*label;
+	BString label;
 	font_family plainFamily,
 	 			family;
 	font_style 	plainStyle,
@@ -264,11 +273,11 @@ void NoteWindow :: InitWindow(){
 	fNoteMenuBar = new BMenuBar(menuBarRect,"Barra del menu");
 
 	// Menu
-	fFileMenu 		= new BMenu("File");
-	fFontMenu 		= new BMenu("Font");
-	fEditMenu 		= new BMenu("Edit");
-	fSettingsMenu 	= new BMenu("Settings");
-	fAboutMenu 		= new BMenu("About");
+	fFileMenu 		= new BMenu(B_TRANSLATE("File"));
+	fFontMenu 		= new BMenu(B_TRANSLATE("Font"));
+	fEditMenu 		= new BMenu(B_TRANSLATE("Edit"));
+	fSettingsMenu 	= new BMenu(B_TRANSLATE("Settings"));
+	fAboutMenu 		= new BMenu(B_TRANSLATE("About"));
 
 	fNoteMenuBar -> AddItem (fFileMenu);
 	fNoteMenuBar -> AddItem (fEditMenu);
@@ -281,38 +290,38 @@ void NoteWindow :: InitWindow(){
 	/*************** Menu Item ***************/
 
 	// File menu
-	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Open" B_UTF8_ELLIPSIS, new BMessage(OPEN), 'O'));
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem(B_TRANSLATE("Open" B_UTF8_ELLIPSIS), new BMessage(OPEN), 'O'));
 	fSaveItem -> SetTarget(note_app);
 	fFileMenu -> AddSeparatorItem();
-	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save", new BMessage(SAVE), 'S'));
-	fFileMenu -> AddItem (fSaveItem = new BMenuItem("Save as" B_UTF8_ELLIPSIS, new BMessage(SAVE_AS), 'S', B_SHIFT_KEY));
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem(B_TRANSLATE("Save"), new BMessage(SAVE), 'S'));
+	fFileMenu -> AddItem (fSaveItem = new BMenuItem(B_TRANSLATE("Save as" B_UTF8_ELLIPSIS), new BMessage(SAVE_AS), 'S', B_SHIFT_KEY));
 	fFileMenu -> AddSeparatorItem();
-	fFileMenu -> AddItem (fQuitItem = new BMenuItem ("Quit",	new BMessage (QUIT_APPL), 'Q'));
+	fFileMenu -> AddItem (fQuitItem = new BMenuItem (B_TRANSLATE("Quit"), new BMessage (QUIT_APPL), 'Q'));
 
 	// Settings	menu
-	fSettingsMenu -> AddItem (fChangeBackgroundColorItem 	= new BMenuItem ("Change background color",		new BMessage (SET_COLOR)));
-	fSettingsMenu -> AddItem (fAddDateAndTimeItem 			= new BMenuItem ("Add date and time",			new BMessage (ADD_DATA)));
-	fSettingsMenu -> AddItem (fSetAlarmItem 				= new BMenuItem ("Set alarm", 					new BMessage (SET_ALARM)));
-	fSettingsMenu -> AddItem (fSetTagsItem 					= new BMenuItem ("Set tags",					new BMessage (SET_TAGS)));
-	fSettingsMenu -> AddItem (fSetAppItem 					= new BMenuItem ("Set preferred application",	new BMessage (SET_APP)));
-	fSettingsMenu -> AddItem (fLink 						= new BMenuItem ("Go to the selected link", 	new BMessage (GO_TO_LINK)));					
+	fSettingsMenu -> AddItem (fChangeBackgroundColorItem 	= new BMenuItem (B_TRANSLATE("Change background color"),		new BMessage (SET_COLOR)));
+	fSettingsMenu -> AddItem (fAddDateAndTimeItem 			= new BMenuItem (B_TRANSLATE("Add date and time"),			new BMessage (ADD_DATA)));
+	fSettingsMenu -> AddItem (fSetAlarmItem 				= new BMenuItem (B_TRANSLATE("Set alarm"), 					new BMessage (SET_ALARM)));
+	fSettingsMenu -> AddItem (fSetTagsItem 					= new BMenuItem (B_TRANSLATE("Set tags"),					new BMessage (SET_TAGS)));
+	fSettingsMenu -> AddItem (fSetAppItem 					= new BMenuItem (B_TRANSLATE("Set preferred application"),	new BMessage (SET_APP)));
+	fSettingsMenu -> AddItem (fLink 						= new BMenuItem (B_TRANSLATE("Go to the selected link"), 	new BMessage (GO_TO_LINK)));					
 
 	// Edit menu
-	fEditMenu 		-> AddItem (fUndoItem 		= new BMenuItem("Can't Undo", 	new BMessage(B_UNDO), 		'Z'));
+	fEditMenu 		-> AddItem (fUndoItem 		= new BMenuItem(B_TRANSLATE("Can't Undo"), 	new BMessage(B_UNDO), 		'Z'));
 	fUndoItem 		-> SetEnabled(false);		// I can't do undo without the message TEXT_CHANGED
 	fEditMenu 		-> AddSeparatorItem();
-	fEditMenu 		-> AddItem (fCutItem 		= new BMenuItem("Cut", 			new BMessage(B_CUT), 		'X'));
+	fEditMenu 		-> AddItem (fCutItem 		= new BMenuItem(B_TRANSLATE("Cut"), 			new BMessage(B_CUT), 		'X'));
 	fCutItem 		-> SetTarget(this);
-	fEditMenu 		-> AddItem (fCopyItem 		= new BMenuItem("Copy", 		new BMessage(B_COPY), 		'C'));
+	fEditMenu 		-> AddItem (fCopyItem 		= new BMenuItem(B_TRANSLATE("Copy"), 		new BMessage(B_COPY), 		'C'));
 	fCopyItem 		-> SetTarget(this);
-	fEditMenu 		-> AddItem (fPasteItem 		= new BMenuItem("Paste", 		new BMessage(B_PASTE), 		'V'));
+	fEditMenu 		-> AddItem (fPasteItem 		= new BMenuItem(B_TRANSLATE("Paste"), 		new BMessage(B_PASTE), 		'V'));
 	fPasteItem 		-> SetTarget(this);
-	fEditMenu 		-> AddItem (fSelectAllItem 	= new BMenuItem("Select all", 	new BMessage(B_SELECT_ALL), 'A'));
+	fEditMenu 		-> AddItem (fSelectAllItem 	= new BMenuItem(B_TRANSLATE("Select all"), 	new BMessage(B_SELECT_ALL), 'A'));
 	fSelectAllItem 	-> SetTarget(this);
 
 	// Font menu
 	// Font: Size
-	sizeFont 	= 	new BMenu ("Size");
+	sizeFont 	= 	new BMenu (B_TRANSLATE("Size"));
 	sizeFont 	-> 	SetRadioMode (true);
 	fFontMenu 	-> 	AddItem (sizeFont);
 	// Writing the menu...
@@ -327,7 +336,7 @@ void NoteWindow :: InitWindow(){
 	}
 
 	// Font: Color
-	colorFont =  new BMenu ("Color");
+	colorFont =  new BMenu (B_TRANSLATE("Color"));
 	colorFont -> SetRadioMode (true);
 	fFontMenu -> AddItem (colorFont);
 	// Writing the menu...
@@ -338,7 +347,7 @@ void NoteWindow :: InitWindow(){
 		message -> AddInt8 ("green", (int8)colors[i].green);
 		message -> AddInt8 ("blue", (int8)colors[i].blue);
 
-		label = NULL;
+		label = "";
 		switch (i) {
 			case 0: {
 				label = "Black";
@@ -456,7 +465,7 @@ NoteWindow::_CreateNoteView(void)
 	frameText.OffsetTo(B_ORIGIN);
 	frameText.InsetBy(TEXT_INSET, TEXT_INSET);
 
-	fNoteText = new NoteText(frameView, frameText, "NoteText", this);
+	fNoteText = new NoteText(frameView, frameText, B_TRANSLATE("NoteText"), this);
 	fNoteText->SetDoesUndo(true);
 	fNoteText->MakeFocus();
 	fNoteText->SetStylable(true);

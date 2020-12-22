@@ -12,9 +12,14 @@
  */
 
 #include "AlarmView.h"
+#include <Catalog.h>
+#include <TranslationUtils.h>
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "AlarmView"
 
 // Constructor
-AlarmView::AlarmView(BRect rect, char *name)
+AlarmView::AlarmView(BRect rect, const char *name)
 		 : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW) {
 
 }
@@ -27,7 +32,7 @@ void AlarmView :: AttachedToWindow() {
 // Drawing the window
 void AlarmView :: Draw (BRect updateRect) {
 	MovePenTo(BPoint(20.0, 20.0));
-	DrawString ("Insert time and date to set an alarm");
+	DrawString (B_TRANSLATE("Insert time and date to set an alarm"));
 }
 
 

@@ -6,11 +6,10 @@
  *
  *			Ilio Catallo
  *
- * Last revision: Ilio Catallo, 29th June 2009
- *
+ * Last revision: thaflo, december 2020
+ * 
  * Description: Header of the NoteText
  */
-
 
 #ifndef NOTE_TEXT_H
 #define NOTE_TEXT_H
@@ -28,7 +27,7 @@ class NoteText : public BTextView {
 
  	public:
 
- 								NoteText(BRect frame, BRect frameText, char *name,BHandler *handler);
+ 								NoteText(BRect frame, BRect frameText, const char *name,BHandler *handler);
  								NoteText(BMessage *message);
  							 	~NoteText();
  		static	BArchivable*	Instantiate(BMessage *msg);

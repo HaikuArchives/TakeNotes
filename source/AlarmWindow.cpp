@@ -21,6 +21,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+//translation 
+#include <Catalog.h>
+#include <TranslationUtils.h>
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "AlarmWindow"
+
+
 // Messages
 #define BUTTON_ALARM_OK 	'alok'
 #define BUTTON_ALARM_UNDO 	'alun'
@@ -33,7 +41,7 @@
 * It is created with the dimensions of BRect
 */
 AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
-			: BWindow (frame, "Set alarm for this note", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
+			: BWindow (frame, B_TRANSLATE("Set alarm for this note"), B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 
 	// Variables
     fMessenger = new BMessenger(handler);
@@ -58,11 +66,11 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	AddChild(fAlarmView);
 
 	// Text fields for the data
-	hour = new BTextControl(BRect(20,40,100,35),   "hour",     "hour:", hourDefaultField , NULL);
-	minute = new BTextControl(BRect(120,40,200,35), "minute",  "min:", minuteDefaultField, NULL);
-	day = new BTextControl(BRect(20,100,100,35),   "day",     "day:", dayDefaultField, NULL);
-	month = new BTextControl(BRect(120,100,200,35), "month",    "month:", monthDefaultField, NULL);
-	year = new BTextControl(BRect(220,100,300,35),  "year",     "year:", yearDefaultField, NULL);
+	hour = new BTextControl(BRect(20,40,100,35),   B_TRANSLATE("hour"),     B_TRANSLATE("hour:"), hourDefaultField , NULL);
+	minute = new BTextControl(BRect(120,40,200,35), B_TRANSLATE("minute"),  B_TRANSLATE("min:"), minuteDefaultField, NULL);
+	day = new BTextControl(BRect(20,100,100,35),   B_TRANSLATE("day"),  B_TRANSLATE("day:"), dayDefaultField, NULL);
+	month = new BTextControl(BRect(120,100,200,35), B_TRANSLATE("month"),    B_TRANSLATE("month:"), monthDefaultField, NULL);
+	year = new BTextControl(BRect(220,100,300,35),  B_TRANSLATE("year"),     B_TRANSLATE("year:"), yearDefaultField, NULL);
 
 	// Text field label: visible
 	hour -> SetDivider(hour->StringWidth("hour:") + 5);
@@ -72,8 +80,8 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	year -> SetDivider(year->StringWidth("year:") + 5);
 
 	// Allocate the OK button
-	fButtonOk = new BButton (BRect(400,230,450,240),"ok", "Done", new BMessage(BUTTON_ALARM_OK));
-	fButtonUndo = new BButton (BRect(340,230,390,240),"undo","Undo",new BMessage(BUTTON_ALARM_UNDO));
+	fButtonOk = new BButton (BRect(400,230,450,240),"ok", B_TRANSLATE("Done"), new BMessage(BUTTON_ALARM_OK));
+	fButtonUndo = new BButton (BRect(340,230,390,240),"undo",B_TRANSLATE("Undo"),new BMessage(BUTTON_ALARM_UNDO));
 
 	// Making all the objects part of the view
 	fAlarmView->AddChild(hour);

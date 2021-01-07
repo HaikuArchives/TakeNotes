@@ -23,6 +23,8 @@
 #include "AlarmWindow.h"
 #include "ChoiceWindow.h"
 #include "TagsWindow.h"
+#include "SettingsWindow.h"
+
 
 // Other Libraries
 #include <Window.h>
@@ -49,6 +51,12 @@ struct AlarmData {
 	int Hour;				// Alarm - Hour
 	int Minute;				// Alarm - Minute
 };
+
+status_t load_settings(BMessage* message, const char* fileName,
+					   const char* folder = NULL);
+
+status_t save_settings(BMessage* message, const char* fileName,
+					   const char* folder = NULL);
 
 // Constructor
 class NoteWindow : public BWindow {
@@ -78,6 +86,7 @@ class NoteWindow : public BWindow {
 		AlarmWindow 	*fAlarmWindow;
 		ChoiceWindow 	*fChoiceWindow;
 		TagsWindow		*fTagsWindow;
+		SettingsWindow	*fSettingsWindow;
 		BMenuBar 		*fNoteMenuBar;
 		BMenu			*fFileMenu;
 		BMenu 			*fFontMenu;
@@ -89,7 +98,10 @@ class NoteWindow : public BWindow {
 		BScrollView		*fScrollView;
 
 		// Menu Items: file menu
+		BMenuItem	*fNewItem;
 		BMenuItem	*fSaveItem;
+		BMenuItem	*fOpenItem;
+		BMenuItem	*fDeleteItem;
 		BMenuItem	*fQuitItem;
 
 		// MenuItems (Edit menu)
@@ -103,11 +115,14 @@ class NoteWindow : public BWindow {
 		// MenuItems (Settings menu)
 
 		BMenuItem 	*fChangeBackgroundColorItem;
+		BMenuItem 	*fSettingsItem;
 		BMenuItem	*fAddDateAndTimeItem;
 		BMenuItem	*fSetTagsItem;
 		BMenuItem	*fSetAppItem;
 		BMenuItem 	*fSetAlarmItem;
+		BMenuItem	*fLoadLastNote;
 		BMenuItem   *fLink;
+		BMenuItem   *fUrl;
 
 		// Undo flags
 		bool 		fUndoFlag;
@@ -120,6 +135,7 @@ class NoteWindow : public BWindow {
 
 		//Messaging
 		BMessage		*fSaveMessage;
+//		BMessage		*fSettingsMessage;
 		BMessenger 		fMessenger;
 		BMessageRunner 	*runner;
 
@@ -128,7 +144,7 @@ class NoteWindow : public BWindow {
 
 		// Save panel
 		BFilePanel	*fSavePanel;
-		
+
 		// Hash table
 		BFile			fDatabase;
 		AppHashTable	*fHash;

@@ -16,11 +16,17 @@
 #include "ColorView.h"
 #include "StringView.h"
 
+//translation 
+#include <Catalog.h>
+#include <TranslationUtils.h>
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "ColorWindow"
 // Messages
 #define COLOR_CHANGED 'ccrq'
 
 // Constructor
-ColorView :: ColorView(BRect rect, char *name,BHandler *handler)
+ColorView :: ColorView(BRect rect, const char *name,BHandler *handler)
 	   	  : BView(rect, name, B_FOLLOW_ALL, B_WILL_DRAW){
 }
 
@@ -35,7 +41,7 @@ void ColorView :: Draw (BRect updateRect) {
 	// Variables
 	BStringView *instructions;
 	BRect frame(10,20,600,35);
-	const char *text = "Press the button to change the color";
+	const char *text = B_TRANSLATE("Change the color. It will be applied immediatly.");
 
 	instructions = new BStringView (frame, "instructions", text);
 	AddChild(instructions);

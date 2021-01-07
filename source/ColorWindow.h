@@ -26,10 +26,12 @@ class ColorWindow : public BWindow {
 
 	public:
 
-					 ColorWindow(BRect frame, BHandler *handler);
+					 ColorWindow(BRect frame, BHandler *handler, rgb_color);
 		virtual bool QuitRequested();
 		virtual	void MessageReceived(BMessage*);
 		virtual void Quit();
+		const rgb_color gBgColor = {255,240,113};
+
 
 	private:
 

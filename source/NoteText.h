@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *
  * Last revision: thaflo, december 2020
- * 
+ *
  * Description: Header of the NoteText
  */
 
@@ -41,7 +41,6 @@ class NoteText : public BTextView {
  				void			SetReplicated(bool flag);
  				bool			GetReplicated();
  				void			SetHandler(BHandler *handler);
-
 
  	private:
 

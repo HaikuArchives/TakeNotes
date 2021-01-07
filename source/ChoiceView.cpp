@@ -30,6 +30,13 @@
 #define BUTTON_OK		'btok'
 #define BUTTON_UNDO		'btun'
 
+//translation 
+#include <Catalog.h>
+#include <TranslationUtils.h>
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "ChoiceView"
+
 // Constructor
 ChoiceView :: ChoiceView(BRect rect, char *vname,BHandler *handler)
 	   	  : BView(rect, vname, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS | B_FULL_UPDATE_ON_RESIZE){
@@ -100,7 +107,7 @@ ChoiceView :: ChoiceView(BRect rect, char *vname,BHandler *handler)
     frame.top = frame.bottom - 40;
     frame.right-= 90;
     frame.bottom -= 10;
-    fUndoButton = new BButton(frame,"undo","Undo",new BMessage(BUTTON_UNDO));
+    fUndoButton = new BButton(frame,"undo",B_TRANSLATE("Undo"),new BMessage(BUTTON_UNDO));
 
    	frame = Bounds();
     frame.left += 430;

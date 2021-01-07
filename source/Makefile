@@ -34,23 +34,39 @@ APP_MIME_SIG= application/x-vnd.TakeNotes
 #	if two source files with the same name (source.c or source.cpp)
 #	are included from different directories.  Also note that spaces
 #	in folder names do not work well with this makefile.
-SRCS= AlarmView.cpp AlarmWindow.cpp \
-AppHashTable.cpp \
-ChoiceView.cpp ChoiceWindow.cpp \
-ColorMenuItem.cpp ColorView.cpp ColorWindow.cpp \
-NoteApplication.cpp NoteRefFilter.cpp NoteText.cpp NoteView.cpp NoteWindow.cpp \
-TagsWindow.cpp
+SRCS = \
+	 AlarmView.cpp  \
+	 AlarmWindow.cpp  \
+	 AppHashTable.cpp  \
+	 ChoiceView.cpp  \
+	 ChoiceWindow.cpp  \
+	 ColorMenuItem.cpp  \
+	 ColorView.cpp  \
+	 ColorWindow.cpp  \
+	 NoteApplication.cpp  \
+	 NoteRefFilter.cpp  \
+	 NoteText.cpp  \
+	 NoteView.cpp  \
+	 NoteWindow.cpp  \
+	 SettingsWindow.cpp  \
+	 TagsWindow.cpp  \
+
 
 #	specify the resource definition files to use
 #	full path or a relative path to the resource file can be used.
-RDEFS= TakeNotes.rdef
+RDEFS = \
+	 TakeNotes.rdef  \
+
 	
 #	specify the resource files to use. 
 #	full path or a relative path to the resource file can be used.
 #	both RDEFS and RSRCS can be defined in the same makefile.
-RSRCS= 
+RSRCS = \
+
 
 # @<-src@ 
+#%}
+
 #%}
 
 #	end support for Pe and Eddie
@@ -71,7 +87,7 @@ RSRCS=
 #		naming scheme you need to specify the path to the library
 #		and it's name
 #		library: my_lib.a entry: my_lib.a or path/my_lib.a
-LIBS= be localestub translation tracker $(STDCPPLIBS)
+LIBS= be localestub shared translation tracker $(STDCPPLIBS)
 
 #	specify additional paths to directories following the standard
 #	libXXX.so or libXXX.a naming scheme.  You can specify full paths

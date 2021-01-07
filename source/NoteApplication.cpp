@@ -24,6 +24,7 @@
 #include <Deskbar.h>
 #include <Entry.h>
 #include <File.h>
+#include <FindDirectory.h>
 #include <IconUtils.h>
 #include <Mime.h>
 #include <Node.h>
@@ -44,7 +45,9 @@
 // Constants
 #define COLOR_CHANGED	'ccrq'
 #define FONT_BOLD 		'fntb'
+#define NEW				'new'
 #define OPEN			'open'
+#define DELETE			'dele'
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "NoteApplication"
@@ -56,6 +59,7 @@ NoteApplication *note_app;
 const char*	kSignature = "application/x-vnd.ccc-TakeNotes";
 const char*	kDeskbarSignature = "application/x-vnd.Be-TSKB";
 const char*	kDeskbarItemName = "TakeNotes";
+
 
 /*
 * This function fills the image_info image struct with the app image of itself
@@ -95,6 +99,18 @@ NoteApplication :: NoteApplication()
 	// Private data members initialization
 	fWindowCount = 0;
 	note_app = this;
+	fSettingsMessage = new BMessage();
+
+	printf("%s\n",load_settings(fSettingsMessage, "settings", "TakeNotes"));
+
+	//thaflo 2020: global settings
+	// Open the config file, if it doesn't exist we create it
+	BFile settings;
+	status_t err;
+	if ((err = settings.SetTo("/boot/home/config/settings/TakeNotes/settings", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
+		printf("%s\n",err);
+	}
+
 
 	// Create the file open panel
 	fOpenPanel = new BFilePanel(B_OPEN_PANEL, NULL, NULL, B_FILE_NODE, true,
@@ -113,26 +129,42 @@ void NoteApplication :: ReadyToRun(){
 	// Variables
 	BDeskbar	deskbar;
 	BAlert 		*alert;
+	short int	erg;
 
 	// Check if the replicant isn't already installed in the Deskbar, avoid to ask if we already opened a note
 	if (!deskbar.HasItem(kDeskbarItemName) && fWindowCount == 0){
 
-		alert = new BAlert("", B_TRANSLATE("Do you want TakeNotes to live in the Deskbar?"), B_TRANSLATE("No thanks"), B_TRANSLATE("Install"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-		alert->SetShortcut(0, B_ESCAPE);
+		alert = new BAlert("", B_TRANSLATE("Do you want TakeNotes to live in the Deskbar?"), B_TRANSLATE("Never"), B_TRANSLATE("No thanks"), B_TRANSLATE("Install"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert -> SetShortcut(0, B_ESCAPE);
+		erg = alert -> Go();
 		// In case we have to install it in the deskbar...
-		if (alert->Go() == 1) {
+		if (erg == 2) {
 			_InstallReplicantInDeskbar();
 			return;
 		}
-
+		if (erg == 1) {
+			fSettingsMessage -> SetBool("live_in_deskbar", false);
+			save_settings(fSettingsMessage, "settings", "TakeNotes");
+		}
 	}
 
 	// If there's some window opened return
 	if (fWindowCount > 0)
 		return;
+
 	// If there aren't windows opened, we open a note
-	else
+	// thaflo 2020: load defaults and last used note
+	//fSettingsMessage = new BMessage();
+	entry_ref *fRef = new entry_ref;
+
+	if(load_settings(fSettingsMessage, "settings", "TakeNotes") != B_OK) {
 		OpenNote();
+	} else {
+		if(fSettingsMessage -> FindBool("load_last_note") == TRUE)
+			fSettingsMessage -> FindRef("last_note", fRef);
+	}
+
+	OpenNote(fRef);
 }
 
 // Function CheckMime
@@ -274,7 +306,6 @@ status_t NoteApplication :: CheckMime(){
 void
 NoteApplication::OpenNote(entry_ref *ref)
 {
-
 	if (ref == NULL) {
 		new NoteWindow();
 		fWindowCount++;
@@ -284,8 +315,11 @@ NoteApplication::OpenNote(entry_ref *ref)
 	entry_ref linkedRef;
 	BEntry entry(ref, true);
 	if(entry.InitCheck() != B_OK || !entry.Exists() ||
-			entry.GetRef(&linkedRef) != B_OK)
+			entry.GetRef(&linkedRef) != B_OK) {
+		new NoteWindow();
+		fWindowCount++;
 		return;
+	}
 
 	for (int32 i = 0; i < CountWindows(); i++) {
 		NoteWindow *noteWin = dynamic_cast<NoteWindow*>(WindowAt(i));
@@ -296,7 +330,9 @@ NoteApplication::OpenNote(entry_ref *ref)
 		noteWin->Activate();
 		return;
 	}
+
 	new NoteWindow(&linkedRef);
+
 	fWindowCount++;
 }
 
@@ -305,7 +341,6 @@ void NoteApplication :: CloseNote(){
 
 	fWindowCount--;
 	if (fWindowCount == 0){
-
 		BAutolock lock(this);
 		Quit();
 	}
@@ -318,6 +353,7 @@ void NoteApplication :: ArgvReceived(int32 argc, char** argv){
 	// Variables
 	const 		char 		*cwd = "";
 	BMessage 	*message = CurrentMessage();
+	fSettingsMessage = new BMessage();
 
 	// Extract the cwd (current working directory)
 	if (message != NULL){
@@ -345,16 +381,26 @@ void NoteApplication :: ArgvReceived(int32 argc, char** argv){
 
 		get_ref_for_path(path.Path(), &ref);
 		// Open a note
+		entry_ref *fRef = new entry_ref;
+		fRef = &ref;
+
+		// load settings so we can set the appropriate mark on the "open last note on startup" menu
+		if (load_settings(fSettingsMessage, "settings", "TakeNotes") != B_OK)
+			printf("couldn't load settings\n");
+
 		OpenNote(&ref);
 	}
 }
 
 // Function RefsReceived
 void NoteApplication :: RefsReceived(BMessage *message){
-
 	// Variables
 	int32 index = 0;
 	entry_ref ref;
+	fSettingsMessage = new BMessage();
+
+	if (load_settings(fSettingsMessage, "settings", "TakeNotes") != B_OK)
+			printf("couldn't load settings\n");
 
 	while(message->FindRef("refs", index++, &ref) == B_OK){
 		OpenNote(&ref);
@@ -363,12 +409,20 @@ void NoteApplication :: RefsReceived(BMessage *message){
 
 // Function used to receive messages
 void NoteApplication :: MessageReceived(BMessage *message){
-
 	// Search if the message that was caputed is handled by the application
 	switch(message->what){
 
 		case OPEN:
 			fOpenPanel->Show();
+		break;
+
+		case DELETE:
+			printf("todo: delete note\n");
+		break;
+
+		case NEW:
+			new NoteWindow();
+			fWindowCount++;
 		break;
 
 		case B_SILENT_RELAUNCH:
@@ -424,4 +478,54 @@ int main(){
 
 	myApp.Run();
 	return(0);
+}
+
+
+//stolen from LaunchBox->support.cpp
+//thanks Stippi!
+
+status_t
+load_settings(BMessage* message, const char* fileName, const char* folder)
+{
+	status_t ret = B_BAD_VALUE;
+	if (message) {
+		BPath path;
+		if ((ret = find_directory(B_USER_SETTINGS_DIRECTORY, &path)) == B_OK) {
+			// passing folder is optional
+			if (folder)
+				ret = path.Append( folder );
+			if (ret == B_OK && (ret = path.Append(fileName)) == B_OK ) {
+				BFile file(path.Path(), B_READ_ONLY);
+				if ((ret = file.InitCheck()) == B_OK) {
+					ret = message->Unflatten(&file);
+					file.Unset();
+				}
+			}
+		}
+	}
+	return ret;
+}
+
+
+status_t
+save_settings(BMessage* message, const char* fileName, const char* folder)
+{
+	status_t ret = B_BAD_VALUE;
+	if (message) {
+		BPath path;
+		if ((ret = find_directory(B_USER_SETTINGS_DIRECTORY, &path)) == B_OK) {
+			// passing folder is optional
+			if (folder && (ret = path.Append(folder)) == B_OK)
+				ret = create_directory(path.Path(), 0777);
+			if (ret == B_OK && (ret = path.Append(fileName)) == B_OK) {
+				BFile file(path.Path(), B_WRITE_ONLY | B_CREATE_FILE
+					| B_ERASE_FILE);
+				if ((ret = file.InitCheck()) == B_OK) {
+					ret = message->Flatten(&file);
+					file.Unset();
+				}
+			}
+		}
+	}
+	return ret;
 }

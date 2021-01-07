@@ -79,7 +79,6 @@ SettingsWindow :: SettingsWindow (BRect frame, BHandler *handler, rgb_color colo
 										| B_NAVIGABLE | B_PULSE_NEEDED);
 	fCalendarView->ResizeToPreferred();
 	fColorView->AddChild(fCalendarView);
-	printf("settings window\n");
 
 	Show();
 }

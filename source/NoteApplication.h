@@ -23,7 +23,6 @@
 #include <String.h>
 #include <image.h>
 
-
 // Definition of the class
 class NoteApplication : public BApplication {
 
@@ -42,9 +41,11 @@ class NoteApplication : public BApplication {
 				void		OpenNote(entry_ref* ref = NULL);
 				void		CloseNote();
 				status_t	CheckMime();
-	private:
-
+		BMessage*			fSettingsMessage;
 		int32		fWindowCount;
+
+
+	private:
 		BFilePanel	*fOpenPanel;
 		NoteRefFilter	fNoteRefFilter;
 

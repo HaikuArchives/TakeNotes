@@ -8,11 +8,14 @@
  *			Eleonora Ciceri
  *
  * Last revision: Eleonora Ciceri, 23th June 2009
- *
+ * December 2020: thaflo: Change color directly (that's the Be way)
  * Description: Window that is opened to change the background color
  */
 
 #include "ColorWindow.h"
+#include "NoteText.h"
+#include <ColorControl.h>
+#include <stdio.h>
 
 // Libraries
 #include <Alert.h>
@@ -20,44 +23,52 @@
 
 // Messages
 #define COLOR_CHANGED 	'ccrq'
-#define BUTTON_OK 		'btok'
-#define BUTTON_UNDO		'btun'
+#define BUTTON_DEFAULT		'btdf'
 #define COLOR_CLOSE		'_clc'
+#define COLOR_CHOSEN		'_cch'
+#define COLOR 'colo'
+#define SAVE 'save'
+
+//translation
+#include <Catalog.h>
+#include <TranslationUtils.h>
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "ColorWindow"
 
 /*
 * Constructor
 * It is created with the dimensions of BRect
 */
-ColorWindow :: ColorWindow (BRect frame, BHandler *handler)
-			: BWindow (frame, "Change the background color", B_TITLED_WINDOW,B_NOT_RESIZABLE) {
+ColorWindow :: ColorWindow (BRect frame, BHandler *handler, rgb_color color)
+			: BWindow (frame, B_TRANSLATE("Change the background color"), B_TITLED_WINDOW, B_NOT_RESIZABLE) {
 
 	// Variables
-	BPoint 				 leftTop(20.0, 50.0);
+	BPoint 				 leftTop(10.0, 50.0);
 	color_control_layout matrix;
 	long 				 cellSide;
 
-	BButton				 *okButton;
 	BButton				 *undoButton;
 
 	// Create the  view and set the background color, then add child to window
 	frame.OffsetTo(B_ORIGIN);
 	fColorView = new ColorView (frame, "ColorView",handler);
 	fColorView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	fColorView->ResizeToPreferred();
 	AddChild(fColorView);
 
 	// Drawing...
 	fMessenger = new BMessenger(handler);
 
-	matrix = B_CELLS_16x16;
-	cellSide = 16;
+	matrix = B_CELLS_32x8;
+	cellSide = 9.0;
 
-	fColorControl = new BColorControl (leftTop, matrix, cellSide, "ColorControl");
+	fColorControl = new BColorControl (leftTop, matrix, cellSide, "ColorControl", new BMessage(COLOR_CHANGED));
+	fColorControl->SetValue(color);
 	fColorView -> AddChild(fColorControl);
 
-	okButton = new BButton (BRect(280, 320, 350, 350), "ok", "Change", new BMessage(BUTTON_OK));
-	fColorView -> AddChild(okButton);
-
-	undoButton = new BButton (BRect(200, 320, 270, 350), "undo", "Undo", new BMessage(BUTTON_UNDO));
+	undoButton = new BButton (BRect(10, 150, 170, 175), "default", B_TRANSLATE("Default"), new BMessage(BUTTON_DEFAULT));
+	undoButton->ResizeToPreferred();
 	fColorView -> AddChild(undoButton);
 
 	Show();
@@ -73,10 +84,7 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 	message->PrintToStream();
 
 	switch (message -> what) {
-
-		// It answer to an OK request
-		case BUTTON_OK: {
-
+			case COLOR_CHANGED: {
 			// I catch the color that was chosen by the user
 			userColorChoice = fColorControl -> ValueAsColor();
 
@@ -86,19 +94,18 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 			msg -> AddInt8 ("green", (int8)userColorChoice.green);
 			msg -> AddInt8 ("blue", (int8)userColorChoice.blue);
 			fMessenger->SendMessage(msg);
-			Quit();
-		}
-		break;
+			}
+			break;
 
 		// It answer to an UNDO request
-		case BUTTON_UNDO: {
+		case BUTTON_DEFAULT: {
 
-			alert = new BAlert("", "Latest changes will be discarded", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			alert = new BAlert("", B_TRANSLATE("Set default values ?"), B_TRANSLATE("Yes"), B_TRANSLATE("No"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 
 			if (alert->Go() == 0) {
-				// Discard all the changes
-				Quit();
+				fColorControl->SetValue(gBgColor);
+				this->PostMessage(COLOR_CHANGED);
 			}
 		}
 		break;
@@ -116,6 +123,7 @@ void ColorWindow :: Quit(){
 	BMessage *message;
 
 	// Inform NoteWindow that this window is going to be closed
+	fMessenger->SendMessage(message);
 	message = new BMessage (COLOR_CLOSE);
 	fMessenger->SendMessage(message);
 

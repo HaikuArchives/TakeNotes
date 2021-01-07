@@ -35,6 +35,13 @@
 #include <Resources.h>
 #include <Roster.h>
 
+//translation
+#include <Catalog.h>
+#include <TranslationUtils.h>
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "NoteView"
+
 // System libraries
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +52,7 @@
 #define	OPEN_TAKENOTES		'onwp'
 #define	OPEN_FILE			'onfl'
 #define REMOVE_ASSOCIATION	'rmsc'
+#define SETTINGS_CLOSE		'settc'
 
 // Constructor
 NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *handler)
@@ -237,8 +245,8 @@ void NoteView :: MouseDown(BPoint point){
 		menu->SetFont(be_plain_font);
 
 		// Fill the menu
-		menu->AddItem(new BMenuItem("Open TakeNotes" B_UTF8_ELLIPSIS,new BMessage(OPEN_TAKENOTES)));
-		menu->AddItem(new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED)));
+		menu->AddItem(new BMenuItem(B_TRANSLATE("Open TakeNotes" B_UTF8_ELLIPSIS),new BMessage(OPEN_TAKENOTES)));
+		menu->AddItem(new BMenuItem(B_TRANSLATE("Quit"), new BMessage(B_QUIT_REQUESTED)));
 		if (fHash->HasElement()) menu->AddSeparatorItem();
 
 		// Initialization
@@ -332,13 +340,13 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 
 	/*
 	* Flags the message with the information regarding the application and the class name
-	* This informations are required and they will be used by the costructor by message 
+	* This informations are required and they will be used by the costructor by message
 	* to rehydrate the replicant
 	*/
 	msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");
 	msg->AddString("class","NoteView");
 
-	// If the function has been called by NoteWindow::Save we should find this information and use them to save 
+	// If the function has been called by NoteWindow::Save we should find this information and use them to save
 	if (msg->FindRef("directory",&ref) == B_OK && msg -> FindString("name", &name) == B_OK) {
 
 		dir.SetTo(&ref);
@@ -381,9 +389,9 @@ void NoteView :: AboutRequested(){
 	// Variable
 	BAlert *alert;
 
-	alert = new BAlert("About TakeNotes",
-			"Copyright 2020\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\nFlorian Thaler\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile", 
-			"OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+	alert = new BAlert(B_TRANSLATE("About TakeNotes"),
+			B_TRANSLATE("Copyright 2020\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\nFlorian Thaler\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile"),
+			B_TRANSLATE("Thanks"), NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 	alert->SetShortcut(0,B_ESCAPE);
 	alert->Go();
 

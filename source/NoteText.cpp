@@ -36,7 +36,7 @@ NoteText :: NoteText(BRect frame, BRect frameText, const char *name, BHandler *h
 	fReplicated = false;
 
 	// Background color
-	SetViewColor(254, 254, 92, 255);
+	SetViewColor(255,240,113);
 
 }
 
@@ -63,7 +63,7 @@ status_t NoteText :: Archive (BMessage *msg, bool deep) const{
 
 	/*
 	* Flags the message with the information regarding the application and the class name
-	* This informations are required and they will be used by the costructor by message 
+	* This informations are required and they will be used by the costructor by message
 	* to rehydrate the replicant
 	*/
 	msg->AddString("add_on","application/x-vnd.ccc-TakeNotes");

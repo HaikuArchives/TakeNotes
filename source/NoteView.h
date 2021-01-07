@@ -46,7 +46,7 @@ class NoteView : public BView {
 	virtual	status_t		Archive(BMessage *msg, bool deep=true) const;
 
 			void			InitBitmap();
-			void 			SetBackgroundColor(rgb_color color);
+			void 		SetBackgroundColor(rgb_color color);
 
 			void			_LoadDB();
 			status_t		_SaveDB();

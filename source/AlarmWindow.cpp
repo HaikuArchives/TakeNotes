@@ -17,11 +17,14 @@
 
 // Libraries
 #include <Alert.h>
+#include <GroupLayout.h>
+#include <GroupLayoutBuilder.h>
+#include <LayoutBuilder.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 
-//translation 
+//translation
 #include <Catalog.h>
 #include <TranslationUtils.h>
 
@@ -31,7 +34,7 @@
 
 // Messages
 #define BUTTON_ALARM_OK 	'alok'
-#define BUTTON_ALARM_UNDO 	'alun'
+#define BUTTON_ALARM_CANCEL 	'btcn'
 #define SET_ALARM 			'salr'
 #define ALARM_MSG 			'alrm'
 #define ALARM_CLOSE			'_alc'
@@ -41,7 +44,7 @@
 * It is created with the dimensions of BRect
 */
 AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
-			: BWindow (frame, B_TRANSLATE("Set alarm for this note"), B_TITLED_WINDOW,B_NOT_RESIZABLE) {
+			: BWindow (frame, B_TRANSLATE("Set an alarm for this note"), B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 
 	// Variables
     fMessenger = new BMessenger(handler);
@@ -53,24 +56,24 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
     char 	hourDefaultField[3];
 
 	// Initialize text fields with current system time values
-	sprintf(minuteDefaultField, "%d", GetTime(0));
-	sprintf(hourDefaultField, "%d", GetTime(1));
-	sprintf(dayDefaultField, "%d", GetTime(2));
-	sprintf(monthDefaultField, "%d", GetTime(3));
+	sprintf(minuteDefaultField, "%02d", GetTime(0));
+	sprintf(hourDefaultField, "%02d", GetTime(1));
+	sprintf(dayDefaultField, "%02d", GetTime(2));
+	sprintf(monthDefaultField, "%02d", GetTime(3));
 	sprintf(yearDefaultField, "%d", GetTime(4));
 
 	// We allocate the view AlarmView and associate it to the AlarmWindow
 	frame.OffsetTo(B_ORIGIN);
 	fAlarmView = new AlarmView(frame,"AlarmView");
 	fAlarmView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	AddChild(fAlarmView);
+	//AddChild(fAlarmView);
 
 	// Text fields for the data
-	hour = new BTextControl(BRect(20,40,100,35),   B_TRANSLATE("hour"),     B_TRANSLATE("hour:"), hourDefaultField , NULL);
-	minute = new BTextControl(BRect(120,40,200,35), B_TRANSLATE("minute"),  B_TRANSLATE("min:"), minuteDefaultField, NULL);
-	day = new BTextControl(BRect(20,100,100,35),   B_TRANSLATE("day"),  B_TRANSLATE("day:"), dayDefaultField, NULL);
-	month = new BTextControl(BRect(120,100,200,35), B_TRANSLATE("month"),    B_TRANSLATE("month:"), monthDefaultField, NULL);
-	year = new BTextControl(BRect(220,100,300,35),  B_TRANSLATE("year"),     B_TRANSLATE("year:"), yearDefaultField, NULL);
+	hour = new BTextControl(BRect(10,10,100,35),   B_TRANSLATE("hour"),     B_TRANSLATE("hour:"), hourDefaultField , NULL);
+	minute = new BTextControl(BRect(110,10,210,35), B_TRANSLATE("minute"),  B_TRANSLATE("min:"), minuteDefaultField, NULL);
+	day = new BTextControl(BRect(10,50,100,75),   B_TRANSLATE("day"),  B_TRANSLATE("day:"), dayDefaultField, NULL);
+	month = new BTextControl(BRect(110,50,200,75), B_TRANSLATE("month"),    B_TRANSLATE("month:"), monthDefaultField, NULL);
+	year = new BTextControl(BRect(210,50,300,75),  B_TRANSLATE("year"),     B_TRANSLATE("year:"), yearDefaultField, NULL);
 
 	// Text field label: visible
 	hour -> SetDivider(hour->StringWidth("hour:") + 5);
@@ -80,18 +83,36 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	year -> SetDivider(year->StringWidth("year:") + 5);
 
 	// Allocate the OK button
-	fButtonOk = new BButton (BRect(400,230,450,240),"ok", B_TRANSLATE("Done"), new BMessage(BUTTON_ALARM_OK));
-	fButtonUndo = new BButton (BRect(340,230,390,240),"undo",B_TRANSLATE("Undo"),new BMessage(BUTTON_ALARM_UNDO));
+	fButtonOk = new BButton (BRect(200,110,300,135),"ok", B_TRANSLATE("Ok"), new BMessage(BUTTON_ALARM_OK));
+	fButtonCancel = new BButton (BRect(320,110,420,135),"cancel",B_TRANSLATE("Cancel"),new BMessage(BUTTON_ALARM_CANCEL));
 
+	//BLayout
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+		.AddGroup(B_HORIZONTAL)
+			.SetInsets(B_USE_DEFAULT_SPACING)
+			.Add(hour)
+			.Add(minute)
+			.AddGlue()
+		.End()
+		.AddGroup(B_HORIZONTAL)
+			.Add(day)
+			.Add(month)
+			.Add(year)
+		.End()
+		.AddGroup(B_HORIZONTAL)
+			.Add(fButtonOk)
+			.Add(fButtonCancel)
+			.Add(fAlarmView)
+		.End();
 	// Making all the objects part of the view
-	fAlarmView->AddChild(hour);
+	/*fAlarmView->AddChild(hour);
 	fAlarmView->AddChild(minute);
 	fAlarmView->AddChild(day);
 	fAlarmView->AddChild(month);
-	fAlarmView->AddChild(year);
+	fAlarmView->AddChild(year);*/
 
-	fAlarmView->AddChild(fButtonOk);
-	fAlarmView->AddChild(fButtonUndo);
+	//fAlarmView->AddChild(fButtonOk);
+	//fAlarmView->AddChild(fButtonCancel);
 
 	Show();
 
@@ -141,14 +162,14 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			*/
 
 			// First check if there are any values (in a correct range)
-			if( (hourN > 0 && hourN < 24)  && (minuteN > 0 && minuteN < 60) && (dayN > 0) && (monthN > 0  && monthN <= 12) && (yearN >= 1970 && yearN <= 2150) ) {
+			if ( (hourN > 0 && hourN < 24)  && (minuteN > 0 && minuteN < 60) && (dayN > 0) && (monthN > 0  && monthN <= 12) && (yearN >= 1970 && yearN <= 2150) ) {
 
 				// Second check if day is correct in its month
 				daysInMonth = GetDaysInMonth(monthN,yearN);
 
 				if(dayN > daysInMonth) {
 
-					BAlert *myAlert = new BAlert("Incorrect days in month", "Insert a correct day for selected month", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+					BAlert *myAlert = new BAlert(B_TRANSLATE("Incorrect day in month"), B_TRANSLATE("Insert a correct day for selected month"), B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 					myAlert -> Go();
 					break;
 				}
@@ -156,7 +177,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 				// Third check if input user date/time comes after system time
 				if ( !(IsAfter(minuteN,hourN,dayN,monthN,yearN)) ) {
 
-					BAlert *myAlert = new BAlert("Previous date-time", "Date-time should come after system time", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+					BAlert *myAlert = new BAlert(B_TRANSLATE("Previous date-time"), B_TRANSLATE("Date-time should come after system time"), B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 					myAlert -> Go();
 					break;
 
@@ -190,7 +211,7 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 			} else {
 
 				// If some values are missing show an alert
-				BAlert *myAlert = new BAlert("Missing values", "Fill all the fields with correct values", "OK", NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+				BAlert *myAlert = new BAlert(B_TRANSLATE("Missing values"), B_TRANSLATE("Fill all the fields with correct values"), B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 				myAlert -> Go();
 
 			}
@@ -198,9 +219,9 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 		}
 		break;
 
-		case BUTTON_ALARM_UNDO:{
+		case BUTTON_ALARM_CANCEL:{
 
-			BAlert *alert = new BAlert("", "The alarm hasn't been saved yet, do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			BAlert *alert = new BAlert("", B_TRANSLATE("The alarm hasn't been saved yet, do you really want to close the window?"), B_TRANSLATE("Yes"), B_TRANSLATE("No"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 
 			if (alert->Go() == 0) {
@@ -226,7 +247,7 @@ int32 AlarmWindow :: GetDaysInMonth(int month, int year) {
 		case 1:
 			return 31;
 		case 2: {
-			if ( (year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
+			if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
 				return 29;
 			else
 				return 28;
@@ -283,13 +304,10 @@ bool AlarmWindow :: IsAfter(int min, int h, int d, int mon, int y) {
 	userTime = mktime(timeinfo);
 
 	// Compare user time and system time
-	if( difftime(userTime, time( &rawtime) ) > 0 ) {
-
+	if ( difftime(userTime, time( &rawtime) ) > 0 ) {
 		return true;
 	}
-
 	else {
-
 		return false;
 	}
 }
@@ -312,6 +330,7 @@ int AlarmWindow :: GetTime(int element) {
 
 	switch(element) {
 		case 0:
+			printf("%02d\n",now -> tm_min);
 			return now -> tm_min;
 		case 1:
 			return now -> tm_hour;

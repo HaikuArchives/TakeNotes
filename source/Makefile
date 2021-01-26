@@ -48,7 +48,6 @@ SRCS = \
 	 NoteText.cpp  \
 	 NoteView.cpp  \
 	 NoteWindow.cpp  \
-	 SettingsWindow.cpp  \
 	 TagsWindow.cpp  \
 
 
@@ -65,6 +64,8 @@ RSRCS = \
 
 
 # @<-src@ 
+#%}
+
 #%}
 
 #%}

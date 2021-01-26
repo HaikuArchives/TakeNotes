@@ -22,7 +22,7 @@
 #define COLOR_CHANGED 	'ccrq'
 #define REVERT_COLOR		'revc'
 #define DEFAULT_COLOR		'defc'
-#define SETTINGS_CLOSE		'_clc'
+#define SETTINGS_CLOSE		'_sec'
 #define COLOR_CHOSEN		'_cch'
 #define SAVE		'save'
 
@@ -67,11 +67,11 @@ SettingsWindow :: SettingsWindow (BRect frame, BHandler *handler, rgb_color colo
 	fColorControl -> SetValue(color);
 	fColorView -> AddChild(fColorControl);
 
-	revertButton = new BButton (BRect(10, 150, 170, 175), "default", B_TRANSLATE("Default"), new BMessage(REVERT_COLOR));
+	revertButton = new BButton (BRect(10, 150, 170, 175), "default", B_TRANSLATE("Defaults"), new BMessage(REVERT_COLOR));
 	revertButton->ResizeToPreferred();
 	fColorView -> AddChild(revertButton);
 
-	setDefButton = new BButton (BRect(180, 150, 340, 175), "default_color", B_TRANSLATE("set as default"), new BMessage(DEFAULT_COLOR));
+	setDefButton = new BButton (BRect(180, 150, 340, 175), "default_color", B_TRANSLATE("Set as default"), new BMessage(DEFAULT_COLOR));
 	setDefButton->ResizeToPreferred();
 	fColorView -> AddChild(setDefButton);
 
@@ -109,7 +109,7 @@ void SettingsWindow :: MessageReceived (BMessage* message) {
 		// It answer to an UNDO request
 		case REVERT_COLOR: {
 
-			alert = new BAlert("", B_TRANSLATE("Set default values ?"), B_TRANSLATE("Yes"), B_TRANSLATE("No"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			alert = new BAlert("", B_TRANSLATE("Set default values?"), B_TRANSLATE("Yes"), B_TRANSLATE("No"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 
 			if (alert->Go() == 0) {
@@ -142,13 +142,8 @@ void SettingsWindow :: MessageReceived (BMessage* message) {
 // Hook function-override, we should inform NoteWindow that SettingsWindow will be closed
 void SettingsWindow :: Quit(){
 
-	// Variables
-	BMessage *message;
-
 	// Inform NoteWindow that this window is going to be closed
-	message = new BMessage (SETTINGS_CLOSE);
-
-	fMessenger->SendMessage(message);
+	fMessenger -> SendMessage(SETTINGS_CLOSE);
 
 	// Execute the real code
 	BWindow :: Quit();
@@ -158,7 +153,6 @@ void SettingsWindow :: Quit(){
 
 // Function that is activated when I close the window
 bool SettingsWindow :: QuitRequested() {
-	//fMessenger->SendMessage(SAVE);
 	Quit();
 	return (true);
 }

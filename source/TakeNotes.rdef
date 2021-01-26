@@ -1,11 +1,11 @@
 /*
  * Copyright 2009, Ilio Catallo, Stefano Celentano, Eleonora Ciceri, all rights reserved
  * Distribuited under the terms of the GPL v2 license
- * 
+ *
  * Authors:
  *
  *			Ilio Catallo
- * 
+ *
  * Icons by:
  *
  *			Meanwhile
@@ -15,20 +15,20 @@
  *
  * Description: TODO
  */
- 
+
 
 resource app_signature "application/x-vnd.ccc-TakeNotes";
 
 resource app_version {
 	major  = 1,
-	middle = 0,
+	middle = 5,
 	minor  = 0,
 
-	variety = B_APPV_BETA,
+	variety = B_APPV_FINAL,
 	internal = 0,
 
 	short_info = "TakeNotes",
-	long_info = "TakeNotes ©2009 Ilio Catallo, Stefano Celentano, Eleonora Ciceri"
+	long_info = "TakeNotes ©2021 Ilio Catallo, Stefano Celentano, Eleonora Ciceri, Florian Thaler"
 };
 
 resource app_flags B_SINGLE_LAUNCH;

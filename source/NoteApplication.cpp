@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Eleonora Ciceri
  *
- * Last revision: Ilio Catallo, 26th June 2009
+ * Last revision: Florian Thaler, 26th January 2021
  *
  * Description: This is the application, with all the functions implemented.
  *				This is the main container of the functions related to an application.
@@ -15,6 +15,7 @@
 
 // Our Libraries
 #include "NoteApplication.h"
+#include <private/interface/AboutWindow.h>
 
 // Libraries
 #include <Alert.h>
@@ -47,7 +48,6 @@
 #define FONT_BOLD 		'fntb'
 #define NEW				'new'
 #define OPEN			'open'
-#define DELETE			'dele'
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "NoteApplication"
@@ -91,26 +91,30 @@ NoteApplication :: NoteApplication()
 	* Creation of the directory with the association between notes
 	* and applications
 	*/
-	DIR *dir;
-	dir = opendir("/boot/home/config/settings/TakeNotes");
-	if (dir == NULL)
-		mkdir ("/boot/home/config/settings/TakeNotes", O_CREAT);
+
+	status_t ret = B_BAD_VALUE;
+	BPath path;
+	if ((ret = find_directory(B_USER_SETTINGS_DIRECTORY, &path)) == B_OK) {
+		if (ret = path.Append("TakeNotes") == B_OK)
+			ret = create_directory(path.Path(), 0777);
+	}
 
 	// Private data members initialization
 	fWindowCount = 0;
 	note_app = this;
-	fSettingsMessage = new BMessage();
 
-	printf("%s\n",load_settings(fSettingsMessage, "settings", "TakeNotes"));
-
-	//thaflo 2020: global settings
 	// Open the config file, if it doesn't exist we create it
-	BFile settings;
-	status_t err;
-	if ((err = settings.SetTo("/boot/home/config/settings/TakeNotes/settings", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
-		printf("%s\n",err);
-	}
+	// BFile settings;
+	// status_t err;
+	// if ((err = settings.SetTo(B_USER_SETTINGS_DIRECTORY + "TakeNotes", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
+	//	printf("%s\n",err);
+	// }
 
+	//thaflo 2021: load global settings
+	fSettingsMessage = new BMessage();
+	load_settings(fSettingsMessage, "settings", "TakeNotes");
+	if (fSettingsMessage -> GetBool("live_in_deskbar") == true)
+		_InstallReplicantInDeskbar();
 
 	// Create the file open panel
 	fOpenPanel = new BFilePanel(B_OPEN_PANEL, NULL, NULL, B_FILE_NODE, true,
@@ -127,19 +131,21 @@ NoteApplication::~NoteApplication()
 void NoteApplication :: ReadyToRun(){
 
 	// Variables
-	BDeskbar	deskbar;
+	BDeskbar	fDeskbar;
 	BAlert 		*alert;
 	short int	erg;
 
 	// Check if the replicant isn't already installed in the Deskbar, avoid to ask if we already opened a note
-	if (!deskbar.HasItem(kDeskbarItemName) && fWindowCount == 0){
+	if (!fDeskbar.HasItem(kDeskbarItemName) && fWindowCount == 0 && (fSettingsMessage -> GetBool("live_in_deskbar")) == false){
 
-		alert = new BAlert("", B_TRANSLATE("Do you want TakeNotes to live in the Deskbar?"), B_TRANSLATE("Never"), B_TRANSLATE("No thanks"), B_TRANSLATE("Install"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert = new BAlert("", B_TRANSLATE("Do you want TakeNotes to live in the Deskbar?"), B_TRANSLATE("Maybe later"), B_TRANSLATE("No thanks"), B_TRANSLATE("Install"), B_WIDTH_AS_USUAL, B_INFO_ALERT);
 		alert -> SetShortcut(0, B_ESCAPE);
 		erg = alert -> Go();
 		// In case we have to install it in the deskbar...
 		if (erg == 2) {
 			_InstallReplicantInDeskbar();
+			fSettingsMessage -> SetBool("live_in_deskbar", true);
+			save_settings(fSettingsMessage, "settings", "TakeNotes");
 			return;
 		}
 		if (erg == 1) {
@@ -148,23 +154,36 @@ void NoteApplication :: ReadyToRun(){
 		}
 	}
 
-	// If there's some window opened return
+	// If there's some window open return
 	if (fWindowCount > 0)
 		return;
 
 	// If there aren't windows opened, we open a note
 	// thaflo 2020: load defaults and last used note
-	//fSettingsMessage = new BMessage();
 	entry_ref *fRef = new entry_ref;
 
-	if(load_settings(fSettingsMessage, "settings", "TakeNotes") != B_OK) {
-		OpenNote();
+	if (load_settings(fSettingsMessage, "settings", "TakeNotes") != B_OK) {
+		printf("open settings failed \n");
+
 	} else {
-		if(fSettingsMessage -> FindBool("load_last_note") == TRUE)
+		if (fSettingsMessage -> FindBool("load_last_note") == TRUE)
 			fSettingsMessage -> FindRef("last_note", fRef);
 	}
 
 	OpenNote(fRef);
+}
+
+status_t NoteApplication :: Test() {
+	// I wanted to have only one AboutWindow, but it seems that I need an extra
+	// one for the replicant
+	BAlert *alert;
+
+	alert = new BAlert(B_TRANSLATE("About TakeNotes"),
+			B_TRANSLATE("Copyright 2020\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\nFlorian Thaler\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile"),
+			B_TRANSLATE("Thanks"), NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
+	alert->SetShortcut(0,B_ESCAPE);
+	alert->Go();
+	return true;
 }
 
 // Function CheckMime
@@ -314,7 +333,7 @@ NoteApplication::OpenNote(entry_ref *ref)
 
 	entry_ref linkedRef;
 	BEntry entry(ref, true);
-	if(entry.InitCheck() != B_OK || !entry.Exists() ||
+	if (entry.InitCheck() != B_OK || !entry.Exists() ||
 			entry.GetRef(&linkedRef) != B_OK) {
 		new NoteWindow();
 		fWindowCount++;
@@ -332,7 +351,6 @@ NoteApplication::OpenNote(entry_ref *ref)
 	}
 
 	new NoteWindow(&linkedRef);
-
 	fWindowCount++;
 }
 
@@ -402,7 +420,7 @@ void NoteApplication :: RefsReceived(BMessage *message){
 	if (load_settings(fSettingsMessage, "settings", "TakeNotes") != B_OK)
 			printf("couldn't load settings\n");
 
-	while(message->FindRef("refs", index++, &ref) == B_OK){
+	while (message->FindRef("refs", index++, &ref) == B_OK){
 		OpenNote(&ref);
 	}
 }
@@ -410,14 +428,10 @@ void NoteApplication :: RefsReceived(BMessage *message){
 // Function used to receive messages
 void NoteApplication :: MessageReceived(BMessage *message){
 	// Search if the message that was caputed is handled by the application
-	switch(message->what){
+	switch (message->what){
 
 		case OPEN:
 			fOpenPanel->Show();
-		break;
-
-		case DELETE:
-			printf("todo: delete note\n");
 		break;
 
 		case NEW:
@@ -452,13 +466,13 @@ void NoteApplication :: _InstallReplicantInDeskbar(){
 		BPath path(&ref);
 
 		// Initialize the deskbar object
-		BDeskbar deskbar;
+		BDeskbar fDeskbar;
 
 		// If the deskbar is running we finally install
-		if (!deskbar.IsRunning())
+		if (!fDeskbar.IsRunning())
 			return;
 
-		if (deskbar.AddItem(&ref) != B_OK)
+		if (fDeskbar.AddItem(&ref) != B_OK)
 			return;
 
 	} else
@@ -468,7 +482,9 @@ void NoteApplication :: _InstallReplicantInDeskbar(){
 	* Quit the application, an indipendent instance of TakeNotes is now running
 	* as a replicant in the Deskbar
 	*/
-	Quit();
+	if (fWindowCount == 0) {
+		//Quit();	ends in debugger
+	}
 }
 
 // Main
@@ -478,6 +494,27 @@ int main(){
 
 	myApp.Run();
 	return(0);
+}
+
+// Function that shows about window
+void NoteApplication :: AboutRequested()
+{
+
+	BAboutWindow* about = new BAboutWindow("TakeNotes", kSignature);
+
+	const char* authors[] = {
+		"Ilio Catallo",
+		"Stefano Celentano",
+		"Eleonora Ciceri",
+		"Florian Thaler",
+		NULL
+	};
+
+	about->AddCopyright(2021, "Ilio Catallo & others");
+	about->AddAuthors(authors);
+	about->AddText(B_TRANSLATE("Distribuited under the terms of the GPLv2 license"));
+	about->AddText(B_TRANSLATE("Icons by Meanwhile"));
+	about->Show();
 }
 
 

@@ -68,7 +68,7 @@ class NoteWindow : public BWindow {
 			virtual void		MessageReceived(BMessage* message);
 			virtual void		Quit();
 			virtual bool		QuitRequested();
-					void		AboutRequested();
+//					void		AboutRequested();
 					void		InitWindow();
 					void		CreateOtherWindows();
 					void		_LoadDB();
@@ -101,7 +101,6 @@ class NoteWindow : public BWindow {
 		BMenuItem	*fNewItem;
 		BMenuItem	*fSaveItem;
 		BMenuItem	*fOpenItem;
-		BMenuItem	*fDeleteItem;
 		BMenuItem	*fQuitItem;
 
 		// MenuItems (Edit menu)
@@ -121,8 +120,8 @@ class NoteWindow : public BWindow {
 		BMenuItem	*fSetAppItem;
 		BMenuItem 	*fSetAlarmItem;
 		BMenuItem	*fLoadLastNote;
+		BMenuItem	*fLiveInDeskbar;
 		BMenuItem   *fLink;
-		BMenuItem   *fUrl;
 
 		// Undo flags
 		bool 		fUndoFlag;
@@ -135,7 +134,6 @@ class NoteWindow : public BWindow {
 
 		//Messaging
 		BMessage		*fSaveMessage;
-//		BMessage		*fSettingsMessage;
 		BMessenger 		fMessenger;
 		BMessageRunner 	*runner;
 

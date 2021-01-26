@@ -21,7 +21,6 @@
 
 // Other Libraries
 #include <Alert.h>
-#include <private/interface/AboutWindow.h>
 #include <Notification.h>
 
 #include <Application.h>
@@ -78,9 +77,10 @@
 #define	ALARM_CLOSE			'_alc'
 #define	CHOICE_CLOSE		'_chc'
 #define NOTE_SETTINGS		'ntst'
-#define SETTINGS_CLOSE 'setc'
+#define SETTINGS_CLOSE '_sec'
 #define DEFAULT_COLOR		'defc'
 #define LOAD_LAST_NOTE		'llno'
+#define LIVE_IN_DESKBAR		'lind'
 
 // Constants
 #define MENU_BAR_HEIGHT 18
@@ -97,7 +97,7 @@ const struct tm gettime() {
 // Constructor
 NoteWindow::NoteWindow()
 	:
-	BWindow(BRect(100, 100, 350, 350), B_TRANSLATE("Untitled"), B_TITLED_WINDOW,
+	BWindow(BRect(100, 100, 350, 350), B_TRANSLATE("Untitled"), B_TITLED_WINDOW_LOOK, B_NORMAL_WINDOW_FEEL,
 		B_ASYNCHRONOUS_CONTROLS),
 	fRef(NULL)
 {
@@ -303,10 +303,8 @@ void NoteWindow :: InitWindow(){
 	// File menu
 	fFileMenu -> AddItem (fNewItem = new BMenuItem(B_TRANSLATE("New" B_UTF8_ELLIPSIS), new BMessage(NEW), 'N'));
 	fFileMenu -> AddItem (fOpenItem = new BMenuItem(B_TRANSLATE("Open" B_UTF8_ELLIPSIS), new BMessage(OPEN), 'O'));
-	fFileMenu -> AddItem (fDeleteItem = new BMenuItem(B_TRANSLATE("Delete" B_UTF8_ELLIPSIS), new BMessage(DELETE), 'D'));
 	fNewItem -> SetTarget(note_app);
 	fOpenItem -> SetTarget(note_app);
-	fDeleteItem -> SetTarget(note_app);
 
 	fFileMenu -> AddSeparatorItem();
 	fFileMenu -> AddItem (fSaveItem = new BMenuItem(B_TRANSLATE("Save"), new BMessage(SAVE), 'S'));
@@ -323,9 +321,10 @@ void NoteWindow :: InitWindow(){
 	fSettingsMenu -> AddItem (fSetTagsItem 					= new BMenuItem (B_TRANSLATE("Set tags"),					new BMessage (SET_TAGS)));
 	fSettingsMenu -> AddItem (fSetAppItem 					= new BMenuItem (B_TRANSLATE("Set preferred application"),	new BMessage (SET_APP)));
 	fSettingsMenu -> AddItem (fLink 						= new BMenuItem (B_TRANSLATE("Open the selected link"), 	new BMessage (GO_TO_LINK)));
-	fSettingsMenu -> AddItem (fUrl 						= new BMenuItem (B_TRANSLATE("Add Url"), 	new BMessage (ADD_URL)));
 	fSettingsMenu -> AddItem (fLoadLastNote				= new BMenuItem (B_TRANSLATE("Load last note on startup"), 	new BMessage (LOAD_LAST_NOTE)));
+	fSettingsMenu -> AddItem (fLiveInDeskbar				= new BMenuItem (B_TRANSLATE("Use Deskbar Replicant"), 	new BMessage (LIVE_IN_DESKBAR)));
 	fLoadLastNote -> SetMarked(note_app -> fSettingsMessage -> FindBool("load_last_note"));
+	fLiveInDeskbar -> SetMarked(note_app -> fSettingsMessage -> FindBool("live_in_deskbar"));
 
 	// Edit menu
 	fEditMenu 		-> AddItem (fUndoItem 		= new BMenuItem(B_TRANSLATE("Can't Undo"), 	new BMessage(B_UNDO), 		'Z'));
@@ -443,9 +442,6 @@ void NoteWindow :: InitWindow(){
 			}
 		}
 	}
-
-	// About menu
-//	fAboutMenu -> AddItem (menuItem = new BMenuItem (B_TRANSLATE("About TakeNotes..."), new BMessage (B_ABOUT_REQUESTED)));
 
 	// Add the menu to the window
 	AddChild(fNoteMenuBar);
@@ -794,16 +790,41 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 	// Receiving the messages
 	switch (message -> what) {
 
-		//
+		case LIVE_IN_DESKBAR: {
+			if(fLiveInDeskbar -> IsMarked()) {
+				fLiveInDeskbar -> SetMarked(false);
+				BDeskbar *db = new BDeskbar();
+				if (db -> HasItem(kDeskbarItemName))
+					db -> RemoveItem(kDeskbarItemName);
+			}	else {
+				fLiveInDeskbar -> SetMarked(true);
+				note_app -> _InstallReplicantInDeskbar();				
+			}
+
+		note_app -> fSettingsMessage -> SetBool("load_last_note", fLoadLastNote -> IsMarked());
+		note_app -> fSettingsMessage -> SetBool("live_in_deskbar", fLiveInDeskbar -> IsMarked());
+		
+		if(fRef)  {
+			note_app -> fSettingsMessage -> RemoveData("last_note" );
+			note_app -> fSettingsMessage -> AddRef("last_note", fRef );
+		}
+		if(save_settings(note_app -> fSettingsMessage, "settings", "TakeNotes") == B_OK)
+				printf("settings saved\n");
+		}	
+		break;
+		
 		case LOAD_LAST_NOTE: {
 			if(fLoadLastNote -> IsMarked()) 
 				fLoadLastNote -> SetMarked(false);
 			else 
 				fLoadLastNote -> SetMarked(true);
 		}
-		note_app -> fSettingsMessage -> RemoveData("last_note" );
+
 		note_app -> fSettingsMessage -> SetBool("load_last_note", fLoadLastNote -> IsMarked());
-		note_app -> fSettingsMessage -> AddRef("last_note", fRef );
+		if(fRef)  {
+			note_app -> fSettingsMessage -> RemoveData("last_note" );
+			note_app -> fSettingsMessage -> AddRef("last_note", fRef );
+		}
 		if(save_settings(note_app -> fSettingsMessage, "settings", "TakeNotes") == B_OK)
 				printf("settings saved\n");
 				
@@ -870,10 +891,6 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 			fNoteText -> Undo(be_clipboard);
 
-		}
-		break;
-		case ADD_URL: {
-				// to implement
 		}
 		break;
 		// Message that tells if the text is changes (it is used for the "can't undo")
@@ -1032,8 +1049,9 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		}
 		break;
 		
-		// Show the settings window - thaflo 2020
+		// Show the settings window - thaflo 2021
 		case NOTE_SETTINGS:{
+			printf ("settings \n");
 
 			if (fSettingsWindow == NULL){
 
@@ -1041,7 +1059,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				fSettingsWindow -> Show();
 
 			} else {
-//				fColorWindow->Activate();
+				fSettingsWindow->Activate();
 			}
 		}
 		break;
@@ -1063,7 +1081,6 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		case SET_APP: {
 
 			if (!fSaveMessage){
-
 				alert = new BAlert("Warning",B_TRANSLATE("You must save your note before!"),B_TRANSLATE("Cancel"),B_TRANSLATE("Save"));
 
 				if (alert->Go() == 1) {
@@ -1114,7 +1131,6 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		case SET_TAGS: {
 
 			if (!fSaveMessage){
-
 				alert = new BAlert("Warning",B_TRANSLATE("You must save your note before!"),B_TRANSLATE("Cancel"),B_TRANSLATE("Save"));
 				if (alert->Go() == 1) {
 					fSavePanel -> Show();
@@ -1227,10 +1243,12 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		
 		// It removes the settings window
 		case SETTINGS_CLOSE: {
-			if(fSaveMessage) {
+			printf("close settings \n");
+			//if message with information about the note exists, save them
+			if(fSaveMessage) { 
 				this->PostMessage(SAVE);
 			}
-			fColorWindow = NULL;
+			fSettingsWindow = NULL;
 		}
 		break;
 
@@ -1254,12 +1272,12 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 		// About menu
 		case B_ABOUT_REQUESTED: {
-			AboutRequested();
+			note_app -> AboutRequested();
 		}
 		break;
 		
 		case DEFAULT_COLOR: {
-		//remember the new default color
+		//save the new default color
 			rgb_color c = {10,10,10,10};
 			note_app -> fSettingsMessage -> SetColor("def_color", message -> GetColor("new_def_color", c));
 			if(save_settings(note_app -> fSettingsMessage, "settings", "TakeNotes") != B_OK)
@@ -1277,26 +1295,6 @@ bool NoteWindow :: QuitRequested(){
 
 	Quit();
 	return(true);
-}
-
-// Function that shows about window
-void NoteWindow :: AboutRequested()
-{
-	BAboutWindow* about = new BAboutWindow("TakeNotes", kSignature);
-
-	const char* authors[] = {
-		"Ilio Catallo",
-		"Stefano Celentano",
-		"Eleonora Ciceri",
-		"Florian Thaler",
-		NULL
-	};
-
-	about->AddCopyright(2020, "Ilio Catallo & others");
-	about->AddAuthors(authors);
-	about->AddText(B_TRANSLATE("Distribuited under the terms of the GPLv2 license"));
-	about->AddText(B_TRANSLATE("Icons by Meanwhile"));
-	about->Show();
 }
 
 // Function that quits the window

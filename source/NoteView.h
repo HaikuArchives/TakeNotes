@@ -40,7 +40,7 @@ class NoteView : public BView {
 	virtual	void			AttachedToWindow();
 	virtual	void			MessageReceived(BMessage *message);
 	virtual	void			MouseDown(BPoint point);
-	virtual	void			AboutRequested();
+	virtual	void			_AboutRequested();
 
 	static 	BArchivable*	Instantiate(BMessage *msg);
 	virtual	status_t		Archive(BMessage *msg, bool deep=true) const;

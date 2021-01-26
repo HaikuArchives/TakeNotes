@@ -20,6 +20,7 @@
 #include "NoteRefFilter.h"
 
 #include <Application.h>
+#include <Deskbar.h>
 #include <String.h>
 #include <image.h>
 
@@ -35,15 +36,18 @@ class NoteApplication : public BApplication {
 		virtual void		RefsReceived(BMessage* message);
 		virtual void		MessageReceived(BMessage* message);
 		virtual void		ReadyToRun();
+		status_t Test();
 
 				void		_InstallReplicantInDeskbar();
 
 				void		OpenNote(entry_ref* ref = NULL);
 				void		CloseNote();
+				void		AboutRequested();
+
 				status_t	CheckMime();
 		BMessage*			fSettingsMessage;
 		int32		fWindowCount;
-
+		BDeskbar*	fDeskbar;
 
 	private:
 		BFilePanel	*fOpenPanel;

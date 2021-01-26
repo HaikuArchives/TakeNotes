@@ -19,6 +19,7 @@
 // Our libraries
 #include "NoteApplication.h"
 #include "NoteView.h"
+#include <private/interface/AboutWindow.h>
 
 // Other libraries
 #include <Application.h>
@@ -245,8 +246,10 @@ void NoteView :: MouseDown(BPoint point){
 		menu->SetFont(be_plain_font);
 
 		// Fill the menu
-		menu->AddItem(new BMenuItem(B_TRANSLATE("Open TakeNotes" B_UTF8_ELLIPSIS),new BMessage(OPEN_TAKENOTES)));
+		menu->AddItem(new BMenuItem(B_TRANSLATE("New Note" B_UTF8_ELLIPSIS),new BMessage(OPEN_TAKENOTES)));
+		menu->AddItem(new BMenuItem(B_TRANSLATE("About" B_UTF8_ELLIPSIS), new BMessage(B_ABOUT_REQUESTED)));
 		menu->AddItem(new BMenuItem(B_TRANSLATE("Quit"), new BMessage(B_QUIT_REQUESTED)));
+
 		if (fHash->HasElement()) menu->AddSeparatorItem();
 
 		// Initialization
@@ -383,20 +386,6 @@ BArchivable* NoteView :: Instantiate(BMessage *msg){
 
 }
 
-// Hook function-override,that shows some information about us and our work
-void NoteView :: AboutRequested(){
-
-	// Variable
-	BAlert *alert;
-
-	alert = new BAlert(B_TRANSLATE("About TakeNotes"),
-			B_TRANSLATE("Copyright 2020\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\nFlorian Thaler\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile"),
-			B_TRANSLATE("Thanks"), NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-	alert->SetShortcut(0,B_ESCAPE);
-	alert->Go();
-
-}
-
 /*
 * Functions that save to FS the associations between applications and notes
 * It saves the whole Hash table structure to FS with the syntax:
@@ -464,7 +453,7 @@ void NoteView :: MessageReceived(BMessage *message){
 
 		// The user wants more information about us
 		case B_ABOUT_REQUESTED:
-			AboutRequested();
+			_AboutRequested();
 		break;
 
 		// The user wants to open takenotes and write a new note
@@ -593,6 +582,27 @@ void NoteView :: _Quit(){
 
 		be_app->PostMessage(B_QUIT_REQUESTED);
     }
+
+}
+
+// About TakeNotes
+void NoteView :: _AboutRequested(){
+
+	BAboutWindow* about = new BAboutWindow("TakeNotes", kSignature);
+
+	const char* authors[] = {
+		"Ilio Catallo",
+		"Stefano Celentano",
+		"Eleonora Ciceri",
+		"Florian Thaler",
+		NULL
+	};
+
+	about->AddCopyright(2021, "Ilio Catallo & others");
+	about->AddAuthors(authors);
+	about->AddText(B_TRANSLATE("Distribuited under the terms of the GPLv2 license"));
+	about->AddText(B_TRANSLATE("Icons by Meanwhile"));
+	about->Show();
 
 }
 

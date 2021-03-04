@@ -1,0 +1,64 @@
+1	English	application/x-vnd.TakeNotes	2183189585
+Color	NoteWindow		Color
+NoteText	NoteWindow		NoteText
+month	AlarmWindow		month
+Quit	NoteView		Quit
+Change background color	NoteWindow		Change background color
+Green	NoteWindow		Green
+Insert time and date to set an alarm	AlarmView		Insert time and date to set an alarm
+Icons by Meanwhile	NoteWindow		Icons by Meanwhile
+Alarm activated for note: 	NoteWindow		Alarm activated for note: 
+Untitled	NoteWindow		Untitled
+Edit	NoteWindow		Edit
+Save	NoteWindow		Save
+Error: This selection is in the database!	NoteWindow		Error: This selection is in the database!
+File	NoteWindow		File
+Open TakeNotes…	NoteView		Open TakeNotes…
+hour:	AlarmWindow		hour:
+Save as…	NoteWindow		Save as…
+About TakeNotes	NoteView		About TakeNotes
+Set alarm	NoteWindow		Set alarm
+Size	NoteWindow		Size
+Copyright 2020\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\nFlorian Thaler\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile	NoteView		Copyright 2020\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\nFlorian Thaler\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile
+You must save your note before!	NoteWindow		You must save your note before!
+min:	AlarmWindow		min:
+hour	AlarmWindow		hour
+Undo	NoteWindow		Undo
+Red	NoteWindow		Red
+year	AlarmWindow		year
+Undo	AlarmWindow		Undo
+day	AlarmWindow		day
+Install	NoteApplication		Install
+Set alarm for this note	AlarmWindow		Set alarm for this note
+No thanks	NoteApplication		No thanks
+Undo	ChoiceView		Undo
+year:	AlarmWindow		year:
+Yellow	NoteWindow		Yellow
+day:	AlarmWindow		day:
+Done	AlarmWindow		Done
+Add date and time	NoteWindow		Add date and time
+Paste	NoteWindow		Paste
+Cut	NoteWindow		Cut
+About TakeNotes...	NoteWindow		Über TakeNotes...
+Undo	ColorWindow		Undo
+Select all	NoteWindow		Select all
+Set tags	NoteWindow		Set tags
+Settings	NoteWindow		Settings
+Distribuited under the terms of the GPLv2 license	NoteWindow		Distribuited under the terms of the GPLv2 license
+Set preferred application	NoteWindow		Set preferred application
+minute	AlarmWindow		minute
+Open…	NoteWindow		Open…
+Copy	NoteWindow		Copy
+Blue	NoteWindow		Blue
+Thanks	NoteView		Thanks
+Black	NoteWindow		Black
+Can't Undo	NoteWindow		Can't Undo
+Alarm activated	NoteWindow		Alarm activated
+Do you want TakeNotes to live in the Deskbar?	NoteApplication		Do you want TakeNotes to live in the Deskbar?
+Font	NoteWindow		Font
+About	NoteWindow		About
+OK	NoteWindow		Ok
+Go to the selected link	NoteWindow		Go to the selected link
+Redo	NoteWindow		Redo
+month:	AlarmWindow		month:
+Quit	NoteWindow		Quit

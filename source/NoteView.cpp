@@ -246,7 +246,7 @@ void NoteView :: MouseDown(BPoint point){
 		menu->SetFont(be_plain_font);
 
 		// Fill the menu
-		menu->AddItem(new BMenuItem(B_TRANSLATE("New Note" B_UTF8_ELLIPSIS),new BMessage(OPEN_TAKENOTES)));
+		menu->AddItem(new BMenuItem(B_TRANSLATE("New note" B_UTF8_ELLIPSIS),new BMessage(OPEN_TAKENOTES)));
 		menu->AddItem(new BMenuItem(B_TRANSLATE("About" B_UTF8_ELLIPSIS), new BMessage(B_ABOUT_REQUESTED)));
 		menu->AddItem(new BMenuItem(B_TRANSLATE("Quit"), new BMessage(B_QUIT_REQUESTED)));
 

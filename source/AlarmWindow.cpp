@@ -41,7 +41,7 @@
 * It is created with the dimensions of BRect
 */
 AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
-			: BWindow (frame, B_TRANSLATE("Set alarm for this note"), B_TITLED_WINDOW,B_NOT_RESIZABLE) {
+			: BWindow (frame, B_TRANSLATE("Set an alarm for this note"), B_TITLED_WINDOW,B_NOT_RESIZABLE) {
 
 	// Variables
     fMessenger = new BMessenger(handler);

@@ -600,7 +600,7 @@ void NoteView :: _AboutRequested(){
 
 	about->AddCopyright(2021, "Ilio Catallo & others");
 	about->AddAuthors(authors);
-	about->AddText(B_TRANSLATE("Distribuited under the terms of the GPLv2 license"));
+	about->AddText(B_TRANSLATE("Distributed under the terms of the GPLv2 license"));
 	about->AddText(B_TRANSLATE("Icons by Meanwhile"));
 	about->Show();
 

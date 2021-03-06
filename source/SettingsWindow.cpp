@@ -71,7 +71,7 @@ SettingsWindow :: SettingsWindow (BRect frame, BHandler *handler, rgb_color colo
 	revertButton->ResizeToPreferred();
 	fColorView -> AddChild(revertButton);
 
-	setDefButton = new BButton (BRect(180, 150, 340, 175), "default_color", B_TRANSLATE("set as default"), new BMessage(DEFAULT_COLOR));
+	setDefButton = new BButton (BRect(180, 150, 340, 175), "default_color", B_TRANSLATE("Set as default"), new BMessage(DEFAULT_COLOR));
 	setDefButton->ResizeToPreferred();
 	fColorView -> AddChild(setDefButton);
 

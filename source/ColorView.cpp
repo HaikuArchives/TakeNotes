@@ -16,7 +16,7 @@
 #include "ColorView.h"
 #include "StringView.h"
 
-//translation 
+//translation
 #include <Catalog.h>
 #include <TranslationUtils.h>
 
@@ -38,16 +38,8 @@ void ColorView :: AttachedToWindow() {
 
 // Drawing the window
 void ColorView :: Draw (BRect updateRect) {
-	// Variables
-	BStringView *instructions;
-	BRect frame(10,20,600,35);
-	const char *text = B_TRANSLATE("Change the color. It will be applied immediatly.");
-
-	instructions = new BStringView (frame, "instructions", text);
-	AddChild(instructions);
 }
 
 // When the user clicks...
 void ColorView :: MouseDown(BPoint point) {
-
 }

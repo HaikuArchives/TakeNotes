@@ -20,18 +20,25 @@
 #include <Entry.h>
 #include <Message.h>
 #include <View.h>
+#include <Catalog.h>
+#include <TranslationUtils.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "TagsWindow"
+
 // Constants
 #define BUTTON_OK 		'btok'
-#define BUTTON_UNDO 	'btun'
+#define BUTTON_CANCEL 	'btcn'
 #define TAGS_CLOSE		'_tgc'
 
 
+
 TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
-		   : BWindow (BRect(300,300,700,550),"Set Tags for this note",B_TITLED_WINDOW, B_NOT_RESIZABLE){
+		   : BWindow (BRect(300,300,700,450), B_TRANSLATE("Set Tags for this note")
+		   ,B_TITLED_WINDOW, B_NOT_RESIZABLE){
 
 	// Variables
 	fMessenger = new BMessenger(handler);
@@ -49,14 +56,15 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
 	// Create the main view
 	fTagsView = new BView(Bounds(), "TagsView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 
-	// Create the Text Field
-	fTag1 = new BTextControl(BRect(20,40,200,55), "tag1", "First Tag: ", NULL, NULL);
-	fTag2 = new BTextControl(BRect(20,70,200,85), "tag2", "Second Tag: ", NULL, NULL);
-	fTag3 = new BTextControl(BRect(20,100,200,135), "tag3", "Third Tag: ", NULL, NULL);
+	fTag1 = new BTextControl(BRect(10,10,200,30), "tag1", B_TRANSLATE("First Tag: "), NULL, NULL);
+	fTag2 = new BTextControl(BRect(10,40,200,60), "tag2", B_TRANSLATE("Second Tag: "), NULL, NULL);
+	fTag3 = new BTextControl(BRect(10,70,200,90), "tag3", B_TRANSLATE("Third Tag: "), NULL, NULL);
 
 	//Create the OK and UNDO button
-	fDoneButton = new BButton(BRect(340,200,390,210), "ok", "OK", new BMessage(BUTTON_OK));
-	fUndoButton = new BButton(BRect(270,200,320,210), "undo", "Undo", new BMessage(BUTTON_UNDO));
+	fCancelButton = new BButton(BRect(210,115,290,135), "cancel",
+			B_TRANSLATE("Cancel"), new BMessage(BUTTON_CANCEL));
+	fOkButton = new BButton(BRect(300,115,380,135), "ok",
+			B_TRANSLATE("OK"), new BMessage(BUTTON_OK));
 
 	/*
 	* Add the view as window's child, set back ground color,
@@ -70,15 +78,15 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
 	fTagsView->AddChild(fTag3);
 
 	// Add OK and UNDO button as children
-	fTagsView->AddChild(fDoneButton);
-	fTagsView->AddChild(fUndoButton);
+	fTagsView->AddChild(fOkButton);
+	fTagsView->AddChild(fCancelButton);
 
 	// Open the file from FS starting from the fSaveMessage message
 	if (fSaveMessage->FindRef("directory",&ref) == B_OK && fSaveMessage->FindString("name", &name) == B_OK){
 
 		dir.SetTo(&ref);
 		if ((err = dir.InitCheck()) != B_OK){
-			BAlert *myalert = new BAlert("ERR","errore di inizializzazione del file","OK");
+			BAlert *myalert = new BAlert("ERR", B_TRANSLATE("File initiation failed"), B_TRANSLATE("OK"));
 			myalert->Go();
 			exit(-1);
 
@@ -129,15 +137,8 @@ void TagsWindow :: MessageReceived(BMessage *message){
 		break;
 
 		// Message that answer to an UNDO request
-		case BUTTON_UNDO: {
-
-			BAlert *alert = new BAlert("", "The tags haven't been saved yet, do you really want to close the window ?", "Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-			alert->SetShortcut(0, B_ESCAPE);
-
-			if (alert->Go() == 0) {
-				// Discard all the changes
-				Quit();
-			}
+		case BUTTON_CANCEL: {
+			Quit();
 		}
 		break;
 

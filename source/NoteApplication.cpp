@@ -48,7 +48,6 @@
 #define FONT_BOLD 		'fntb'
 #define NEW				'new'
 #define OPEN			'open'
-#define DELETE			'dele'
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "NoteApplication"
@@ -92,21 +91,24 @@ NoteApplication :: NoteApplication()
 	* Creation of the directory with the association between notes
 	* and applications
 	*/
-	DIR *dir;
-	dir = opendir("/boot/home/config/settings/TakeNotes");
-	if (dir == NULL)
-		mkdir ("/boot/home/config/settings/TakeNotes", O_CREAT);
+
+	status_t ret = B_BAD_VALUE;
+	BPath path;
+	if ((ret = find_directory(B_USER_SETTINGS_DIRECTORY, &path)) == B_OK) {
+		if (ret = path.Append("TakeNotes") == B_OK)
+			ret = create_directory(path.Path(), 0777);
+	}
 
 	// Private data members initialization
 	fWindowCount = 0;
 	note_app = this;
 
 	// Open the config file, if it doesn't exist we create it
-	BFile settings;
-	status_t err;
-	if ((err = settings.SetTo("/boot/home/config/settings/TakeNotes/settings", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
-		printf("%s\n",err);
-	}
+	// BFile settings;
+	// status_t err;
+	// if ((err = settings.SetTo(B_USER_SETTINGS_DIRECTORY + "TakeNotes", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
+	//	printf("%s\n",err);
+	// }
 
 	//thaflo 2021: load global settings
 	fSettingsMessage = new BMessage();
@@ -160,11 +162,11 @@ void NoteApplication :: ReadyToRun(){
 	// thaflo 2020: load defaults and last used note
 	entry_ref *fRef = new entry_ref;
 
-	if(load_settings(fSettingsMessage, "settings", "TakeNotes") != B_OK) {
+	if (load_settings(fSettingsMessage, "settings", "TakeNotes") != B_OK) {
 		printf("open settings failed \n");
 
 	} else {
-		if(fSettingsMessage -> FindBool("load_last_note") == TRUE)
+		if (fSettingsMessage -> FindBool("load_last_note") == TRUE)
 			fSettingsMessage -> FindRef("last_note", fRef);
 	}
 
@@ -172,6 +174,8 @@ void NoteApplication :: ReadyToRun(){
 }
 
 status_t NoteApplication :: Test() {
+	// I wanted to have only one AboutWindow, but it seems that I need an extra
+	// one for the replicant
 	BAlert *alert;
 
 	alert = new BAlert(B_TRANSLATE("About TakeNotes"),
@@ -179,6 +183,7 @@ status_t NoteApplication :: Test() {
 			B_TRANSLATE("Thanks"), NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
 	alert->SetShortcut(0,B_ESCAPE);
 	alert->Go();
+	return true;
 }
 
 // Function CheckMime
@@ -328,7 +333,7 @@ NoteApplication::OpenNote(entry_ref *ref)
 
 	entry_ref linkedRef;
 	BEntry entry(ref, true);
-	if(entry.InitCheck() != B_OK || !entry.Exists() ||
+	if (entry.InitCheck() != B_OK || !entry.Exists() ||
 			entry.GetRef(&linkedRef) != B_OK) {
 		new NoteWindow();
 		fWindowCount++;
@@ -415,7 +420,7 @@ void NoteApplication :: RefsReceived(BMessage *message){
 	if (load_settings(fSettingsMessage, "settings", "TakeNotes") != B_OK)
 			printf("couldn't load settings\n");
 
-	while(message->FindRef("refs", index++, &ref) == B_OK){
+	while (message->FindRef("refs", index++, &ref) == B_OK){
 		OpenNote(&ref);
 	}
 }
@@ -423,14 +428,10 @@ void NoteApplication :: RefsReceived(BMessage *message){
 // Function used to receive messages
 void NoteApplication :: MessageReceived(BMessage *message){
 	// Search if the message that was caputed is handled by the application
-	switch(message->what){
+	switch (message->what){
 
 		case OPEN:
 			fOpenPanel->Show();
-		break;
-
-		case DELETE:
-			printf("todo: delete note\n");
 		break;
 
 		case NEW:

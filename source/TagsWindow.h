@@ -33,8 +33,8 @@ class TagsWindow : public BWindow{
 
  	private:
 
- 		BButton			*fDoneButton;
- 		BButton			*fUndoButton;
+ 		BButton			*fOkButton;
+ 		BButton			*fCancelButton;
  		BTextControl 	*fTag1;
 		BTextControl 	*fTag2;
 		BTextControl    *fTag3;

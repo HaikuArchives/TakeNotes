@@ -17,7 +17,6 @@
 #include "NoteApplication.h"
 #include "NoteWindow.h"
 #include "ColorMenuItem.h"
-#include "SettingsWindow.h"
 
 // Other Libraries
 #include <Alert.h>
@@ -78,7 +77,7 @@
 #define	CHOICE_CLOSE		'_chc'
 #define NOTE_SETTINGS		'ntst'
 #define SETTINGS_CLOSE '_sec'
-#define DEFAULT_COLOR		'defc'
+#define SET_DEFAULT_COLOR		'stdc'
 #define LOAD_LAST_NOTE		'llno'
 #define LIVE_IN_DESKBAR		'lind'
 
@@ -113,14 +112,14 @@ NoteWindow::NoteWindow()
 	// Create the save file panel
 	fSavePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, 0,
 		false);
-		
+
 	Show();
 }
 
 // Construtor
 NoteWindow :: NoteWindow(entry_ref *ref)
 	:
-	BWindow(BRect(100, 100, 350, 350), B_TRANSLATE("Untitled"), B_TITLED_WINDOW,
+	BWindow(BRect(100, 100, 350, 350), B_TRANSLATE("Untitled note"), B_TITLED_WINDOW,
 		B_ASYNCHRONOUS_CONTROLS),
 	fRef(new entry_ref(*ref))
 {
@@ -132,10 +131,11 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 	BAlert 		*alert;
 	BEntry		entry(ref, true);	// entry of possibly linked file
 	BRect		viewRect;
-	BString filename = B_TRANSLATE("Untitled");
-	char 		name[B_FILE_NAME_LENGTH] = "Untitled";
+	BString filename = B_TRANSLATE("Untitled note (filename)");
+	char 		name[B_FILE_NAME_LENGTH] = "Untitled1";
 	bool		isNoteFile = false;	// readable takenotes file
 	bool		isNewFile = false;
+
 
 	// Initialize all the "static" elements like MenuBar,Menu,MenuItems and so on
 	InitWindow();
@@ -159,7 +159,7 @@ NoteWindow :: NoteWindow(entry_ref *ref)
 	if (isNoteFile || isNewFile) {
 		// Set the message that will store the path of the current note on FS
 		fSaveMessage = new BMessage(B_SAVE_REQUESTED);
-		
+
 		if (fSaveMessage){
 			// Add the required information to the fSaveMessage: the parent directory and the name of the file
 			// Variables used ONLY in this case
@@ -284,7 +284,7 @@ void NoteWindow :: InitWindow(){
 	menuBarRect.bottom = MENU_BAR_HEIGHT;
 	fNoteMenuBar = new BMenuBar(menuBarRect,"Barra del menu");
 
-	// Menu 
+	// Menu
 	fFileMenu 		= new BMenu(B_TRANSLATE("Note"));
 	fFontMenu 		= new BMenu(B_TRANSLATE("Font"));
 	fEditMenu 		= new BMenu(B_TRANSLATE("Edit"));
@@ -310,7 +310,6 @@ void NoteWindow :: InitWindow(){
 	fFileMenu -> AddItem (fSaveItem = new BMenuItem(B_TRANSLATE("Save"), new BMessage(SAVE), 'S'));
 	fFileMenu -> AddItem (fSaveItem = new BMenuItem(B_TRANSLATE("Save as" B_UTF8_ELLIPSIS), new BMessage(SAVE_AS), 'S', B_SHIFT_KEY));
 	fFileMenu -> AddSeparatorItem();
-	fFileMenu -> AddItem (fSettingsItem 	= new BMenuItem (B_TRANSLATE("Settings..."),		new BMessage (NOTE_SETTINGS),'P'));
 	fFileMenu -> AddItem (fQuitItem = new BMenuItem (B_TRANSLATE("Quit"), new BMessage (QUIT_APPL), 'Q'));
 
 	// Settings	menu
@@ -458,7 +457,7 @@ void NoteWindow :: CreateOtherWindows(){
 	fColorWindow = NULL;
 	fAlarmWindow = NULL;
 	fChoiceWindow = NULL;
-	fSettingsWindow = NULL;
+
 }
 
 
@@ -579,7 +578,7 @@ status_t NoteWindow :: Save(BMessage *message) {
 	BMessage archive(*message);
 	fNoteView -> Archive(&archive, true);
 	fNoteView->SetReplicated(false);
-						
+
 	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
 			return err;
 		}
@@ -713,7 +712,7 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 			// Open the config file, if it doesn't exist we create it
 			if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
 				return err;
-			}			
+			}
 
 			// Prepare the string
 			config.GetSize(&length);
@@ -798,36 +797,37 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 					db -> RemoveItem(kDeskbarItemName);
 			}	else {
 				fLiveInDeskbar -> SetMarked(true);
-				note_app -> _InstallReplicantInDeskbar();				
+				note_app -> _InstallReplicantInDeskbar();
 			}
 
 		note_app -> fSettingsMessage -> SetBool("load_last_note", fLoadLastNote -> IsMarked());
 		note_app -> fSettingsMessage -> SetBool("live_in_deskbar", fLiveInDeskbar -> IsMarked());
-		
-		if(fRef)  {
+
+		if (fRef)  {
 			note_app -> fSettingsMessage -> RemoveData("last_note" );
 			note_app -> fSettingsMessage -> AddRef("last_note", fRef );
 		}
-		if(save_settings(note_app -> fSettingsMessage, "settings", "TakeNotes") == B_OK)
+		if (save_settings(note_app -> fSettingsMessage, "settings", "TakeNotes") == B_OK)
 				printf("settings saved\n");
-		}	
+		}
 		break;
-		
+
 		case LOAD_LAST_NOTE: {
-			if(fLoadLastNote -> IsMarked()) 
+			if(fLoadLastNote -> IsMarked())
 				fLoadLastNote -> SetMarked(false);
-			else 
+			else
 				fLoadLastNote -> SetMarked(true);
 		}
 
 		note_app -> fSettingsMessage -> SetBool("load_last_note", fLoadLastNote -> IsMarked());
 		if(fRef)  {
+			printf("fRef gibts\n");
 			note_app -> fSettingsMessage -> RemoveData("last_note" );
 			note_app -> fSettingsMessage -> AddRef("last_note", fRef );
 		}
 		if(save_settings(note_app -> fSettingsMessage, "settings", "TakeNotes") == B_OK)
 				printf("settings saved\n");
-				
+
 		break;
 
 		// Show the panel that allows to save the note
@@ -995,7 +995,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 			offset = k;
 			fNoteText -> GetText(offset, length, buffer);
-			
+
 			//the OS should decide how links are opened, user can adjust settings via the file_type preferences
 			BString cmd = buffer;
 
@@ -1025,7 +1025,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			minute = gettime().tm_min;
 			hour = gettime().tm_hour;
 
-			//todo: thaflo 2020: read separator from OS wide preferences
+			//todo: thaflo 2021: read separator from OS wide preferences
 			sprintf(stringa, "%02d/%02d/%02d - %02d:%02d:%02d", day,
 					month, year, hour, minute, second);
 
@@ -1040,26 +1040,11 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		case SET_COLOR:{
 
 			if (fColorWindow == NULL){
-				fColorWindow = new ColorWindow(BRect(300,300,700,500),this, this->FindView("NoteText")->ViewColor());
+				fColorWindow = new ColorWindow(BRect(300,300,700,450),this, this->FindView("NoteText")->ViewColor());
 				fColorWindow -> Show();
 
 			} else {
 //				fColorWindow->Activate();
-			}
-		}
-		break;
-		
-		// Show the settings window - thaflo 2021
-		case NOTE_SETTINGS:{
-			printf ("settings \n");
-
-			if (fSettingsWindow == NULL){
-
-				fSettingsWindow = new SettingsWindow(BRect(300,300,700,700),this, this->FindView("NoteText")->ViewColor());
-				fSettingsWindow -> Show();
-
-			} else {
-				fSettingsWindow->Activate();
 			}
 		}
 		break;
@@ -1147,7 +1132,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			}
 		}
 		break;
-		
+
 		// Setting the alarm with the window opened
 		case SET_ALARM: {
 
@@ -1234,21 +1219,10 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 		// It removes the color window
 		case COLOR_CLOSE: {
-			if(fSaveMessage) {
+			if (fSaveMessage) {
 				this->PostMessage(SAVE);
 			}
 			fColorWindow = NULL;
-		}
-		break;
-		
-		// It removes the settings window
-		case SETTINGS_CLOSE: {
-			printf("close settings \n");
-			//if message with information about the note exists, save them
-			if(fSaveMessage) { 
-				this->PostMessage(SAVE);
-			}
-			fSettingsWindow = NULL;
 		}
 		break;
 
@@ -1275,8 +1249,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			note_app -> AboutRequested();
 		}
 		break;
-		
-		case DEFAULT_COLOR: {
+
+		case SET_DEFAULT_COLOR: {
 		//save the new default color
 			rgb_color c = {10,10,10,10};
 			note_app -> fSettingsMessage -> SetColor("def_color", message -> GetColor("new_def_color", c));

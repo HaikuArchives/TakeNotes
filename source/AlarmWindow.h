@@ -44,7 +44,7 @@ class AlarmWindow : public BWindow {
 						*year;
 
 		BButton			*fButtonOk;
-		BButton			*fButtonUndo;
+		BButton			*fButtonCancel;
 
 		BMessenger		*fMessenger;
 

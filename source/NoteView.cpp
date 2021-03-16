@@ -54,6 +54,7 @@
 #define	OPEN_FILE			'onfl'
 #define REMOVE_ASSOCIATION	'rmsc'
 #define SETTINGS_CLOSE		'settc'
+#define OPEN_NEW_NOTE		'opnn'
 
 // Constructor
 NoteView :: NoteView(BRect frame, int32 resizingMode, bool inDeskbar, BHandler *handler)
@@ -246,7 +247,7 @@ void NoteView :: MouseDown(BPoint point){
 		menu->SetFont(be_plain_font);
 
 		// Fill the menu
-		menu->AddItem(new BMenuItem(B_TRANSLATE("New Note" B_UTF8_ELLIPSIS),new BMessage(OPEN_TAKENOTES)));
+		menu->AddItem(new BMenuItem(B_TRANSLATE("Open TakeNotes" B_UTF8_ELLIPSIS),new BMessage(OPEN_TAKENOTES)));
 		menu->AddItem(new BMenuItem(B_TRANSLATE("About" B_UTF8_ELLIPSIS), new BMessage(B_ABOUT_REQUESTED)));
 		menu->AddItem(new BMenuItem(B_TRANSLATE("Quit"), new BMessage(B_QUIT_REQUESTED)));
 
@@ -449,7 +450,7 @@ void NoteView :: MessageReceived(BMessage *message){
 	// Variables
 	char	*argv[1];
 
-	switch(message->what){
+	switch (message->what){
 
 		// The user wants more information about us
 		case B_ABOUT_REQUESTED:
@@ -459,6 +460,11 @@ void NoteView :: MessageReceived(BMessage *message){
 		// The user wants to open takenotes and write a new note
 		case OPEN_TAKENOTES:
 			_OpenTakeNotes();
+		break;
+
+		// The user wants to open a new note
+		case OPEN_NEW_NOTE:
+			be_roster -> Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
 		break;
 
 		// The user wants to open a note releated to an application that is currently running
@@ -566,7 +572,7 @@ void NoteView :: _LoadDB(){
 // Launch TakeNotes
 void NoteView :: _OpenTakeNotes(){
 
-	be_roster->Launch("application/x-vnd.ccc-TakeNotes");
+	be_roster->Launch("application/x-vnd.ccc-TakeNotes", new BMessage(OPEN_NEW_NOTE));
 
 }
 
@@ -579,7 +585,6 @@ void NoteView :: _Quit(){
 		deskbar.RemoveItem(kDeskbarItemName);
 
 	} else {
-
 		be_app->PostMessage(B_QUIT_REQUESTED);
     }
 
@@ -602,6 +607,7 @@ void NoteView :: _AboutRequested(){
 	about->AddAuthors(authors);
 	about->AddText(B_TRANSLATE("Distribuited under the terms of the GPLv2 license"));
 	about->AddText(B_TRANSLATE("Icons by Meanwhile"));
+	about->AddExtraInfo("extra info");
 	about->Show();
 
 }

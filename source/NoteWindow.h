@@ -23,8 +23,6 @@
 #include "AlarmWindow.h"
 #include "ChoiceWindow.h"
 #include "TagsWindow.h"
-#include "SettingsWindow.h"
-
 
 // Other Libraries
 #include <Window.h>
@@ -86,7 +84,6 @@ class NoteWindow : public BWindow {
 		AlarmWindow 	*fAlarmWindow;
 		ChoiceWindow 	*fChoiceWindow;
 		TagsWindow		*fTagsWindow;
-		SettingsWindow	*fSettingsWindow;
 		BMenuBar 		*fNoteMenuBar;
 		BMenu			*fFileMenu;
 		BMenu 			*fFontMenu;

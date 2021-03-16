@@ -23,7 +23,8 @@
 
 // Messages
 #define COLOR_CHANGED 	'ccrq'
-#define BUTTON_DEFAULT		'btdf'
+#define BUTTON_REVERT		'btrv'
+#define SET_DEFAULT_COLOR		'stdc'
 #define COLOR_CLOSE		'_clc'
 #define COLOR_CHOSEN		'_cch'
 #define COLOR 'colo'
@@ -41,14 +42,15 @@
 * It is created with the dimensions of BRect
 */
 ColorWindow :: ColorWindow (BRect frame, BHandler *handler, rgb_color color)
-			: BWindow (frame, B_TRANSLATE("Change the background color"), B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+			: BWindow (frame, B_TRANSLATE("Change the default background color"), B_TITLED_WINDOW, B_NOT_RESIZABLE) {
 
 	// Variables
-	BPoint 				 leftTop(10.0, 50.0);
+	BPoint 				 leftTop(10.0, 10.0);
 	color_control_layout matrix;
 	long 				 cellSide;
 
-	BButton				 *undoButton;
+	BButton				 *revertButton;
+	BButton				 *setAsDefaultButton;
 
 	// Create the  view and set the background color, then add child to window
 	frame.OffsetTo(B_ORIGIN);
@@ -67,9 +69,15 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler, rgb_color color)
 	fColorControl->SetValue(color);
 	fColorView -> AddChild(fColorControl);
 
-	undoButton = new BButton (BRect(10, 150, 170, 175), "default", B_TRANSLATE("Default"), new BMessage(BUTTON_DEFAULT));
-	undoButton->ResizeToPreferred();
-	fColorView -> AddChild(undoButton);
+	revertButton = new BButton (BRect(10, 100, 170, 125), "default", B_TRANSLATE("Defaults"), new BMessage(BUTTON_REVERT));
+	revertButton->ResizeToPreferred();
+	fColorView -> AddChild(revertButton);
+
+	setAsDefaultButton = new BButton (BRect(135, 100, 250, 125), "default_color",
+				B_TRANSLATE("Set as default for new notes"), new BMessage(SET_DEFAULT_COLOR));
+	setAsDefaultButton->ResizeToPreferred();
+	fColorView -> AddChild(setAsDefaultButton);
+
 
 	Show();
 }
@@ -97,16 +105,18 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 			}
 			break;
 
-		// It answer to an UNDO request
-		case BUTTON_DEFAULT: {
+		// It answer to an REVERT request
+		case BUTTON_REVERT: {
+			fColorControl->SetValue(gBgColor);
+			this->PostMessage(COLOR_CHANGED);
+		}
+		break;
 
-			alert = new BAlert("", B_TRANSLATE("Set default values ?"), B_TRANSLATE("Yes"), B_TRANSLATE("No"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-			alert->SetShortcut(0, B_ESCAPE);
-
-			if (alert->Go() == 0) {
-				fColorControl->SetValue(gBgColor);
-				this->PostMessage(COLOR_CHANGED);
-			}
+		// It answer to SET AS DEFAULT request
+		case SET_DEFAULT_COLOR: {
+			msg = new BMessage(SET_DEFAULT_COLOR);
+			msg -> AddColor("new_def_color", fColorControl -> ValueAsColor());
+			fMessenger->SendMessage(msg);
 		}
 		break;
 

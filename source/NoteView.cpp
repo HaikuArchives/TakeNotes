@@ -276,39 +276,39 @@ void NoteView :: MouseDown(BPoint point){
    		 		name.Compare("media_addon_server") != 0 && name.Compare("afp_server") != 0 && name.Compare("debug_server") != 0) {
 
    		 		// Obtain the signature number
-   				countSignatures = fHash -> GetNumSignatures();
+   				countSignatures = fHash->GetNumSignatures();
 
    				// For each signature in the list we check if it is the hash table and in case we add it to the menu
    				for (int i = 0; i < countSignatures; i++) {
-   					sig = fHash -> GetSignature(i);
-   					if (strcmp (appInfo -> signature, sig) == 0) {
+   					sig = fHash->GetSignature(i);
+   					if (strcmp (appInfo->signature, sig) == 0) {
    						subMenu = new BMenu (ref.name);
 
    						// Make the list of the notes releated to that application
-   						int countNotes = fHash -> GetNumNotes(sig);
+   						int countNotes = fHash->GetNumNotes(sig);
    						for (int j = 0; j < countNotes; j++) {
 
    							// Obtain the current note path
-   							note = fHash -> GetNote(sig, j);
+   							note = fHash->GetNote(sig, j);
 
    							// Create the list of notes for a given application
    							mess = new BMessage(OPEN_FILE);
-   							mess -> AddString("Note", note);
+   							mess->AddString("Note", note);
 
    							messRemove = new BMessage (REMOVE_ASSOCIATION);
-   							messRemove -> AddString ("Note", note);
-   							messRemove -> AddString ("Signature", sig);
+   							messRemove->AddString ("Note", note);
+   							messRemove->AddString ("Signature", sig);
 
    							// Sub-menu useful to open or remove a note
    							noteMenu = new BMenu (note);
-   							noteMenu -> AddItem (new BMenuItem ("Open", mess));
-   							noteMenu -> AddItem (new BMenuItem ("Remove the association", messRemove));
-   							noteMenu -> SetTargetForItems(this);
-   							subMenu -> AddItem (noteMenu);
+   							noteMenu->AddItem (new BMenuItem ("Open", mess));
+   							noteMenu->AddItem (new BMenuItem ("Remove the association", messRemove));
+   							noteMenu->SetTargetForItems(this);
+   							subMenu->AddItem (noteMenu);
    						}
 
-   						subMenu -> SetTargetForItems(this);
-   						menu -> AddItem (subMenu);
+   						subMenu->SetTargetForItems(this);
+   						menu->AddItem (subMenu);
    					}
    				}
 
@@ -351,7 +351,7 @@ status_t NoteView :: Archive (BMessage *msg,bool deep) const{
 	msg->AddString("class","NoteView");
 
 	// If the function has been called by NoteWindow::Save we should find this information and use them to save
-	if (msg->FindRef("directory",&ref) == B_OK && msg -> FindString("name", &name) == B_OK) {
+	if (msg->FindRef("directory",&ref) == B_OK && msg->FindString("name", &name) == B_OK) {
 
 		dir.SetTo(&ref);
 		if ((err = dir.InitCheck()) != B_OK)
@@ -418,16 +418,16 @@ status_t NoteView :: _SaveDB(){
 	toWrite.SetTo("");
 
 	// Writing the structure, for each signature...
-	countSignatures = fHash -> GetNumSignatures();
+	countSignatures = fHash->GetNumSignatures();
 	for (int i = 0; i < countSignatures; i++) {
 
 		// Prepare the string
-		char* signature = fHash -> GetSignature(i);
-		countNotes = fHash -> GetNumNotes(signature);
+		char* signature = fHash->GetSignature(i);
+		countNotes = fHash->GetNumNotes(signature);
 
 		// Parse the string
 		for (int j = 0; j < countNotes; j++) {
-			char* note = fHash -> GetNote (signature, j);
+			char* note = fHash->GetNote (signature, j);
 			printf(">>(FILE) nota: %d, path: %s\n", j, note);
 			toWrite.Append(note);
 			toWrite.Append(":");
@@ -464,17 +464,17 @@ void NoteView :: MessageReceived(BMessage *message){
 
 		// The user wants to open a new note
 		case OPEN_NEW_NOTE:
-			be_roster -> Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
+			be_roster->Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
 		break;
 
 		// The user wants to open a note releated to an application that is currently running
 		case OPEN_FILE:{
 
 			// Find the note path of the releated application
-			argv[0] = (char*)message -> FindString("Note");
+			argv[0] = (char*)message->FindString("Note");
 
 			//Open the note
-			be_roster -> Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
+			be_roster->Launch("application/x-vnd.ccc-TakeNotes", 1, argv, NULL);
 		}
 		break;
 
@@ -486,7 +486,7 @@ void NoteView :: MessageReceived(BMessage *message){
 			BString s(message->FindString("Signature"));
 
 			// Removing from the data structure
-			fHash -> DeleteNote (s, n);
+			fHash->DeleteNote (s, n);
 
 			// Rewriting the file
 			_SaveDB();
@@ -645,6 +645,6 @@ void NoteView :: SetBackgroundColor(rgb_color color){
 }
 
 extern "C" _EXPORT BView *instantiate_deskbar_item(void){
-
+	printf("extern C _export ...\n");
 	return new NoteView(BRect(0, 0, 15, 15), B_FOLLOW_LEFT | B_FOLLOW_TOP,true);
 }

@@ -16,7 +16,7 @@ NAME= TakeNotes
 #	DRIVER: Kernel Driver
 TYPE= APP
 
-# 	if you plan to use localization features 
+# 	if you plan to use localization features
 # 	specify the application MIME siganture
 APP_MIME_SIG= application/x-vnd.TakeNotes
 
@@ -24,7 +24,7 @@ APP_MIME_SIG= application/x-vnd.TakeNotes
 #	to fill in generic makefile
 
 #%{
-# @src->@ 
+# @src->@
 
 #	specify the source files to use
 #	full paths or paths relative to the makefile can be included
@@ -35,13 +35,11 @@ APP_MIME_SIG= application/x-vnd.TakeNotes
 #	are included from different directories.  Also note that spaces
 #	in folder names do not work well with this makefile.
 SRCS = \
-	 AlarmView.cpp  \
 	 AlarmWindow.cpp  \
 	 AppHashTable.cpp  \
 	 ChoiceView.cpp  \
 	 ChoiceWindow.cpp  \
 	 ColorMenuItem.cpp  \
-	 ColorView.cpp  \
 	 ColorWindow.cpp  \
 	 NoteApplication.cpp  \
 	 NoteRefFilter.cpp  \
@@ -56,14 +54,14 @@ SRCS = \
 RDEFS = \
 	 TakeNotes.rdef  \
 
-	
-#	specify the resource files to use. 
+
+#	specify the resource files to use.
 #	full path or a relative path to the resource file can be used.
 #	both RDEFS and RSRCS can be defined in the same makefile.
 RSRCS = \
 
 
-# @<-src@ 
+# @<-src@
 #%}
 
 #%}
@@ -83,7 +81,7 @@ RSRCS = \
 #
 #	-	for localization support add following libs:
 #		locale localestub
-#		
+#
 #	- 	if your library does not follow the standard library
 #		naming scheme you need to specify the path to the library
 #		and it's name
@@ -96,21 +94,21 @@ LIBS= be localestub shared translation tracker $(STDCPPLIBS)
 #	be recursive, so include all of the paths where libraries can
 #	be found.  Directories where source files are found are
 #	automatically included.
-LIBPATHS= 
+LIBPATHS=
 
 #	additional paths to look for system headers
 #	thes use the form: #include <header>
 #	source file directories are NOT auto-included here
-SYSTEM_INCLUDE_PATHS = 
+SYSTEM_INCLUDE_PATHS =
 
 #	additional paths to look for local headers
 #	thes use the form: #include "header"
 #	source file directories are automatically included
-LOCAL_INCLUDE_PATHS = 
+LOCAL_INCLUDE_PATHS =
 
 #	specify the level of optimization that you desire
 #	NONE, SOME, FULL
-OPTIMIZE= 
+OPTIMIZE=
 
 # 	specify here the codes for languages you are going
 # 	to support in this application. The default "en"
@@ -125,23 +123,23 @@ LOCALES= en de
 #	to use.  For example, setting DEFINES to "DEBUG=1" will cause the
 #	compiler option "-DDEBUG=1" to be used.  Setting DEFINES to "DEBUG"
 #	would pass "-DDEBUG" on the compiler's command line.
-DEFINES= 
+DEFINES=
 
 #	specify special warning levels
 #	if unspecified default warnings will be used
 #	NONE = supress all warnings
 #	ALL = enable all warnings
-WARNINGS = 
+WARNINGS =
 
 #	specify whether image symbols will be created
 #	so that stack crawls in the debugger are meaningful
 #	if TRUE symbols will be created
-SYMBOLS = 
+SYMBOLS =
 
 #	specify debug settings
 #	if TRUE will allow application to be run from a source-level
 #	debugger.  Note that this will disable all optimzation.
-DEBUGGER = 
+DEBUGGER =
 
 #	specify additional compiler flags for all files
 COMPILER_FLAGS =
@@ -150,16 +148,16 @@ COMPILER_FLAGS =
 LINKER_FLAGS =
 
 #	specify the version of this particular item
-#	(for example, -app 3 4 0 d 0 -short 340 -long "340 "`echo -n -e '\302\251'`"1999 GNU GPL") 
+#	(for example, -app 3 4 0 d 0 -short 340 -long "340 "`echo -n -e '\302\251'`"1999 GNU GPL")
 #	This may also be specified in a resource.
-APP_VERSION = 
+APP_VERSION =
 
 #	(for TYPE == DRIVER only) Specify desired location of driver in the /dev
 #	hierarchy. Used by the driverinstall rule. E.g., DRIVER_PATH = video/usb will
 #	instruct the driverinstall rule to place a symlink to your driver's binary in
 #	~/add-ons/kernel/drivers/dev/video/usb, so that your driver will appear at
 #	/dev/video/usb when loaded. Default is "misc".
-DRIVER_PATH = 
+DRIVER_PATH =
 
 ## include the makefile-engine
 DEVEL_DIRECTORY := \

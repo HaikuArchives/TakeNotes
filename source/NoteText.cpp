@@ -92,17 +92,17 @@ void NoteText :: MessageReceived(BMessage *message){
 
 		// Cut request
 		case B_CUT:
-			this -> Cut(be_clipboard);
+			this->Cut(be_clipboard);
 		break;
 
 		// Copy Request
 		case B_COPY:
-			this -> Copy(be_clipboard);
+			this->Copy(be_clipboard);
 		break;
 
 		// Paste Request
 		case B_PASTE:
-			this -> Paste(be_clipboard);
+			this->Paste(be_clipboard);
 		break;
 
 		// All the other messages are forwarded to the superclass method

@@ -290,40 +290,40 @@ void NoteWindow :: InitWindow(){
 	fEditMenu 		= new BMenu(B_TRANSLATE("Edit"));
 	fSettingsMenu 	= new BMenu(B_TRANSLATE("Settings"));
 
-	fNoteMenuBar -> AddItem (fFileMenu);
-	fNoteMenuBar -> AddItem (fEditMenu);
-	fNoteMenuBar -> AddItem (fFontMenu);
-	fNoteMenuBar -> AddItem (fSettingsMenu);
-	fNoteMenuBar -> AddItem(new BMenuItem(B_TRANSLATE("About" B_UTF8_ELLIPSIS), new BMessage(B_ABOUT_REQUESTED)));
+	fNoteMenuBar->AddItem (fFileMenu);
+	fNoteMenuBar->AddItem (fEditMenu);
+	fNoteMenuBar->AddItem (fFontMenu);
+	fNoteMenuBar->AddItem (fSettingsMenu);
+	fNoteMenuBar->AddItem(new BMenuItem(B_TRANSLATE("About" B_UTF8_ELLIPSIS), new BMessage(B_ABOUT_REQUESTED)));
 
-	fFontMenu -> SetRadioMode(true);
+	fFontMenu->SetRadioMode(true);
 
 	/*************** Menu Item ***************/
 
 	// File menu
-	fFileMenu -> AddItem (fNewItem = new BMenuItem(B_TRANSLATE("New" B_UTF8_ELLIPSIS), new BMessage(NEW), 'N'));
-	fFileMenu -> AddItem (fOpenItem = new BMenuItem(B_TRANSLATE("Open" B_UTF8_ELLIPSIS), new BMessage(OPEN), 'O'));
-	fNewItem -> SetTarget(note_app);
-	fOpenItem -> SetTarget(note_app);
+	fFileMenu->AddItem (fNewItem = new BMenuItem(B_TRANSLATE("New" B_UTF8_ELLIPSIS), new BMessage(NEW), 'N'));
+	fFileMenu->AddItem (fOpenItem = new BMenuItem(B_TRANSLATE("Open" B_UTF8_ELLIPSIS), new BMessage(OPEN), 'O'));
+	fNewItem->SetTarget(note_app);
+	fOpenItem->SetTarget(note_app);
 
-	fFileMenu -> AddSeparatorItem();
-	fFileMenu -> AddItem (fSaveItem = new BMenuItem(B_TRANSLATE("Save"), new BMessage(SAVE), 'S'));
-	fFileMenu -> AddItem (fSaveItem = new BMenuItem(B_TRANSLATE("Save as" B_UTF8_ELLIPSIS), new BMessage(SAVE_AS), 'S', B_SHIFT_KEY));
-	fFileMenu -> AddSeparatorItem();
-	fFileMenu -> AddItem (fQuitItem = new BMenuItem (B_TRANSLATE("Quit"), new BMessage (QUIT_APPL), 'Q'));
+	fFileMenu->AddSeparatorItem();
+	fFileMenu->AddItem (fSaveItem = new BMenuItem(B_TRANSLATE("Save"), new BMessage(SAVE), 'S'));
+	fFileMenu->AddItem (fSaveItem = new BMenuItem(B_TRANSLATE("Save as" B_UTF8_ELLIPSIS), new BMessage(SAVE_AS), 'S', B_SHIFT_KEY));
+	fFileMenu->AddSeparatorItem();
+	fFileMenu->AddItem (fQuitItem = new BMenuItem (B_TRANSLATE("Quit"), new BMessage (QUIT_APPL), 'Q'));
 
 	// Settings	menu
 	//: rename it at the end to "Add..."
-	fSettingsMenu -> AddItem (fChangeBackgroundColorItem 	= new BMenuItem (B_TRANSLATE("Change background color"),		new BMessage (SET_COLOR)));
-	fSettingsMenu -> AddItem (fAddDateAndTimeItem 			= new BMenuItem (B_TRANSLATE("Insert date and time"),			new BMessage (ADD_DATA)));
-	fSettingsMenu -> AddItem (fSetAlarmItem 				= new BMenuItem (B_TRANSLATE("Set alarm"), 					new BMessage (SET_ALARM)));
-	fSettingsMenu -> AddItem (fSetTagsItem 					= new BMenuItem (B_TRANSLATE("Set tags"),					new BMessage (SET_TAGS)));
-	fSettingsMenu -> AddItem (fSetAppItem 					= new BMenuItem (B_TRANSLATE("Set preferred application"),	new BMessage (SET_APP)));
-	fSettingsMenu -> AddItem (fLink 						= new BMenuItem (B_TRANSLATE("Open the selected link"), 	new BMessage (GO_TO_LINK)));
-	fSettingsMenu -> AddItem (fLoadLastNote				= new BMenuItem (B_TRANSLATE("Load last note on startup"), 	new BMessage (LOAD_LAST_NOTE)));
-	fSettingsMenu -> AddItem (fLiveInDeskbar				= new BMenuItem (B_TRANSLATE("Use Deskbar Replicant"), 	new BMessage (LIVE_IN_DESKBAR)));
-	fLoadLastNote -> SetMarked(note_app -> fSettingsMessage -> FindBool("load_last_note"));
-	fLiveInDeskbar -> SetMarked(note_app -> fSettingsMessage -> FindBool("live_in_deskbar"));
+	fSettingsMenu->AddItem (fChangeBackgroundColorItem 	= new BMenuItem (B_TRANSLATE("Change background color"),		new BMessage (SET_COLOR)));
+	fSettingsMenu->AddItem (fAddDateAndTimeItem 			= new BMenuItem (B_TRANSLATE("Insert date and time"),			new BMessage (ADD_DATA)));
+	fSettingsMenu->AddItem (fSetAlarmItem 				= new BMenuItem (B_TRANSLATE("Set alarm"), 					new BMessage (SET_ALARM), 'L'));
+	fSettingsMenu->AddItem (fSetTagsItem 					= new BMenuItem (B_TRANSLATE("Set tags"),					new BMessage (SET_TAGS)));
+	fSettingsMenu->AddItem (fSetAppItem 					= new BMenuItem (B_TRANSLATE("Set preferred application"),	new BMessage (SET_APP)));
+	fSettingsMenu->AddItem (fLink 						= new BMenuItem (B_TRANSLATE("Open the selected link"), 	new BMessage (GO_TO_LINK)));
+	fSettingsMenu->AddItem (fLoadLastNote				= new BMenuItem (B_TRANSLATE("Load last note on startup"), 	new BMessage (LOAD_LAST_NOTE)));
+	fSettingsMenu->AddItem (fLiveInDeskbar				= new BMenuItem (B_TRANSLATE("Use Deskbar Replicant"), 	new BMessage (LIVE_IN_DESKBAR)));
+	fLoadLastNote->SetMarked(note_app->fSettingsMessage->FindBool("load_last_note"));
+	fLiveInDeskbar->SetMarked(note_app->fSettingsMessage->FindBool("live_in_deskbar"));
 
 	// Edit menu
 	fEditMenu 		-> AddItem (fUndoItem 		= new BMenuItem(B_TRANSLATE("Can't Undo"), 	new BMessage(B_UNDO), 		'Z'));
@@ -346,25 +346,25 @@ void NoteWindow :: InitWindow(){
 	// Writing the menu...
 	for (uint32 i = 0; i < sizeof(fontSizes) / sizeof(fontSizes[0]); i++ ){
 		message = new BMessage (FONT_SIZE);
-		message -> AddFloat ("size", fontSizes[i]);
+		message->AddFloat ("size", fontSizes[i]);
 		char label[64];
 		snprintf(label, sizeof(label), "%ld", fontSizes[i]);
-		sizeFont -> AddItem (menuItem = new BMenuItem (label, message));
+		sizeFont->AddItem (menuItem = new BMenuItem (label, message));
 		if (i == 3)
-			menuItem -> SetMarked(true);
+			menuItem->SetMarked(true);
 	}
 
 	// Font: Color
 	colorFont =  new BMenu (B_TRANSLATE("Color"));
-	colorFont -> SetRadioMode (true);
-	fFontMenu -> AddItem (colorFont);
+	colorFont->SetRadioMode (true);
+	fFontMenu->AddItem (colorFont);
 	// Writing the menu...
 	for (uint32 i = 0; i < sizeof(colors) / sizeof(colors[0]); i++ ){
 
 		message = new BMessage (FONT_COLOR);
-		message -> AddInt8 ("red", (int8)colors[i].red);
-		message -> AddInt8 ("green", (int8)colors[i].green);
-		message -> AddInt8 ("blue", (int8)colors[i].blue);
+		message->AddInt8 ("red", (int8)colors[i].red);
+		message->AddInt8 ("green", (int8)colors[i].green);
+		message->AddInt8 ("blue", (int8)colors[i].blue);
 
 		label = "";
 		switch (i) {
@@ -396,18 +396,18 @@ void NoteWindow :: InitWindow(){
 			default:
 				break;
 		}
-		colorFont -> AddItem (menuItem = new ColorMenuItem (label, color, message));
+		colorFont->AddItem (menuItem = new ColorMenuItem (label, color, message));
 			// Set the item as "in use"
 			if (i == 0)
-				menuItem -> SetMarked(true);
+				menuItem->SetMarked(true);
 	}
 
-	fFontMenu -> AddSeparatorItem();
+	fFontMenu->AddSeparatorItem();
 
 	// Font type
 	fCurrentFont = 0;
 
-	be_plain_font -> GetFamilyAndStyle (&plainFamily,&plainStyle);
+	be_plain_font->GetFamilyAndStyle (&plainFamily,&plainStyle);
 
 	// Taking the number of font families
 	numFamilies = count_font_families();
@@ -418,11 +418,11 @@ void NoteWindow :: InitWindow(){
 
 			// Creating a menu of that font family
 			fontMenu = new BMenu (family);
-			fontMenu -> SetRadioMode (true);	// I can set only one item as "in use"
-			fFontMenu -> AddItem (menuItem = new BMenuItem (fontMenu, new BMessage (FONT_FAMILY)));
+			fontMenu->SetRadioMode (true);	// I can set only one item as "in use"
+			fFontMenu->AddItem (menuItem = new BMenuItem (fontMenu, new BMessage (FONT_FAMILY)));
 
 			if (!strcmp (plainFamily,family)) {
-				menuItem -> SetMarked (true);
+				menuItem->SetMarked (true);
 				fCurrentFont = menuItem;
 			}
 			// Number of styles of that font family
@@ -432,10 +432,10 @@ void NoteWindow :: InitWindow(){
 			for (int32 j = 0; j < numStyles; j++) {
 
 				if (get_font_style(family,j,&style,&flags)==B_OK) {
-					fontMenu -> AddItem (menuItem = new BMenuItem (style, new BMessage(FONT_STYLE)));
+					fontMenu->AddItem (menuItem = new BMenuItem (style, new BMessage(FONT_STYLE)));
 
 					if (!strcmp (plainStyle, style))
-						menuItem -> SetMarked(true);
+						menuItem->SetMarked(true);
 
 				}
 			}
@@ -482,9 +482,9 @@ NoteWindow::_CreateNoteView(void)
 	frameText.InsetBy(TEXT_INSET, TEXT_INSET);
 
 	fNoteText = new NoteText(frameView, frameText, B_TRANSLATE("NoteText"), this);
-	fNoteText -> SetDoesUndo(true);
-	fNoteText -> MakeFocus();
-	fNoteText -> SetStylable(true);
+	fNoteText->SetDoesUndo(true);
+	fNoteText->MakeFocus();
+	fNoteText->SetStylable(true);
 	// ScrollView
 	fScrollView = new BScrollView("scrollview", fNoteText, B_FOLLOW_ALL, 0,
 		true, true, B_NO_BORDER);
@@ -492,10 +492,10 @@ NoteWindow::_CreateNoteView(void)
 	fNoteView->AddChild(fScrollView);
 
 	//load color read from the settings file which was loaded in fSettingsMessage
-	fNoteView -> SetBackgroundColor(note_app -> fSettingsMessage -> GetColor("def_color", {255,240,113}));
+	fNoteView->SetBackgroundColor(note_app->fSettingsMessage->GetColor("def_color", {255,240,113}));
 
 	if(!fSaveMessage)
-		MoveTo(200+(note_app -> fWindowCount*20),200+( note_app -> fWindowCount*20));
+		MoveTo(200+(note_app->fWindowCount*20),200+( note_app->fWindowCount*20));
 }
 
 
@@ -511,28 +511,28 @@ void NoteWindow :: SetFontStyle (const char* fontFamily, const char* fontStyle) 
 	rgb_color 	sameColor;
 	BMenuItem 	*oldItem;
 
-	fNoteText -> GetFontAndColor (&font, &sameProperties, &sameColor);
+	fNoteText->GetFontAndColor (&font, &sameProperties, &sameColor);
 	// Copying the current font family and font style
 	font.GetFamilyAndStyle (&oldFamily, &oldStyle);
 
 	if (strcmp (oldFamily, fontFamily)) {
-		oldItem = fFontMenu -> FindItem (oldFamily);
+		oldItem = fFontMenu->FindItem (oldFamily);
 
 		if (oldItem != NULL)
 			// Removing the check
-			oldItem -> SetMarked (false);
+			oldItem->SetMarked (false);
 	}
 
 	font.SetFamilyAndStyle (fontFamily, fontStyle);
-	fNoteText -> SetFontAndColor (&font);
+	fNoteText->SetFontAndColor (&font);
 
-	superItem = fFontMenu -> FindItem (fontFamily);
+	superItem = fFontMenu->FindItem (fontFamily);
 
 		if (superItem != NULL )
-			superItem -> SetMarked (true);	// Check the one that was selected
+			superItem->SetMarked (true);	// Check the one that was selected
 
-	menuItem = fFontMenu -> FindItem("Black");
-	menuItem -> SetMarked(true);
+	menuItem = fFontMenu->FindItem("Black");
+	menuItem->SetMarked(true);
 }
 
 // Function that saves the note
@@ -553,7 +553,7 @@ status_t NoteWindow :: Save(BMessage *message) {
 	// Saving the directory and the path of the note
 	if ((err = message->FindRef("directory",&ref)) != B_OK)
 		return err;
-	if ((err = message -> FindString("name", &name)) != B_OK)
+	if ((err = message->FindString("name", &name)) != B_OK)
 		return err;
 
 	// Set fRef
@@ -576,7 +576,7 @@ status_t NoteWindow :: Save(BMessage *message) {
 	SetTitle(name);
 
 	BMessage archive(*message);
-	fNoteView -> Archive(&archive, true);
+	fNoteView->Archive(&archive, true);
 	fNoteView->SetReplicated(false);
 
 	if ((err = config.SetTo("/boot/home/config/settings/TakeNotes/config", B_READ_WRITE | B_CREATE_FILE)) != B_OK){
@@ -683,22 +683,22 @@ status_t NoteWindow :: _SaveDB(const char* signature){
 		_LoadDB();
 
 		// We take the number of the signatures...
-		countSignatures = fHash -> GetNumSignatures();
+		countSignatures = fHash->GetNumSignatures();
 
 		// Searching if the signature is still present with this note
 		for (int i = 0; i < countSignatures; i++) {
-			sig = fHash -> GetSignature(i);
+			sig = fHash->GetSignature(i);
 
 			// Signature found?
 			if (strcmp (signature, sig) == 0) {
 
 				// Number of notes in this signature
 				BString str(signature);
-				countNotes = fHash -> GetNumNotes(str);
+				countNotes = fHash->GetNumNotes(str);
 
 				for (int j = 0; j < countNotes; j++)
 					// Note found
-					if (strcmp(fHash -> GetNote(str, j), path.Path()) == 0) {
+					if (strcmp(fHash->GetNote(str, j), path.Path()) == 0) {
 						found = 1;
 						alert = new BAlert("Error", B_TRANSLATE("Error: This selection is in the database!"),
 							B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
@@ -787,59 +787,58 @@ void NoteWindow :: MessageReceived(BMessage* message) {
         struct tm *timeinfo;
 
 	// Receiving the messages
-	switch (message -> what) {
+	switch (message->what) {
 
 		case LIVE_IN_DESKBAR: {
-			if(fLiveInDeskbar -> IsMarked()) {
-				fLiveInDeskbar -> SetMarked(false);
+			if(fLiveInDeskbar->IsMarked()) {
+				fLiveInDeskbar->SetMarked(false);
 				BDeskbar *db = new BDeskbar();
-				if (db -> HasItem(kDeskbarItemName))
-					db -> RemoveItem(kDeskbarItemName);
+				if (db->HasItem(kDeskbarItemName))
+					db->RemoveItem(kDeskbarItemName);
 			}	else {
-				fLiveInDeskbar -> SetMarked(true);
-				note_app -> _InstallReplicantInDeskbar();
+				fLiveInDeskbar->SetMarked(true);
+				note_app->_InstallReplicantInDeskbar();
 			}
 
-		note_app -> fSettingsMessage -> SetBool("load_last_note", fLoadLastNote -> IsMarked());
-		note_app -> fSettingsMessage -> SetBool("live_in_deskbar", fLiveInDeskbar -> IsMarked());
+		note_app->fSettingsMessage->SetBool("load_last_note", fLoadLastNote->IsMarked());
+		note_app->fSettingsMessage->SetBool("live_in_deskbar", fLiveInDeskbar->IsMarked());
 
 		if (fRef)  {
-			note_app -> fSettingsMessage -> RemoveData("last_note" );
-			note_app -> fSettingsMessage -> AddRef("last_note", fRef );
+			note_app->fSettingsMessage->RemoveData("last_note" );
+			note_app->fSettingsMessage->AddRef("last_note", fRef );
 		}
-		if (save_settings(note_app -> fSettingsMessage, "settings", "TakeNotes") == B_OK)
+		if (save_settings(note_app->fSettingsMessage, "settings", "TakeNotes") == B_OK)
 				printf("settings saved\n");
 		}
 		break;
 
 		case LOAD_LAST_NOTE: {
-			if(fLoadLastNote -> IsMarked())
-				fLoadLastNote -> SetMarked(false);
+			if(fLoadLastNote->IsMarked())
+				fLoadLastNote->SetMarked(false);
 			else
-				fLoadLastNote -> SetMarked(true);
+				fLoadLastNote->SetMarked(true);
 		}
 
-		note_app -> fSettingsMessage -> SetBool("load_last_note", fLoadLastNote -> IsMarked());
+		note_app->fSettingsMessage->SetBool("load_last_note", fLoadLastNote->IsMarked());
 		if(fRef)  {
-			printf("fRef gibts\n");
-			note_app -> fSettingsMessage -> RemoveData("last_note" );
-			note_app -> fSettingsMessage -> AddRef("last_note", fRef );
+			note_app->fSettingsMessage->RemoveData("last_note" );
+			note_app->fSettingsMessage->AddRef("last_note", fRef );
 		}
-		if(save_settings(note_app -> fSettingsMessage, "settings", "TakeNotes") == B_OK)
+		if(save_settings(note_app->fSettingsMessage, "settings", "TakeNotes") == B_OK)
 				printf("settings saved\n");
 
 		break;
 
 		// Show the panel that allows to save the note
 		case SAVE_AS: {
-			fSavePanel -> Show();
+			fSavePanel->Show();
 		}
 		break;
 
 		// Save the changes
 		case SAVE:{
 			if (!fSaveMessage){
-				 fSavePanel -> Show();
+				 fSavePanel->Show();
 			}
 			else {
 				Save(fSaveMessage);
@@ -864,22 +863,22 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		// Edit messages
 		// Cut the selected text
 		case B_CUT:
-			fNoteText -> Cut(be_clipboard);
+			fNoteText->Cut(be_clipboard);
 		break;
 
 		// Copy the selected text
 		case B_COPY:
-			fNoteText -> Copy(be_clipboard);
+			fNoteText->Copy(be_clipboard);
 		break;
 
 		// Paste the selected text
 		case B_PASTE:
-			fNoteText -> Paste(be_clipboard);
+			fNoteText->Paste(be_clipboard);
 		break;
 
 		// Select all the text
 		case B_SELECT_ALL:
-			fNoteText -> SelectAll();
+			fNoteText->SelectAll();
 		break;
 
 		// Message for the undo function
@@ -889,7 +888,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			if (fCanRedo)	//...and I can do "Redo"
 				fRedoFlag = true;
 
-			fNoteText -> Undo(be_clipboard);
+			fNoteText->Undo(be_clipboard);
 
 		}
 		break;
@@ -900,16 +899,16 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 				fCanUndo = false;
 				fCanRedo = true;
-				fUndoItem -> SetLabel(B_TRANSLATE("Redo"));
-				fUndoItem -> SetEnabled(true);
+				fUndoItem->SetLabel(B_TRANSLATE("Redo"));
+				fUndoItem->SetEnabled(true);
 				fUndoFlag = false;
 
 			}
 			else {
 				fCanUndo = true;
 				fCanRedo = false;
-				fUndoItem -> SetLabel(B_TRANSLATE("Undo"));
-				fUndoItem -> SetEnabled(true);
+				fUndoItem->SetLabel(B_TRANSLATE("Undo"));
+				fUndoItem->SetEnabled(true);
 				fRedoFlag = false;
 		    }
 		    //eventualle check here if there's a string available to convert to a link
@@ -919,10 +918,10 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		// Font size
 		case FONT_SIZE: {
 
-			if (message -> FindFloat ("size", &fontSize) == B_OK){
-				fNoteText -> GetFontAndColor(&font, &sameProperties, &sameColor);
+			if (message->FindFloat ("size", &fontSize) == B_OK){
+				fNoteText->GetFontAndColor(&font, &sameProperties, &sameColor);
 				font.SetSize(fontSize);
-				fNoteText -> SetFontAndColor (&font, B_FONT_SIZE);
+				fNoteText->SetFontAndColor (&font, B_FONT_SIZE);
 			}
 
 		}
@@ -939,8 +938,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			colore.blue = (uint8)c;
 
 			// Setting a different color for the font
-			fNoteText -> GetFontAndColor(&font, &sameProperties);
-			fNoteText -> SetFontAndColor(&font,0,&colore);
+			fNoteText->GetFontAndColor(&font, &sameProperties);
+			fNoteText->SetFontAndColor(&font,0,&colore);
 
 		}
 		break;
@@ -952,9 +951,9 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fontStyle = NULL;
 
 			// Setting the font family
-			message -> FindPointer ("source", &ptr);
+			message->FindPointer ("source", &ptr);
 			fCurrentFont = static_cast <BMenuItem*>(ptr);
-			fontFamily = fCurrentFont -> Label();
+			fontFamily = fCurrentFont->Label();
 			SetFontStyle (fontFamily, fontStyle);
 
 		}
@@ -967,15 +966,15 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			fontStyle = NULL;
 
 			// Setting the font style
-			message -> FindPointer ("source", &ptr);
+			message->FindPointer ("source", &ptr);
 			item = static_cast <BMenuItem*>(ptr);
-			fontStyle = item -> Label();
-			menu = item -> Menu();
+			fontStyle = item->Label();
+			menu = item->Menu();
 
 			if (menu != NULL) {
-				fCurrentFont = menu -> Superitem();
+				fCurrentFont = menu->Superitem();
 				if (fCurrentFont != NULL)
-					fontFamily = fCurrentFont -> Label();
+					fontFamily = fCurrentFont->Label();
 			}
 			SetFontStyle (fontFamily, fontStyle);
 
@@ -986,7 +985,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 		case GO_TO_LINK: {
 
 			// Copying the selected link
-			fNoteText -> GetSelection(&k,&j);
+			fNoteText->GetSelection(&k,&j);
 			length = j - k + 1;
 
 			// If nothing was selected we need to break
@@ -994,7 +993,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				break;
 
 			offset = k;
-			fNoteText -> GetText(offset, length, buffer);
+			fNoteText->GetText(offset, length, buffer);
 
 			//the OS should decide how links are opened, user can adjust settings via the file_type preferences
 			BString cmd = buffer;
@@ -1030,8 +1029,8 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 					month, year, hour, minute, second);
 
 			// Inserting the string
-			fNoteText -> MakeFocus();
-			fNoteText -> Insert(stringa);
+			fNoteText->MakeFocus();
+			fNoteText->Insert(stringa);
 
 		}
 		break;
@@ -1041,7 +1040,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 			if (fColorWindow == NULL){
 				fColorWindow = new ColorWindow(BRect(300,300,700,450),this, this->FindView("NoteText")->ViewColor());
-				fColorWindow -> Show();
+				fColorWindow->Show();
 
 			} else {
 //				fColorWindow->Activate();
@@ -1057,7 +1056,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			colore.green = (uint8)c;
 			message->FindInt8("blue", &c);
 			colore.blue = (uint8)c;
-			fNoteView -> SetBackgroundColor(colore);
+			fNoteView->SetBackgroundColor(colore);
 
 		}
 		break;
@@ -1069,7 +1068,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				alert = new BAlert("Warning",B_TRANSLATE("You must save your note before!"),B_TRANSLATE("Cancel"),B_TRANSLATE("Save"));
 
 				if (alert->Go() == 1) {
-					fSavePanel -> Show();
+					fSavePanel->Show();
 				}
 
 			} else {
@@ -1082,13 +1081,13 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 				    // Obtaining the applications that are running
 		    	    be_roster->GetAppList(aList);
-			    	countApps = aList -> CountItems();
+			    	countApps = aList->CountItems();
 
 		       		 h = countApps * 17 + 300;
 		       		 printf("Height: %d\n", h);
 
 					fChoiceWindow = new ChoiceWindow(BRect(300,300,800,h), this);
-					fChoiceWindow -> Show();
+					fChoiceWindow->Show();
 
 					delete aList;
 					aList = NULL;
@@ -1105,7 +1104,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 			const char* stringa;
 
-			message -> FindString("signature", &stringa);
+			message->FindString("signature", &stringa);
 			// Save the new association into the config file
 			_SaveDB(stringa);
 
@@ -1118,14 +1117,14 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			if (!fSaveMessage){
 				alert = new BAlert("Warning",B_TRANSLATE("You must save your note before!"),B_TRANSLATE("Cancel"),B_TRANSLATE("Save"));
 				if (alert->Go() == 1) {
-					fSavePanel -> Show();
+					fSavePanel->Show();
 				}
 			} else {
 				// It creates a window
 				if (fTagsWindow == NULL){
 
 					fTagsWindow = new TagsWindow(fSaveMessage, this);
-					fTagsWindow -> Show();
+					fTagsWindow->Show();
 
 				} else
 					fTagsWindow->Activate();
@@ -1138,7 +1137,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 			if (fAlarmWindow == NULL){
 
-				fAlarmWindow = new AlarmWindow(BRect(300,300,800,600),this);
+				fAlarmWindow = new AlarmWindow(BRect(300,300,730,450),this);
 				fAlarmWindow->Show();
 
 			}
@@ -1153,15 +1152,15 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 			alarm_set = true;
 
-			message -> FindInt16("year", &i);
+			message->FindInt16("year", &i);
 			fData.Year = i;
-			message -> FindInt16("month", &i);
+			message->FindInt16("month", &i);
 			fData.Month = i;
-			message -> FindInt16("day", &i);
+			message->FindInt16("day", &i);
 			fData.Day = i;
-			message -> FindInt16("hour", &i);
+			message->FindInt16("hour", &i);
 			fData.Hour = i;
-			message -> FindInt16("minute", &i);
+			message->FindInt16("minute", &i);
 			fData.Minute = i;
 
 		}
@@ -1175,7 +1174,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 				break;
 			}
 			// Second check if the runner has been correctly started
-			if (runner -> InitCheck() < B_NO_ERROR) {
+			if (runner->InitCheck() < B_NO_ERROR) {
 				break;
 			}
 
@@ -1191,12 +1190,12 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			timeinfo = localtime ( &rawtime );
 
 			// Fill the timeinfo struct with data saved in data struct
-			timeinfo -> tm_year = fData.Year - 1900;
-			timeinfo -> tm_mon = fData.Month - 1;
-			timeinfo -> tm_mday = fData.Day;
-			timeinfo -> tm_hour = fData.Hour;
-			timeinfo -> tm_min = fData.Minute;
-			timeinfo -> tm_sec = 0;
+			timeinfo->tm_year = fData.Year - 1900;
+			timeinfo->tm_mon = fData.Month - 1;
+			timeinfo->tm_mday = fData.Day;
+			timeinfo->tm_hour = fData.Hour;
+			timeinfo->tm_min = fData.Minute;
+			timeinfo->tm_sec = 0;
 
 			// Convert from struct tm to data type time_t
 			userTime = mktime(timeinfo);
@@ -1204,7 +1203,7 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 			// Compare user time and system time
 			if (difftime(userTime, time( &rawtime) ) < 0 ) {
 
-				//thaflo: send a notification
+				//thaflo: send a notification/ was an alert before
 				BNotification notification(B_INFORMATION_NOTIFICATION);
 				notification.SetGroup("TakeNotes");
 				notification.SetTitle(Title());
@@ -1246,15 +1245,15 @@ void NoteWindow :: MessageReceived(BMessage* message) {
 
 		// About menu
 		case B_ABOUT_REQUESTED: {
-			note_app -> AboutRequested();
+			note_app->AboutRequested();
 		}
 		break;
 
 		case SET_DEFAULT_COLOR: {
 		//save the new default color
 			rgb_color c = {10,10,10,10};
-			note_app -> fSettingsMessage -> SetColor("def_color", message -> GetColor("new_def_color", c));
-			if(save_settings(note_app -> fSettingsMessage, "settings", "TakeNotes") != B_OK)
+			note_app->fSettingsMessage->SetColor("def_color", message->GetColor("new_def_color", c));
+			if(save_settings(note_app->fSettingsMessage, "settings", "TakeNotes") != B_OK)
 				printf("settings not saved\n");
 		}
 		break;

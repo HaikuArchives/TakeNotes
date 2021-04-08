@@ -20,6 +20,10 @@
 // Libraries
 #include <Alert.h>
 #include <Button.h>
+#include <ControlLook.h>
+#include <GroupLayout.h>
+#include <GroupLayoutBuilder.h>
+#include <LayoutBuilder.h>
 
 // Messages
 #define COLOR_CHANGED 	'ccrq'
@@ -42,43 +46,39 @@
 * It is created with the dimensions of BRect
 */
 ColorWindow :: ColorWindow (BRect frame, BHandler *handler, rgb_color color)
-			: BWindow (frame, B_TRANSLATE("Change the default background color"), B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+			: BWindow (frame, B_TRANSLATE("Change the note's background color"), B_TITLED_WINDOW, B_NOT_RESIZABLE) {
 
 	// Variables
 	BPoint 				 leftTop(10.0, 10.0);
-	color_control_layout matrix;
-	long 				 cellSide;
 
 	BButton				 *revertButton;
 	BButton				 *setAsDefaultButton;
 
-	// Create the  view and set the background color, then add child to window
-	frame.OffsetTo(B_ORIGIN);
-	fColorView = new ColorView (frame, "ColorView",handler);
-	fColorView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	fColorView->ResizeToPreferred();
-	AddChild(fColorView);
-
 	// Drawing...
 	fMessenger = new BMessenger(handler);
 
-	matrix = B_CELLS_32x8;
-	cellSide = 9.0;
-
-	fColorControl = new BColorControl (leftTop, matrix, cellSide, "ColorControl", new BMessage(COLOR_CHANGED));
+	fColorControl = new BColorControl (leftTop, B_CELLS_32x8, 9, "ColorControl", new BMessage(COLOR_CHANGED));
 	fColorControl->SetValue(color);
-	fColorView -> AddChild(fColorControl);
 
-	revertButton = new BButton (BRect(10, 100, 170, 125), "default", B_TRANSLATE("Defaults"), new BMessage(BUTTON_REVERT));
-	revertButton->ResizeToPreferred();
-	fColorView -> AddChild(revertButton);
-
-	setAsDefaultButton = new BButton (BRect(135, 100, 250, 125), "default_color",
+	revertButton = new BButton ("default", B_TRANSLATE("Defaults"), new BMessage(BUTTON_REVERT));
+	setAsDefaultButton = new BButton ("default_color",
 				B_TRANSLATE("Set as default for new notes"), new BMessage(SET_DEFAULT_COLOR));
-	setAsDefaultButton->ResizeToPreferred();
-	fColorView -> AddChild(setAsDefaultButton);
 
+	//use Haiku's layout management
+	SetLayout(new BGroupLayout(B_VERTICAL));
 
+	BView* topView = new BGroupView(B_VERTICAL);
+
+	BLayoutBuilder::Group<>(topView, B_VERTICAL, 0.0f)
+		.SetInsets(5,5,5,5)
+		.Add(fColorControl)
+		.AddGroup(B_HORIZONTAL)
+			.AddGlue()
+			.Add(revertButton)
+			.Add(setAsDefaultButton)
+	.End();
+
+	AddChild(topView);
 	Show();
 }
 
@@ -89,18 +89,16 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 	BMessage  	*msg;
 	BAlert 		*alert;
 
-	message->PrintToStream();
-
-	switch (message -> what) {
+	switch (message->what) {
 			case COLOR_CHANGED: {
 			// I catch the color that was chosen by the user
-			userColorChoice = fColorControl -> ValueAsColor();
+			userColorChoice = fColorControl->ValueAsColor();
 
 			// Sending the message...
 			msg = new BMessage (COLOR_CHANGED);
-			msg -> AddInt8 ("red", (int8)userColorChoice.red);
-			msg -> AddInt8 ("green", (int8)userColorChoice.green);
-			msg -> AddInt8 ("blue", (int8)userColorChoice.blue);
+			msg->AddInt8 ("red", (int8)userColorChoice.red);
+			msg->AddInt8 ("green", (int8)userColorChoice.green);
+			msg->AddInt8 ("blue", (int8)userColorChoice.blue);
 			fMessenger->SendMessage(msg);
 			}
 			break;
@@ -115,7 +113,7 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 		// It answer to SET AS DEFAULT request
 		case SET_DEFAULT_COLOR: {
 			msg = new BMessage(SET_DEFAULT_COLOR);
-			msg -> AddColor("new_def_color", fColorControl -> ValueAsColor());
+			msg->AddColor("new_def_color", fColorControl->ValueAsColor());
 			fMessenger->SendMessage(msg);
 		}
 		break;

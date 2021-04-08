@@ -16,9 +16,8 @@
 #ifndef COLOR_WINDOW_H
 #define COLOR_WINDOW_H
 
-#include "ColorView.h"
-
 #include <Window.h>
+#include <ColorControl.h>
 
 
 // Declaration of the class
@@ -36,7 +35,6 @@ class ColorWindow : public BWindow {
 	private:
 
 		BColorControl 	*fColorControl;
-		ColorView 	 	*fColorView;
 		BMessenger		*fMessenger;
 };
 

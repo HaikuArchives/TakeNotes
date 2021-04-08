@@ -113,7 +113,7 @@ NoteApplication :: NoteApplication()
 	//thaflo 2021: load global settings
 	fSettingsMessage = new BMessage();
 	load_settings(fSettingsMessage, "settings", "TakeNotes");
-	if (fSettingsMessage -> GetBool("live_in_deskbar") == true)
+	if (fSettingsMessage->GetBool("live_in_deskbar") == true)
 		_InstallReplicantInDeskbar();
 
 	// Create the file open panel
@@ -136,20 +136,20 @@ void NoteApplication :: ReadyToRun(){
 	short int	erg;
 
 	// Check if the replicant isn't already installed in the Deskbar, avoid to ask if we already opened a note
-	if (!fDeskbar.HasItem(kDeskbarItemName) && fWindowCount == 0 && (fSettingsMessage -> GetBool("live_in_deskbar")) == false){
+	if (!fDeskbar.HasItem(kDeskbarItemName) && fWindowCount == 0 && (fSettingsMessage->GetBool("live_in_deskbar")) == false){
 
 		alert = new BAlert("", B_TRANSLATE("Do you want TakeNotes to live in the Deskbar?"), B_TRANSLATE("Maybe later"), B_TRANSLATE("No thanks"), B_TRANSLATE("Install"), B_WIDTH_AS_USUAL, B_INFO_ALERT);
-		alert -> SetShortcut(0, B_ESCAPE);
-		erg = alert -> Go();
+		alert->SetShortcut(0, B_ESCAPE);
+		erg = alert->Go();
 		// In case we have to install it in the deskbar...
 		if (erg == 2) {
 			_InstallReplicantInDeskbar();
-			fSettingsMessage -> SetBool("live_in_deskbar", true);
+			fSettingsMessage->SetBool("live_in_deskbar", true);
 			save_settings(fSettingsMessage, "settings", "TakeNotes");
 			return;
 		}
 		if (erg == 1) {
-			fSettingsMessage -> SetBool("live_in_deskbar", false);
+			fSettingsMessage->SetBool("live_in_deskbar", false);
 			save_settings(fSettingsMessage, "settings", "TakeNotes");
 		}
 	}
@@ -166,24 +166,11 @@ void NoteApplication :: ReadyToRun(){
 		printf("open settings failed \n");
 
 	} else {
-		if (fSettingsMessage -> FindBool("load_last_note") == TRUE)
-			fSettingsMessage -> FindRef("last_note", fRef);
+		if (fSettingsMessage->FindBool("load_last_note") == TRUE)
+			fSettingsMessage->FindRef("last_note", fRef);
 	}
 
 	OpenNote(fRef);
-}
-
-status_t NoteApplication :: Test() {
-	// I wanted to have only one AboutWindow, but it seems that I need an extra
-	// one for the replicant
-	BAlert *alert;
-
-	alert = new BAlert(B_TRANSLATE("About TakeNotes"),
-			B_TRANSLATE("Copyright 2020\n\nIlio Catallo,\nStefano Celentano,\nEleonora Ciceri.\nFlorian Thaler\n\nall rights reserved, distribuited under the terms of the GPLv2 license\n\nIcons by Meanwhile"),
-			B_TRANSLATE("Thanks"), NULL, NULL, B_WIDTH_AS_USUAL, B_STOP_ALERT);
-	alert->SetShortcut(0,B_ESCAPE);
-	alert->Go();
-	return true;
 }
 
 // Function CheckMime

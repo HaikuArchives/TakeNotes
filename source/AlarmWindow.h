@@ -15,13 +15,16 @@
 #define ALARM_WINDOW_H
 
 
-#include "AlarmView.h"
-
-#include <Window.h>
-#include <TextControl.h>
+#include <Alert.h>
+#include <Box.h>
 #include <Button.h>
 #include <Messenger.h>
-#include <Alert.h>
+#include <StringView.h>
+#include <TextControl.h>
+#include <Window.h>
+
+static const uint32 kShowPopUpCalendar = 'kspc';
+
 
 // Window that allows the user to insert the alarm
 class AlarmWindow : public BWindow {
@@ -35,13 +38,13 @@ class AlarmWindow : public BWindow {
 
 	private:
 
-		AlarmView 		*fAlarmView;
-
 		BTextControl 	*hour,
 						*minute,
 						*day,
 						*month,
 						*year;
+
+		BView 			*fTopView;
 
 		BButton			*fButtonOk;
 		BButton			*fButtonCancel;

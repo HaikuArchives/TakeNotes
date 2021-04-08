@@ -8,7 +8,7 @@
  *
  * Last revision: Eleonora Ciceri, 16h May 2009
  *
- * Description: Coloured item of the menu "Font -> Color"
+ * Description: Coloured item of the menu "Font->Color"
  */
 
 // Libraries
@@ -27,9 +27,9 @@ void ColorMenuItem :: DrawContent() {
 	rgb_color 	menuC;
 
 	if (menu) {
-		menuC = menu -> HighColor();
-		menu -> SetHighColor (fColor);
+		menuC = menu->HighColor();
+		menu->SetHighColor (fColor);
 		BMenuItem :: DrawContent();
-		menu -> SetHighColor (menuC);
+		menu->SetHighColor (menuC);
 	}
 }

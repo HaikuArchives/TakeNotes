@@ -7,7 +7,7 @@
  *			Ilio Catallo,
  *			Stefano Celentano
  *
- * Last revision: Ilio Catallo, 28th June 2009
+ * Last revision: Florian Thaler, 08.0.2021
  *
  * Description: Tags window, it allows the user to set three customs tags (extra attributes)
  */
@@ -18,6 +18,9 @@
 #include <Alert.h>
 #include <Directory.h>
 #include <Entry.h>
+#include <GroupLayout.h>
+#include <GroupLayoutBuilder.h>
+#include <LayoutBuilder.h>
 #include <Message.h>
 #include <View.h>
 #include <Catalog.h>
@@ -37,7 +40,7 @@
 
 
 TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
-		   : BWindow (BRect(300,300,700,450), B_TRANSLATE("Set Tags for this note")
+		   : BWindow (BRect(300,300,700,450), B_TRANSLATE("Set tags for this note")
 		   ,B_TITLED_WINDOW, B_NOT_RESIZABLE){
 
 	// Variables
@@ -48,38 +51,36 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
 	status_t		err;
 	const char		*name;
 
-	BView			*fTagsView;
-	char			bufferTag1[30];
-	char			bufferTag2[30];
-	char			bufferTag3[30];
+	BString tagone = BString();
+	BString tagtwo = BString();
+	BString tagthree = BString();
 
-	// Create the main view
-	fTagsView = new BView(Bounds(), "TagsView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
+	fTag1 = new BTextControl("tag1", B_TRANSLATE("First Tag: "), NULL, NULL);
+	fTag2 = new BTextControl("tag2", B_TRANSLATE("Second Tag: "), NULL, NULL);
+	fTag3 = new BTextControl("tag3", B_TRANSLATE("Third Tag: "), NULL, NULL);
 
-	fTag1 = new BTextControl(BRect(10,10,200,30), "tag1", B_TRANSLATE("First Tag: "), NULL, NULL);
-	fTag2 = new BTextControl(BRect(10,40,200,60), "tag2", B_TRANSLATE("Second Tag: "), NULL, NULL);
-	fTag3 = new BTextControl(BRect(10,70,200,90), "tag3", B_TRANSLATE("Third Tag: "), NULL, NULL);
+	fCancelButton = new BButton("cancel", B_TRANSLATE("Cancel"), new BMessage(BUTTON_CANCEL));
+	fOkButton = new BButton("ok", B_TRANSLATE("OK"), new BMessage(BUTTON_OK));
 
-	//Create the OK and UNDO button
-	fCancelButton = new BButton(BRect(210,115,290,135), "cancel",
-			B_TRANSLATE("Cancel"), new BMessage(BUTTON_CANCEL));
-	fOkButton = new BButton(BRect(300,115,380,135), "ok",
-			B_TRANSLATE("OK"), new BMessage(BUTTON_OK));
 
-	/*
-	* Add the view as window's child, set back ground color,
-	* then add the tag TextControl as children
-	*/
-	fTagsView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	//thaflo, 2021, adding layout management
+	SetLayout(new BGroupLayout(B_VERTICAL));
+	BView* fTopView = new BGroupView(B_VERTICAL);
 
-	AddChild(fTagsView);
-	fTagsView->AddChild(fTag1);
-	fTagsView->AddChild(fTag2);
-	fTagsView->AddChild(fTag3);
-
-	// Add OK and UNDO button as children
-	fTagsView->AddChild(fOkButton);
-	fTagsView->AddChild(fCancelButton);
+	BLayoutBuilder::Group<>(fTopView, B_VERTICAL)
+		.SetInsets(5,5,5,5)
+		.AddGroup(B_VERTICAL)
+			.Add(fTag1)
+			.Add(fTag2)
+			.Add(fTag3)
+		.End()
+		.AddGroup(B_HORIZONTAL)
+			.AddGlue()
+			.Add(fCancelButton)
+			.Add(fOkButton)
+	.End();
+	AddChild(fTopView);
+	Show();
 
 	// Open the file from FS starting from the fSaveMessage message
 	if (fSaveMessage->FindRef("directory",&ref) == B_OK && fSaveMessage->FindString("name", &name) == B_OK){
@@ -94,20 +95,22 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
 		fFile.SetTo(&dir, name, B_READ_WRITE);
 	}
 
-	printf("$$$$TAGONE$$$$: %s\n", bufferTag1);
+	fFile.ReadAttrString("TAKENOTES:tagone", &tagone);
+	printf("read tag one: %s \n", tagone);
+	fFile.ReadAttrString("TAKENOTES:tagtwo", &tagtwo);
+	printf("read tag two: %s \n", tagtwo);
+	fFile.ReadAttrString("TAKENOTES:tagthree", &tagthree);
+	printf("read tag three: %s \n", tagthree);
 
-	// Read the old values for this file
-	if (fFile.ReadAttr("TAKENOTES:tagone", B_STRING_TYPE, 0, &bufferTag1, 30) > 0) {
-		fTag1->SetText(bufferTag1);
-	}
 
-	if (fFile.ReadAttr("TAKENOTES:tagtwo", B_STRING_TYPE, 0, &bufferTag2, 30) > 0) {
-		fTag2->SetText(bufferTag2);
-	}
+	fTag1->SetText(tagone);
+	sleep(10);
 
-	if (fFile.ReadAttr("TAKENOTES:tagthree", B_STRING_TYPE, 0, &bufferTag3, 30) > 0) {
-		fTag3->SetText(bufferTag3);
-	}
+	printf("set tag one\n");
+	fTag2->SetText(tagtwo);
+	printf("set tag two\n");
+	fTag3->SetText(tagthree);
+	printf("set tag three\n");
 
 }
 

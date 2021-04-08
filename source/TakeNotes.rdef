@@ -11,7 +11,7 @@
  *			Meanwhile
  *
  *
- * Last revision: Ilio Catallo, 17th June 2009
+ * Last revision: Florian Thaler, 2021
  *
  * Description: TODO
  */
@@ -27,8 +27,8 @@ resource app_version {
 	variety = B_APPV_FINAL,
 	internal = 0,
 
-	short_info = "TakeNotes",
-	long_info = "TakeNotes ©2021 Ilio Catallo, Stefano Celentano, Eleonora Ciceri, Florian Thaler"
+	short_info = "TakeNotes, an app to create notes.",
+	long_info = "TakeNotes is an app to create notes with alarms and the ability to set the background color and custom fonts."
 };
 
 resource app_flags B_SINGLE_LAUNCH;

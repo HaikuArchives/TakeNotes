@@ -62,7 +62,7 @@ void ChoiceWindow :: MessageReceived(BMessage* message) {
 	// Variables
 	BAlert *alert;
 
-	switch (message -> what) {
+	switch (message->what) {
 
 		// If a new Radio Button is checked we change the message which stores the current selection
 		case RADIO_CHECKED:{

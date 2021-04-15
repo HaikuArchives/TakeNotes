@@ -70,7 +70,7 @@ ColorWindow :: ColorWindow (BRect frame, BHandler *handler, rgb_color color)
 	BView* topView = new BGroupView(B_VERTICAL);
 
 	BLayoutBuilder::Group<>(topView, B_VERTICAL, 0.0f)
-		.SetInsets(5,5,5,5)
+		.SetInsets(B_USE_WINDOW_INSETS)
 		.Add(fColorControl)
 		.AddGroup(B_HORIZONTAL)
 			.AddGlue()

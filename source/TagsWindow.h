@@ -20,6 +20,8 @@
  #include <TextControl.h>
  #include <Window.h>
 
+
+
 // Window that allows you to add tags
 class TagsWindow : public BWindow{
 

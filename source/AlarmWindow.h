@@ -20,11 +20,9 @@
 #include <Button.h>
 #include <Messenger.h>
 #include <StringView.h>
+#include <Spinner.h>
 #include <TextControl.h>
 #include <Window.h>
-
-static const uint32 kShowPopUpCalendar = 'kspc';
-
 
 // Window that allows the user to insert the alarm
 class AlarmWindow : public BWindow {
@@ -38,11 +36,11 @@ class AlarmWindow : public BWindow {
 
 	private:
 
-		BTextControl 	*hour,
-						*minute,
-						*day,
-						*month,
-						*year;
+		BSpinner		*fHour,
+						*fMinute,
+						*fDay,
+						*fMonth,
+						*fYear;
 
 		BView 			*fTopView;
 

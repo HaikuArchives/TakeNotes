@@ -7,7 +7,7 @@
  *			Ilio Catallo,
  *			Stefano Celentano
  *
- * Last revision: Florian Thaler, 08.0.2021
+ * Last revision: Florian Thaler, 08.04.2021
  *
  * Description: Tags window, it allows the user to set three customs tags (extra attributes)
  */
@@ -51,24 +51,23 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
 	status_t		err;
 	const char		*name;
 
-	BString tagone = BString();
-	BString tagtwo = BString();
-	BString tagthree = BString();
+	BString tagone;
+	BString tagtwo;
+	BString tagthree;
 
-	fTag1 = new BTextControl("tag1", B_TRANSLATE("First Tag: "), NULL, NULL);
-	fTag2 = new BTextControl("tag2", B_TRANSLATE("Second Tag: "), NULL, NULL);
-	fTag3 = new BTextControl("tag3", B_TRANSLATE("Third Tag: "), NULL, NULL);
+	fTag1 = new BTextControl("tag1", B_TRANSLATE("First tag: "), NULL, NULL);
+	fTag2 = new BTextControl("tag2", B_TRANSLATE("Second tag: "), NULL, NULL);
+	fTag3 = new BTextControl("tag3", B_TRANSLATE("Third tag: "), NULL, NULL);
 
 	fCancelButton = new BButton("cancel", B_TRANSLATE("Cancel"), new BMessage(BUTTON_CANCEL));
 	fOkButton = new BButton("ok", B_TRANSLATE("OK"), new BMessage(BUTTON_OK));
-
 
 	//thaflo, 2021, adding layout management
 	SetLayout(new BGroupLayout(B_VERTICAL));
 	BView* fTopView = new BGroupView(B_VERTICAL);
 
 	BLayoutBuilder::Group<>(fTopView, B_VERTICAL)
-		.SetInsets(5,5,5,5)
+		.SetInsets(B_USE_WINDOW_INSETS)
 		.AddGroup(B_VERTICAL)
 			.Add(fTag1)
 			.Add(fTag2)
@@ -80,7 +79,6 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
 			.Add(fOkButton)
 	.End();
 	AddChild(fTopView);
-	Show();
 
 	// Open the file from FS starting from the fSaveMessage message
 	if (fSaveMessage->FindRef("directory",&ref) == B_OK && fSaveMessage->FindString("name", &name) == B_OK){
@@ -96,22 +94,14 @@ TagsWindow :: TagsWindow(BMessage *fSaveMessage, BHandler *handler)
 	}
 
 	fFile.ReadAttrString("TAKENOTES:tagone", &tagone);
-	printf("read tag one: %s \n", tagone);
 	fFile.ReadAttrString("TAKENOTES:tagtwo", &tagtwo);
-	printf("read tag two: %s \n", tagtwo);
 	fFile.ReadAttrString("TAKENOTES:tagthree", &tagthree);
-	printf("read tag three: %s \n", tagthree);
 
+	fTag1->SetText(tagone.String());
+	fTag2->SetText(tagtwo.String());
+	fTag3->SetText(tagthree.String());
 
-	fTag1->SetText(tagone);
-	sleep(10);
-
-	printf("set tag one\n");
-	fTag2->SetText(tagtwo);
-	printf("set tag two\n");
-	fTag3->SetText(tagthree);
-	printf("set tag three\n");
-
+	Show();
 }
 
 // Destructor

@@ -7,7 +7,7 @@
  *			Ilio Catallo
  *			Stefano Celentano
  *
- * Last revision: Stefano Celentano, 30th June 2009
+ * Last revision: Florian Thaler, April 2021
  *
  * Description: Alarm Window allows the user to create an alarm for the note
  */
@@ -21,6 +21,7 @@
 #include <GroupLayoutBuilder.h>
 #include <LayoutBuilder.h>
 #include <TimeFormat.h>
+#include <Window.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -32,14 +33,19 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "AlarmWindow"
 
+class BSpinner;
 
 // Messages
 #define BUTTON_ALARM_OK 	'alok'
-#define BUTTON_ALARM_CANCEL 	'btcn'
+#define BUTTON_ALARM_CANCEL 'btcn'
 #define SET_ALARM 			'salr'
 #define ALARM_MSG 			'alrm'
 #define ALARM_CLOSE			'_alc'
-
+#define MSG_HOUR			'msgh'
+#define MSG_MINUTE			'msgm'
+#define MSG_DAY			'msgd'
+#define MSG_MONTH			'msgo'
+#define MSG_YEAR			'msgy'
 /*
 * Constructor
 * It is created with the dimensions of BRect
@@ -50,44 +56,49 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 	// Variables
     fMessenger = new BMessenger(handler);
 
-    char	dayDefaultField[3];
-    char 	monthDefaultField[4];
-    char 	yearDefaultField[5];
+    char	dayNow[3];
+    char 	monthNow[4];
+    char 	yearNow[5];
     char 	hourNow[6];
 	char	minNow[7];
 
 	// Initialize text fields with current system time values
 	sprintf(minNow,"%02d", GetTime(0)+3);
-	sprintf(dayDefaultField, "%02d", GetTime(2));
+	sprintf(dayNow, "%02d", GetTime(2));
 	sprintf(hourNow, "%02d", GetTime(1));
-	sprintf(monthDefaultField, "%02d", GetTime(3));
-	sprintf(yearDefaultField, "%d", GetTime(4));
+	sprintf(monthNow, "%02d", GetTime(3));
+	sprintf(yearNow, "%d", GetTime(4));
 
-	// We allocate the view AlarmView and associate it to the AlarmWindow
-	// Text fields for the data
-	hour = 		new BTextControl("hour",    B_TRANSLATE("hour:"), hourNow , NULL);
-	minute = 	new BTextControl("min",  B_TRANSLATE("min:"), minNow, NULL);
-	day = 		new BTextControl("day",  	B_TRANSLATE("day:"), dayDefaultField, NULL);
-	month = 	new BTextControl("month",   B_TRANSLATE("month:"), monthDefaultField, NULL);
-	year = 		new BTextControl("year",    B_TRANSLATE("year:"), yearDefaultField, NULL);
+	//user interface
+	fHour = new BSpinner("Hour", B_TRANSLATE("Hour:"), new BMessage(MSG_HOUR));
+	fHour->SetRange(0, 24);
+	fHour->SetValue(atoi(hourNow));
+	fMinute = new BSpinner("Minute", B_TRANSLATE("Minute:"), new BMessage(MSG_MINUTE));
+	fMinute->SetRange(0, 60);
+	fMinute->SetValue(atoi(minNow));
+	fDay = new BSpinner("Day", B_TRANSLATE("Day:"), new BMessage(MSG_DAY));
+	fDay->SetRange(0, 31);
+	fDay->SetValue(atoi(dayNow));
+	fMonth = new BSpinner("Month", B_TRANSLATE("Month:"), new BMessage(MSG_MONTH));
+	fMonth->SetRange(0, 12);
+	fMonth->SetValue(atoi(monthNow));
+	fYear = new BSpinner("Year", B_TRANSLATE("Year:"), new BMessage(MSG_YEAR));
+	fYear->SetValue(atoi(yearNow));
 
-	// Allocate the OK button
-	fButtonOk = new BButton ("ok", B_TRANSLATE("Ok"), new BMessage(BUTTON_ALARM_OK));
+	fButtonOk = new BButton ("ok", B_TRANSLATE("OK"), new BMessage(BUTTON_ALARM_OK));
 	fButtonCancel = new BButton ("cancel",B_TRANSLATE("Cancel"),new BMessage(BUTTON_ALARM_CANCEL));
 
-	//thaflo, 2021, adding layout management
 	SetLayout(new BGroupLayout(B_VERTICAL));
-
 	BView* fTopView = new BGroupView(B_VERTICAL);
 
 	BLayoutBuilder::Group<>(fTopView, B_VERTICAL)
-		.SetInsets(5,5,5,5)
+		.SetInsets(B_USE_WINDOW_INSETS)
 		.AddGrid()
-			.Add(day, 1, 0)
-			.Add(month, 2, 0)
-			.Add(year, 3, 0)
-			.Add(hour, 1, 1)
-			.Add(minute, 2, 1)
+			.Add(fDay, 1, 0)
+			.Add(fMonth, 2, 0)
+			.Add(fYear, 3, 0)
+			.Add(fHour, 1, 1)
+			.Add(fMinute, 2, 1)
 		.End()
 		.AddGroup(B_HORIZONTAL)
 			.AddGlue()
@@ -102,51 +113,27 @@ AlarmWindow :: AlarmWindow (BRect frame, BHandler *handler)
 void AlarmWindow :: MessageReceived(BMessage* message) {
 	// Variables
 	BMessage 	*msg;
-	int16 		i;
 	int32		hourN,minuteN,dayN,monthN,yearN;
 	int32 		daysInMonth;
 
 	switch (message->what) {
-
-		case kShowPopUpCalendar:
-		{
-			int8 which;
-			message->FindInt8("which", &which);
-			//_ShowPopUpCalendar(which);
-			break;
-		}
 
 		case BUTTON_ALARM_OK: {
 			/*
 			 * When I press OK I throw the message that fills the struct
 			 * We prepare the data to be included in the message
 			 */
-			const char *hourTextField;
-			const char *minuteTextField;
-			const char *dayTextField;
-			const char *monthTextField;
-			const char *yearTextField;
 
-			/*
-			* Get text fields context by calling Text()
-			* (returns null if empty) and convert to int
-			*/
+			hourN = fHour->Value();
+			minuteN = fMinute->Value();
+			dayN = fDay->Value();
+			monthN = fMonth->Value();
+			yearN = fYear->Value();
 
-			hourTextField = hour->Text();
-			minuteTextField = minute->Text();
-			dayTextField = day->Text();
-			monthTextField = month->Text();
-			yearTextField = year->Text();
-
-			hourN = atoi(hourTextField);
-			minuteN = atoi(minuteTextField);
-			dayN = atoi(dayTextField);
-			monthN = atoi(monthTextField);
-			yearN = atoi(yearTextField);
 
 			/*
 			* Starting controls for time and date
-			* Notice: I won't send ALARM_MSG if one of these checks is missed
+			* Notice: I won't send ALARM_MSG if one of these checks fails
 			*/
 
 			// First check if there are any values (in a correct range)
@@ -174,20 +161,11 @@ void AlarmWindow :: MessageReceived(BMessage* message) {
 				// Instantiate a new message and fill it with time values
 				msg = new BMessage (ALARM_MSG);
 
-				i = atoi (hourTextField);
-				msg->AddInt16 ("hour", i);
-
-				i = atoi (minuteTextField);
-				msg->AddInt16 ("minute", i);
-
-				i = atoi (dayTextField);
-				msg->AddInt16 ("day", i);
-
-				i = atoi (monthTextField);
-				msg->AddInt16 ("month", i);
-
-				i = atoi (yearTextField);
-				msg->AddInt16 ("year", i);
+				msg->AddInt16 ("hour", hourN);
+				msg->AddInt16 ("minute", minuteN);
+				msg->AddInt16 ("day", dayN);
+				msg->AddInt16 ("month", monthN);
+				msg->AddInt16 ("year", yearN);
 
 				// Sending the message
 				fMessenger->SendMessage(msg);

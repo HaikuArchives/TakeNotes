@@ -272,7 +272,7 @@ int AlarmWindow :: GetTime(int element) {
 
 	// Variables
 	struct tm *now;
-	bigtime_t time_value;
+	time_t time_value;
 
 	// Initialize tm struct and time_t value
 	now = NULL;

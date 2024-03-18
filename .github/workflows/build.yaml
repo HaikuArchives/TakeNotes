@@ -26,4 +26,4 @@ jobs:
           architecture: ${{ matrix.config.architecture }}
           run: |
             ssh user@localhost "pkgman update -y haiku_devel cmd:gcc cmd:make makefile_engine" &&
-            make
+            cd source && make

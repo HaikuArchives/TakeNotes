@@ -29,8 +29,6 @@ class ColorWindow : public BWindow {
 		virtual bool QuitRequested();
 		virtual	void MessageReceived(BMessage*);
 		virtual void Quit();
-		const rgb_color gBgColor = {255,240,113};
-
 
 	private:
 

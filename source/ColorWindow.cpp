@@ -38,6 +38,8 @@
 #include <Catalog.h>
 #include <TranslationUtils.h>
 
+static const rgb_color sBgColor = {255,240,113};
+
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "ColorWindow"
 
@@ -105,7 +107,7 @@ void ColorWindow :: MessageReceived (BMessage* message) {
 
 		// It answer to an REVERT request
 		case BUTTON_REVERT: {
-			fColorControl->SetValue(gBgColor);
+			fColorControl->SetValue(sBgColor);
 			this->PostMessage(COLOR_CHANGED);
 		}
 		break;

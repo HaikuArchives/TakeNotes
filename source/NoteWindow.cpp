@@ -492,7 +492,8 @@ NoteWindow::_CreateNoteView(void)
 	fNoteView->AddChild(fScrollView);
 
 	//load color read from the settings file which was loaded in fSettingsMessage
-	fNoteView->SetBackgroundColor(note_app->fSettingsMessage->GetColor("def_color", {255,240,113}));
+	rgb_color color = {255,240,113};
+	fNoteView->SetBackgroundColor(note_app->fSettingsMessage->GetColor("def_color", color));
 
 	if(!fSaveMessage)
 		MoveTo(200+(note_app->fWindowCount*20),200+( note_app->fWindowCount*20));
